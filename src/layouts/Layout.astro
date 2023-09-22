@@ -1,0 +1,45 @@
+---
+import { ViewTransitions } from "astro:transitions";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = "Rythm Nation",
+  description = "A community of music lovers",
+  image = "/images/band.jpg",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <ViewTransitions />
+  </head>
+  <body
+    class="min-h-screen grid grid-rows-[auto,1fr,auto] border-x-2 border-black"
+  >
+    <Header />
+    <slot />
+    <Footer />
+  </body>
+</html>
+
+
+<style is:global>
+	body {
+	  --tw-bg-opacity: 1;
+	  background-color: rgb(245 245 245 / var(--tw-bg-opacity));
+	}
+  </style>
