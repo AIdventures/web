@@ -27,7 +27,6 @@ pnpm-debug.log*
 .idea/
 
 # Development
-pages/
 works/
 # *.csv
 *.zip

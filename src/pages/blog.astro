@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Main from '../components/Main.astro';
+import PostList from '../components/PostList.astro';
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("posts");
+// console.log(posts);
+---
+
+<Layout title="AIdventure Blog">
+	<Main>
+
+		<div class="max-w-2xl mx-auto text-center mb-12">
+			<h2 class="text-3xl lg:text-5xl font-display text-black">
+			The Blog
+			</h2>
+			<p class="xl:text-xl tracking-tight text-black mt-3">
+				AIdventure is your passport to the ever-evolving world of Machine Learning. Join me on a journey filled with insights, discoveries, and tutorials covering the latest tools and techniques. Don't miss out on the AI revolution!
+			</p>
+		</div>
+		
+		<PostList posts={posts} />
+        
+	</Main>
+</Layout>
