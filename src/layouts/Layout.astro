@@ -11,8 +11,6 @@ interface Props {
 
 const {
   title = "Rythm Nation",
-  description = "A community of music lovers",
-  image = "/images/band.jpg",
 } = Astro.props;
 ---
 
@@ -28,7 +26,7 @@ const {
     <ViewTransitions />
   </head>
   <body
-    class="min-h-screen grid grid-rows-[auto,1fr,auto] border-x-2 border-black"
+    class="min-h-screen grid grid-rows-[auto,1fr,auto]"
   >
     <Header />
     <slot />

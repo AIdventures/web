@@ -25,38 +25,35 @@ post.data.date = formatDate(post.data.date);
 const { headings, Content } = await post.render();
 ---
 
-
-
 <Layout title={`AIdventure - ${post.data.title}`}>
-    <div class="px-24 w-12/12 mx-auto" id="entrada">
-        <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight">
+    <div class="lg:flex lg:items-start">
+        <div class="sticky top-20 order-2 ms-12 hidden basis-64 lg:block">
+            <TOC headings={headings} />
+        </div>
+        <main class="px-24 max-sm:px-5 order-1 max-w-5xl mx-auto">
+            <h1
+            class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight"
+            >
             {post.data.title}
-        </h1>
-        <Image
+            </h1>
+            <Image
             src={post.data.image}
             alt={post.data.title}
             width={1024}
             height={1024 / 2}
             format="webp"
             class="w-full rounded-2xl shadow-xl mt-6 object-cover"
-        />
-        <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 lg:mb-8">
+            />
+            <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 lg:mb-8">
             <span>{post.data.author}</span>
             <span aria-hidden="true">·</span>
             <time datetime={post.data.date}>{post.data.date}</time>
             <span aria-hidden="true">·</span>
             {post.data.tags.map((tag) => <span>#{tag}</span>)}
-        </div>
-    </div>
-    
-    <div class="lg:flex lg:items-start w-12/12 mx-auto">
-        <main class="order-2 w-8/12 mx-auto" id="continuacion">
-            <div class="prose max-w-none">
+            </div>
+            <div class="w-full prose max-w-none">
             <Content />
             </div>
         </main>
-        <div class="sticky top-20 order-3 ms-12 hidden w-8/12 lg:block" id="toc">
-            <TOC headings={headings} />
-        </div>
     </div>
 </Layout>
