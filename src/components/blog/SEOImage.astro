@@ -1,0 +1,32 @@
+---
+import {Image} from "astro:assets"
+
+type Props = {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+    // default format is "webp"
+    format?: "webp" | "png" | "jpeg" | "jpg" | "avif";
+    // default class is "w-full rounded-2xl shadow-xl mt-6 object-cover"
+    className?: string;
+}
+
+const {
+    src,
+    alt,
+    width,
+    height,
+    format = "webp",
+    className = "w-full rounded-2xl shadow-xl mt-6 object-cover"
+} = Astro.props;
+---
+
+<img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    format={format}
+    class={className}
+/>
