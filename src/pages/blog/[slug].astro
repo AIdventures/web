@@ -27,8 +27,8 @@ const { headings, Content } = await post.render();
 ---
 
 <Layout title={`AIdventure - ${post.data.title}`}>
-    <div class="px-6 xl:px-12 w-full lg:w-6/12 mx-auto">
-        <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight">
+    <div class="px-6 w-full grid grid-cols-12 xl:px-12 xl:flex xl:flex-col xl:w-6/12 mx-auto">
+        <h1 class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight col-span-8 col-start-2">
             {post.data.title}
         </h1>
         <Image
@@ -37,9 +37,9 @@ const { headings, Content } = await post.render();
             width={1024}
             height={1024 / 2}
             format="webp"
-            class="w-full rounded-2xl shadow-xl mt-6 object-cover"
+            class="w-full rounded-2xl shadow-xl mt-6 object-cover col-span-8 col-start-2"
         />
-        <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 lg:mb-8">
+        <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 xl:mb-8 col-span-8 col-start-2">
             <span>{post.data.author}</span>
             <span aria-hidden="true">·</span>
             <time datetime={post.data.date}>{post.data.date}</time>
@@ -48,14 +48,14 @@ const { headings, Content } = await post.render();
         </div>
     </div>
     
-    <div class="w-full lg:w-10/12 mx-auto">
-        <div class="grid grid-cols-12 lg:grid-cols-10">
-            <main class="px-6 xl:px-12 order-2 lg:order-1 col-span-12 lg:col-span-6 lg:col-start-3">
+    <div class="w-full xl:w-10/12 mx-auto">
+        <div class="grid grid-cols-12 xl:grid-cols-10">
+            <main class="px-6 xl:px-12 order-2 lg:order-1 col-span-12 lg:col-span-8 lg:col-start-2 xl:col-span-6 xl:col-start-3">
                 <div class="prose max-w-none">
-                <Content />
+                    <Content />
                 </div>
             </main>
-            <div class="order-1 lg:order-2 col-span-12 px-6 xl:px-12 mb-8 lg:mb-0 lg:px-0 lg:col-span-2">
+            <div class="order-1 lg:order-2 col-span-12 px-6 xl:px-8 mb-8 xl:mb-0 lg:col-span-2">
                 <div class="lg:sticky lg:top-20 lg:ms-8 w-full">
                     <TOC headings={headings} />
                 </div>
