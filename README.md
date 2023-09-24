@@ -54,3 +54,4 @@ All commands are run from the root of the project, from a terminal:
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
 
 - Modify prose elements [here](https://tailwindcss.com/docs/typography-plugin#element-modifiers).
+- Live server [cloudflare](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/install-and-setup/tunnel-guide/local)
