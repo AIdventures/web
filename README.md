@@ -55,3 +55,16 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 
 - Modify prose elements [here](https://tailwindcss.com/docs/typography-plugin#element-modifiers).
 - Live server [cloudflare](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/install-and-setup/tunnel-guide/local)
+
+## 📝 ToDos
+
+- [ ] Add a `404` page
+- [ ] Add a `sitemap.xml` file
+- [ ] Add a `robots.txt` file
+- [ ] Add a `manifest.json` file
+- [ ] Add RSS
+- [ ] Add envio correo suscripción
+- [ ] Add copy-paste code
+- [ ] Image caption
+- [ ] Add Google Analytics
+- [ ] Add tag filter
