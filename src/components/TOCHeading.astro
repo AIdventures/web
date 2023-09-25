@@ -14,7 +14,7 @@ const {
 	{
 		!!subheadings.length && (
 			<ul>
-				{subheadings.map((subheading) => (
+				{subheadings.map((subheading: any) => (
 					<Astro.self heading={subheading} />
 				))}
 			</ul>
