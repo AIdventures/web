@@ -59,7 +59,7 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 ## 📝 ToDos
 
 - [ ] Add a `404` page
-- [ ] Add a `sitemap.xml` file
+- [ ] Add a `sitemap.xml` [file](https://docs.astro.build/es/guides/integrations-guide/sitemap/)
 - [ ] Add a `robots.txt` file
 - [ ] Add a `manifest.json` file
 - [ ] Add RSS

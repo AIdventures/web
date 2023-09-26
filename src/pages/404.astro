@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Main from '../components/Main.astro';
+
+import {Image} from "astro:assets"
+---
+
+<Layout title="AIdventure - Your Machine Learning Blog">
+	<Main>
+		
+		<section>
+			<div class="items-center flex pt-12 pb-16 justify-center">
+				<section>
+					<div class="2xl:max-w-7xl mx-auto">
+						<div class="text-center">						
+							<Image
+								src="/404.svg"
+								alt="test"
+								width={600}
+								height={600}
+								format="svg"
+								class="mx-auto w-full h-full lg:w-72 lg:h-72"
+							/>
+							<h1 class="text-4xl sm:text-6xl mx-auto font-bold text-black tracking-widest md:tracking-normal uppercase md:text-7xl lg:text-9xl xl:text-13xl">
+								error 404
+							</h1>
+							<div class="flex-col flex gap-3 mt-10 sm:flex-row justify-center">
+								<a href="/" class="text-black items-center shadow-[5px_5px_black] inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out hover:text-white transform transition hover:shadow-none border-2 duration-200 hover:bg-black lg:w-auto py-3 rounded-xl w-full">
+									Back to safety <span class="ml-3">→</span>
+								</a>
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+		</section>
+		
+	</Main>
+</Layout>

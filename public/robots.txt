@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://blog.maparla.es/sitemap-index.xml
+Sitemap: https://aidventure.es/sitemap-index.xml
