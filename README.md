@@ -58,10 +58,11 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 
 ## 📝 ToDos
 
-- [ ] Add a `404` page
-- [ ] Add a `sitemap.xml` [file](https://docs.astro.build/es/guides/integrations-guide/sitemap/)
-- [ ] Add a `robots.txt` file
+- [x] Add a `404` page
+- [-] Add a `sitemap.xml` [file](https://docs.astro.build/es/guides/integrations-guide/sitemap/)
+- [-] Add a `robots.txt` file
 - [ ] Add a `manifest.json` file
+- [ ] Menu toggler not working on mobile
 - [ ] Add RSS
 - [ ] Add envio correo suscripción
 - [ ] Add copy-paste code
