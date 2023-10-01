@@ -6,6 +6,14 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), mdx(), sitemap()],
+  integrations: [
+    mdx({
+      syntaxHighlight: 'shiki',
+      shikiConfig: {
+        theme: 'github-dark',
+        wrap: true
+      },
+      drafts: true
+    }), tailwind(), sitemap()],
   site: 'https://aidventure.es'
 });

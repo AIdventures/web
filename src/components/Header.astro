@@ -41,14 +41,20 @@
 </header>
 
 <script>
-    const navbar = document.querySelector('[data-collapse-toggle="navbar-default"]');
-    const menuOpen = document.querySelector('#menu-opener');
-    const menuClose = document.querySelector('#menu-closer');
-    const navbarMenu = document.querySelector('#navbar-default');
-    
-    navbar?.addEventListener('click', () => {
-        menuOpen?.classList.toggle('hidden');
-        menuClose?.classList.toggle('hidden');
-        navbarMenu?.classList.toggle('hidden');
-    });
+    const navBar = () => {
+        const navbar = document.querySelector('[data-collapse-toggle="navbar-default"]');
+        const menuOpen = document.querySelector('#menu-opener');
+        const menuClose = document.querySelector('#menu-closer');
+        const navbarMenu = document.querySelector('#navbar-default');
+        
+        navbar?.addEventListener('click', () => {
+            menuOpen?.classList.toggle('hidden');
+            menuClose?.classList.toggle('hidden');
+            navbarMenu?.classList.toggle('hidden');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', navBar);
+    document.addEventListener('astro:after-swap', navBar);
+
 </script>

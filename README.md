@@ -59,13 +59,18 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 ## 📝 ToDos
 
 - [x] Add a `404` page
+- [x] Menu toggler not working on mobile
+- [x] Image caption
 - [-] Add a `sitemap.xml` [file](https://docs.astro.build/es/guides/integrations-guide/sitemap/)
 - [-] Add a `robots.txt` file
+- [-] Add RSS
+- [x] Add copy-paste code
 - [ ] Add a `manifest.json` file
-- [ ] Menu toggler not working on mobile
-- [ ] Add RSS
 - [ ] Add envio correo suscripción
-- [ ] Add copy-paste code
-- [ ] Image caption
-- [ ] Add Google Analytics
 - [ ] Add tag filter
+- [ ] Add search
+- [ ] Add pagination - Load more
+- [ ] TOC for mobile down the screen collapsible => TOC title touch and expand
+- [ ] Add Google Analytics
+- [ ] Responsive test
+- [ ] Image optimization

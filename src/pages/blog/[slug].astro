@@ -63,3 +63,56 @@ const { headings, Content } = await post.render();
         </div>
     </div>
 </Layout>
+
+
+<script>
+
+    // Add a class 'relative' to all pre elements
+    let codeBlocks = Array.from(document.querySelectorAll('pre'))
+    codeBlocks.forEach((code) => {
+        code.classList.add('relative')
+    })
+
+	let copyButtonContent = `
+    <svg class="h-5 w-5 stroke-gray-300 hover:stroke-white" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
+        <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
+    </svg>    
+    `
+	let codeBlock = Array.from(document.querySelectorAll('pre > code'))
+
+	codeBlock.forEach((code) => {
+		const button = document.createElement('button')
+		button.classList.add(
+			'absolute',
+			'top-2',
+			'right-2',
+			'p-2',
+			'rounded-md',
+			'transition-all',
+			'duration-200',
+			'flex',
+			'items-center',
+			'justify-center'
+		)
+		//add to the button a svg icon
+        button.innerHTML = copyButtonContent
+		code.parentElement?.appendChild(button)
+
+		button.addEventListener('click', () => {
+            if (code.textContent !== null) {
+                navigator.clipboard.writeText(code.textContent);
+            }
+			button.innerHTML = `
+            <svg class="h-5 w-5 stroke-green-400" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M5 12l5 5l10 -10" />
+            </svg>
+            `
+			setTimeout(() => {
+				button.innerHTML = copyButtonContent
+			}, 2000)
+		})
+	})
+</script>

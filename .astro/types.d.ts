@@ -184,6 +184,62 @@ declare module 'astro:content' {
 
 	type ContentEntryMap = {
 		"posts": {
+"label-studio-json-load copy 2.mdx": {
+	id: "label-studio-json-load copy 2.mdx";
+  slug: "label-studio-json-load-copy-2";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 3.mdx": {
+	id: "label-studio-json-load copy 3.mdx";
+  slug: "label-studio-json-load-copy-3";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 4.mdx": {
+	id: "label-studio-json-load copy 4.mdx";
+  slug: "label-studio-json-load-copy-4";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 5.mdx": {
+	id: "label-studio-json-load copy 5.mdx";
+  slug: "label-studio-json-load-copy-5";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 6.mdx": {
+	id: "label-studio-json-load copy 6.mdx";
+  slug: "label-studio-json-load-copy-6";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 7.mdx": {
+	id: "label-studio-json-load copy 7.mdx";
+  slug: "label-studio-json-load-copy-7";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 8.mdx": {
+	id: "label-studio-json-load copy 8.mdx";
+  slug: "label-studio-json-load-copy-8";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy.mdx": {
+	id: "label-studio-json-load copy.mdx";
+  slug: "label-studio-json-load-copy";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "label-studio-json-load.mdx": {
 	id: "label-studio-json-load.mdx";
   slug: "label-studio-json-load";
