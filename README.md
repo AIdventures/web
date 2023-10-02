@@ -65,12 +65,43 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 - [-] Add a `robots.txt` file
 - [-] Add RSS
 - [x] Add copy-paste code
-- [ ] Add a `manifest.json` file
+- [?] Add pagination - Load more
 - [ ] Add envio correo suscripción
 - [ ] Add tag filter
 - [ ] Add search
-- [ ] Add pagination - Load more
 - [ ] TOC for mobile down the screen collapsible => TOC title touch and expand
 - [ ] Add Google Analytics
 - [ ] Responsive test
 - [ ] Image optimization
+- [ ] Add a `manifest.json` file
+
+
+```astro
+<!-- Add a Load More button here -->
+<div class=`
+    cursor-pointer
+    flex
+    items-center
+    justify-center
+    w-48
+    my-6
+    px-5
+    py-3
+    mx-auto
+    focus:outline-none
+    focus:ring-2
+    focus:ring-black
+    focus:ring-offset-2
+    rounded-xl
+    font-medium
+    border-black
+    border-2
+    bg-black
+    text-base
+    text-white
+    hover:bg-lila-500
+    hover:text-black
+`>
+    <button class="btn btn-primary">Load More</button>
+</div>
+```

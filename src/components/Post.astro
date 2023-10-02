@@ -13,7 +13,8 @@ const {post} = Astro.props
 post.data.date = formatDate(post.data.date)
 ---
 
-<article class="box-border box-shadow mb-12">
+<!-- We are going to introduce the tags as metadata to filter the posts later on. -->
+<article class="post box-border box-shadow mb-12" data-tags={post.data.tags.join(",")}>
     <a href={`/blog/${post.slug}`}>
         <Image
             src={post.data.image}

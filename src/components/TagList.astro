@@ -7,7 +7,7 @@ type Props = {
 
 const {posts} = Astro.props
 const uniqueTags = new Set(posts.flatMap(post => post.data.tags))
-const shortedTags = [...uniqueTags].sort((a, b) => a.length - b.length)
+let shortedTags = [...uniqueTags].sort((a, b) => a.length - b.length)
 ---
 
 <div
@@ -15,9 +15,40 @@ const shortedTags = [...uniqueTags].sort((a, b) => a.length - b.length)
 >
     {
         [...shortedTags].map(tag => (
-            <h2>
-                <a href={`/tag/${tag}`} class="text-base bg-gray-200 rounded-xl px-2 py-1">#{tag}</a>
+            <h2 class="tag-button select-none cursor-pointer text-base bg-gray-200 rounded-xl px-2 py-1" data-tag={tag}>
+                #{tag}
             </h2>
         ))
     }
 </div>
+
+<script>
+    // Each post has a data-tags attribute with the list of tags of the article, separated by ","
+    // We use this to filter the posts and only show the ones that have the selected tag
+    let selectedTags = new Set()
+    const tagButtons = document.querySelectorAll(".tag-button")
+    tagButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const tag = button.getAttribute("data-tag")
+            if (selectedTags.has(tag)) {
+                selectedTags.delete(tag)
+                button.classList.remove("bg-lila-500")
+                button.classList.add("bg-gray-200")
+            } else {
+                selectedTags.add(tag)
+                button.classList.remove("bg-gray-200")
+                button.classList.add("bg-lila-500")
+            }
+            
+            const posts = document.querySelectorAll(".post") // check Post.astro <article>
+            posts.forEach(post => {
+                const tags = post.getAttribute("data-tags")?.split(",")
+                if (selectedTags.size === 0 || tags?.some(tag => selectedTags.has(tag))) {
+                    post.classList.remove("hidden")
+                } else {
+                    post.classList.add("hidden")
+                }
+            })
+        })
+    })
+</script>
