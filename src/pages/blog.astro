@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Main from '../components/Main.astro';
 import PostList from '../components/PostList.astro';
+import TagList from '../components/TagList.astro';
 import { getCollection } from "astro:content";
 
 const posts = await getCollection("posts");
@@ -10,7 +11,7 @@ const posts = await getCollection("posts");
 <Layout title="AIdventure Blog">
 	<Main>
 
-		<div class="max-w-2xl mx-auto text-center mb-12">
+		<div class="max-w-2xl mx-auto text-center mb-6">
 			<h2 class="text-3xl lg:text-5xl font-display text-black">
 			The Blog
 			</h2>
@@ -18,8 +19,38 @@ const posts = await getCollection("posts");
 				AIdventure is your passport to the ever-evolving world of Machine Learning. Join me on a journey filled with insights, discoveries, and tutorials covering the latest tools and techniques. Don't miss out on the AI revolution!
 			</p>
 		</div>
+
+		<TagList posts={posts} />
 		
 		<PostList posts={posts} />
+
+		<!-- Add a Load More button here -->
+		<div class=`
+			cursor-pointer
+			flex
+			items-center
+			justify-center
+			w-48
+			my-6
+			px-5
+			py-3
+			mx-auto
+			focus:outline-none
+			focus:ring-2
+			focus:ring-black
+			focus:ring-offset-2
+			rounded-xl
+			font-medium
+			border-black
+			border-2
+			bg-black
+			text-base
+			text-white
+			hover:bg-lila-500
+			hover:text-black
+		`>
+			<button class="btn btn-primary">Load More</button>
+		</div>
         
 	</Main>
 </Layout>

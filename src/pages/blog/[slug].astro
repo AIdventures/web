@@ -27,8 +27,8 @@ const { headings, Content } = await post.render();
 ---
 
 <Layout title={`AIdventure - ${post.data.title}`}>
-    <div class="px-6 w-full grid grid-cols-12 xl:px-12 xl:flex xl:flex-col xl:w-6/12 mx-auto">
-        <h1 class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight col-span-8 col-start-2">
+    <div class="px-6 xl:px-12 w-full flex flex-col xl:w-6/12 mx-auto">
+        <h1 class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight xl:col-span-8 xl:col-start-2">
             {post.data.title}
         </h1>
         <Image

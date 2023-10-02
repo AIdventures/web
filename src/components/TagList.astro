@@ -1,0 +1,23 @@
+---
+import type {CollectionEntry} from "astro:content"
+
+type Props = {
+    posts: CollectionEntry<"posts">[]
+}
+
+const {posts} = Astro.props
+const uniqueTags = new Set(posts.flatMap(post => post.data.tags))
+const shortedTags = [...uniqueTags].sort((a, b) => a.length - b.length)
+---
+
+<div
+    class="flex flex-row flex-wrap items-center justify-center w-full mx-auto lg:w-6/12 mt-6 mb-12 gap-x-6 gap-y-6"
+>
+    {
+        [...shortedTags].map(tag => (
+            <h2>
+                <a href={`/tag/${tag}`} class="text-base bg-gray-200 rounded-xl px-2 py-1">#{tag}</a>
+            </h2>
+        ))
+    }
+</div>
