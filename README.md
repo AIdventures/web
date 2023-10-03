@@ -67,7 +67,7 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 - [x] Add copy-paste code
 - [?] Add pagination - Load more
 - [ ] Add envio correo suscripción
-- [ ] Add tag filter
+- [x] Add tag filter
 - [ ] Add search
 - [ ] TOC for mobile down the screen collapsible => TOC title touch and expand
 - [ ] Add Google Analytics
