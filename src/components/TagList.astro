@@ -15,7 +15,7 @@ let shortedTags = [...uniqueTags].sort((a, b) => a.length - b.length)
 >
     {
         [...shortedTags].map(tag => (
-            <h2 class="tag-button select-none cursor-pointer text-base bg-gray-200 rounded-xl px-2 py-1" data-tag={tag}>
+            <h2 class="tag-button select-none border border-gray-300 cursor-pointer text-base bg-gray-200 hover:bg-gray-300 transition-all duration-100 rounded-xl px-2 py-1" data-tag={tag}>
                 #{tag}
             </h2>
         ))
