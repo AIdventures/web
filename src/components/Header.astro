@@ -1,27 +1,20 @@
 ---
+import AIdventureIcon from '../components/icons/AIdventureIcon.astro'
+import HamburgerIcon from '../components/icons/HamburgerIcon.astro'
+import CloseIcon from '../components/icons/CloseIcon.astro'
 ---
 
 <header>
     <nav class="mx-auto w-full bg-lila-500 2xl:border-y-2 justify-center sticky border-y-2 border-black mb-12">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-10 px-12">
             <a href="/" class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 mr-2" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#141520" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M21 3v5l-11 9l-4 4l-3 -3l4 -4l9 -11z" />
-                    <path d="M5 13l6 6" />
-                    <path d="M14.32 17.32l3.68 3.68l3 -3l-3.365 -3.365" />
-                    <path d="M10 5.5l-2 -2.5h-5v5l3 2.5" />
-                  </svg>
+                <AIdventureIcon />
                 <span class="text-2xl font-normal text-lila-950">AIdventure</span>
             </a>
             <button data-collapse-toggle="navbar-default" type="button" class="bg-pink-500 border-2 border-black inline-flex items-center p-2 w-10 h-10 justify-center text-sm md:hidden" aria-controls="navbar-default" aria-expanded="false">
                 <span class="sr-only">Open main menu</span>
-                <svg aria-hidden="true" fill="none" viewBox="0 0 17 14" id="menu-opener">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
-                </svg>
-                <svg class="hidden" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-closer">
-                    <path class="inline-flex" d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                </svg>
+                <HamburgerIcon icon_id="menu-opener" />
+                <CloseIcon icon_id="menu-closer" classes="hidden" />
             </button>
             <div class="hidden w-full md:block md:w-auto" id="navbar-default">
                 <ul class="text-lg items-center gap-4 font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">

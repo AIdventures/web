@@ -1,3 +1,11 @@
+---
+import HeartIcon from './icons/HeartIcon.astro'
+import LinkedinIcon from './icons/LinkedinIcon.astro'
+import GithubIcon from './icons/GithubIcon.astro'
+import KaggleIcon from './icons/KaggleIcon.astro'
+import RSSIcon from './icons/RSSIcon.astro'
+---
+
 <footer class="bg-white border-t-2 border-black mt-12">
   <div class="p-8 lg:p-20 2xl:px-0 2xl:max-w-7xl mx-auto">
     <div class="h-full space-y-6">
@@ -28,19 +36,9 @@
                   <button
                     class="items-center w-full border-black flex border-2 bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 font-medium hover:bg-lila-500 hover:text-black justify-center px-5 py-3 rounded-xl text-base text-white"
                     type="submit"
-                    ><svg
-                      class="h-6 mr-3 w-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      ><path
-                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"></path></svg
-                    > Subscribe for free</button
                   >
+                    <HeartIcon /> Subscribe for free
+                  </button>
                 </div>
               </form>
             </div>
@@ -85,59 +83,20 @@
           </div><div>
             <div class="flex space-x-6 md:order-2">
               <a href="https://www.linkedin.com/in/mario-parre%C3%B1o-lara-a33585125/" target="_blank" class="text-black hover:text-lila-900">
-                <span class="sr-only">LinkedIn</span>
-                <svg class="h-6 w-6 stroke-black hover:stroke-lila-900" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.75" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" />
-                  <path d="M8 11l0 5" />
-                  <path d="M8 8l0 .01" />
-                  <path d="M12 16l0 -5" />
-                  <path d="M16 16v-3a2 2 0 0 0 -4 0" />
-                </svg>
+                <span class="sr-only">LinkedIn</span> <LinkedinIcon />
               </a>
               <a href="https://github.com/MarioProjects" target="_blank" class="text-black hover:text-lila-900">
-                <span class="sr-only">GitHub</span><svg
-                  class="h-6 w-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  ><path
-                    fill-rule="evenodd"
-                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                    clip-rule="evenodd"></path>
-                </svg>
+                <span class="sr-only">GitHub</span> <GithubIcon />
               </a>
               <a href="https://www.kaggle.com/maparla" target="_blank" class="text-black hover:text-lila-900">
-                <span class="sr-only">Kaggle</span>
-                <svg
-                  class="h-6 w-6 fill-black hover:fill-lila-900 stroke-black hover:stroke-lila-900"
-                  viewBox="0 0 32 32"
-                >
-                  <defs>
-                    <clipPath id="A">
-                      <use xlink:href="#B"/>
-                    </clipPath>
-                    <path id="B" d="M31.5 15.978h289v130.044h-289z"/>
-                  </defs>
-                  <path
-                    transform="matrix(.527027 0 0 .527027 -30.632288 -22.45559)"
-                    clip-path="url(#A)" d="M105.75 102.968c-.06.238-.298.357-.713.357H97.1c-.477 0-.89-.208-1.248-.625L82.746 86.028l-3.655 3.477v12.93c0 .595-.298.892-.892.892h-6.152c-.595 0-.892-.297-.892-.892V43.5c0-.593.297-.89.892-.89H78.2c.594 0 .892.298.892.89v36.288l15.692-15.87c.416-.415.832-.624 1.248-.624h8.204c.356 0 .593.15.713.445.12.357.09.624-.09.803L88.274 80.588l17.297 21.488c.237.238.297.535.18.892"
-                  />
-                </svg>
+                <span class="sr-only">Kaggle</span> <KaggleIcon />
               </a>
               <a rel="alternate" type="application/rss+xml" 
                  title="AIdventure RSS Feed" 
                  href="rss.xml"
                  class="text-black hover:text-lila-900"
                 >
-                <span class="sr-only">AIdventure RSS Feed</span>
-
-                <svg class="h-6 w-6 stroke-black hover:stroke-lila-900" width="44" height="44" viewBox="0 0 24 24" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                  <path d="M4 4a16 16 0 0 1 16 16" />
-                  <path d="M4 11a9 9 0 0 1 9 9" />
-                </svg>
+                <span class="sr-only">AIdventure RSS Feed</span> <RSSIcon />
               </a>
             </div>
           </div>
