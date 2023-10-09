@@ -184,6 +184,27 @@ declare module 'astro:content' {
 
 	type ContentEntryMap = {
 		"posts": {
+"label-studio-json-load copy 2.mdx": {
+	id: "label-studio-json-load copy 2.mdx";
+  slug: "label-studio-json-load-copy-2";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy 3.mdx": {
+	id: "label-studio-json-load copy 3.mdx";
+  slug: "label-studio-json-load-copy-3";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"label-studio-json-load copy.mdx": {
+	id: "label-studio-json-load copy.mdx";
+  slug: "label-studio-json-load-copy";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "label-studio-json-load.mdx": {
 	id: "label-studio-json-load.mdx";
   slug: "label-studio-json-load";
