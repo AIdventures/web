@@ -66,13 +66,13 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 - [-] Add RSS
 - [x] Add copy-paste code
 - [?] Add pagination - Load more
-- [ ] Add envio correo suscripción
 - [x] Add tag filter
 - [ ] Add search
 - [ ] TOC for mobile down the screen collapsible => TOC title touch and expand
-- [ ] Add Google Analytics
 - [ ] Responsive test
 - [ ] Image optimization
+- [ ] Add envio correo suscripción
+- [ ] Add Google Analytics
 - [ ] Add a `manifest.json` file
 
 
@@ -105,3 +105,5 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
     <button class="btn btn-primary">Load More</button>
 </div>
 ```
+
+https://github.com/danielcgilibert/blog-template

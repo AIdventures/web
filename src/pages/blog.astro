@@ -6,6 +6,13 @@ import TagList from '../components/TagList.astro';
 import { getCollection } from "astro:content";
 
 const posts = await getCollection("posts");
+
+// short posts by date
+posts.sort((a, b) => {
+	const dateA = new Date(a.data.date);
+	const dateB = new Date(b.data.date);
+	return (dateB as Date).getTime() - (dateA as Date).getTime();
+});
 ---
 
 <Layout title="AIdventure Blog">

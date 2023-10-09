@@ -2,6 +2,7 @@
 import type {CollectionEntry} from "astro:content"
 
 import Post from "./Post.astro"
+import FeaturedPost from "./FeaturedPost.astro"
 type Props = {
     posts: CollectionEntry<"posts">[]
 }
@@ -9,8 +10,13 @@ type Props = {
 const {posts} = Astro.props
 ---
 
+<!-- Draw the first post as special one -->
+<FeaturedPost post={posts[0]} />
+
 <div
-    class="grid grid-cols-2 gap-x-16 gap-y-32 max-md:grid-cols-1 max-sm:gap-y-14"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 max-sm:gap-y-14 mt-16"
 >
-    {posts.map(post => <Post post={post} />)}
+    {posts.slice(1).map((post) => (
+        <Post post={post} />
+    ))}
 </div>
