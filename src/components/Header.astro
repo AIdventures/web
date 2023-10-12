@@ -2,6 +2,9 @@
 import AIdventureIcon from '../components/icons/AIdventureIcon.astro'
 import HamburgerIcon from '../components/icons/HamburgerIcon.astro'
 import CloseIcon from '../components/icons/CloseIcon.astro'
+
+const {current_page} = Astro.props
+const hover_effect = "relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-black after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left"
 ---
 
 <header>
@@ -19,13 +22,28 @@ import CloseIcon from '../components/icons/CloseIcon.astro'
             <div class="hidden w-full md:block md:w-auto" id="navbar-default">
                 <ul class="text-lg items-center gap-4 font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
                     <li>
-                        <a href="/" class="font-normal" aria-current="page">Home</a>
+                        <a href="/" class:list={[
+                            hover_effect,
+                            {
+                                'font-bold' : current_page === 'home'
+                            }
+                        ]} aria-current="page">Home</a>
                     </li>
                     <li>
-                        <a href="/blog" class="font-normal">Blog</a>
+                        <a href="/blog" class:list={[
+                            hover_effect,
+                            {
+                                'font-bold' : current_page === 'blog'
+                            }
+                        ]}>Blog</a>
                     </li>
                     <li>
-                        <a href="/about" class="font-normal">About</a>
+                        <a href="/about" class:list={[
+                            hover_effect,
+                            {
+                                'font-bold' : current_page === 'about'
+                            }
+                        ]}>About</a>
                     </li>
                 </ul>
             </div>

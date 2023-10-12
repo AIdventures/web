@@ -1,22 +1,77 @@
 ---
 author: Mario Parreño
-date: 08/10/2021
+date: 12/10/2021
 image: ./images/label-studio-json-load/pastel.jpg
-tags: ["label-studio", "json", "data", "labeling"]
-title: How to read data in Label Studio through Json
-description: How to read data in Label Studio with Json. You can use Local Storage, AWS S3, Azure, or Google Cloud Storage.
+tags: ["label-studio", "labeling", "data"]
+title: The proper way to read data with Label Studio
+description: Read any kind of data, flexibly, with JSON files in Label Studio.
 ---
-import Callout from "../../components/blog/Callout.astro"
 import SEOImage from "../../components/blog/SEOImage.astro"
 
-Collaboration is a key component of many creative endeavors, and music production is no exception. In fact, collaboration can be essential to the success of a music project, as it allows for the pooling of diverse talents and perspectives to create something truly unique and compelling.
+Loading data when using Label Studio can be accomplished in various ways.
+The easiest one is to drag and drop a file into the interface,
+but this is not always the best option, scpecially when dealing with large datasets.
 
-<Callout text="Learn Astro 3.0" link="https://astro.build/blog/astro-3" />
-
-**Note:** This document is itself written using Markdown; you
-can [see the source for it by adding '.text' to the URL](/projects/markdown/syntax.text).
+In this post we will see how to load data from a **JSON file**, configuring the Label Studio server
+to serve the files from a **local directory or cloud storages**.
 
 ----
+
+# Label Studio Setup
+
+The first thing we will need to do is to run the Label Studio server.
+We can do this by running the following command in the terminal:
+
+```bash
+docker run -d -p 8080:8080 \
+--env LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true \
+--env LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files \
+-v /datadrive/labeling/myfiles:/label-studio/files \
+--env LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK=true \
+--env LABEL_STUDIO_USERNAME=test@test.com \
+--env LABEL_STUDIO_PASSWORD=test \
+--name label-studio \
+--restart=always \
+heartexlabs/label-studio:latest label-studio
+```
+
+Here we are running the Label Studio server in a Docker container,
+specifying that we will use the local storage. We are also mounting a local machine directory
+ `/datadrive/labeling/myfiles` to the container's `/label-studio/files` directory,
+ so that we can access the files from the container. The main parameters for **local file serving** are:
+
+- **`LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true`** enables the local file serving feature.
+- **`LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files`** sets the container's root directory for the local file serving feature.
+- **`-v /datadrive/labeling/myfiles:/label-studio/files`** mounts the local directory `/datadrive/labeling/myfiles` to the container's `/label-studio/files` directory, so that we can access our local machine files from the container.
+
+We are also setting some interesting parameters for the Label Studio server:
+
+- **`LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK=true`** disables the signup feature, so that only users with a signup link can register (we can obtain the signup link when log in with the defined user).
+- **`LABEL_STUDIO_USERNAME=test@test.com`** sets the username for the user that will be created.
+- **`LABEL_STUDIO_PASSWORD=test`** sets the password for the user that will be created.
+
+
+When we run the command above, we will see that the Label Studio server is running in `http://localhost:8080`.
+*Remember to change the path `/datadrive/labeling/myfiles` to the ones in your local machine.*
+
+<SEOImage
+    src={"/posts/label-studio-json-load/ls_setup.png"}
+    caption="Label Studio initial login page"
+    alt="Label Studio Login"
+    width={800}
+    height={200}
+    format="webp"
+/>
+
+If you can access the server, we are ready to go!
+
+# References
+
+You can check the following links for more information about running Label Studio and loading data:
+
+- [Run Label Studio on Docker and use Local Storage](https://labelstud.io/guide/start#Run-Label-Studio-on-Docker-and-use-Local-Storage)
+- [Sync data from external storage](https://labelstud.io/guide/storage)
+- [Get data into Label Studio - Example JSON format](https://labelstud.io/guide/tasks.html#Example-JSON-format)
 
 ## Overview
 
