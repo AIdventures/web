@@ -1,7 +1,7 @@
 ---
 author: Mario Parreño
 date: 12/10/2021
-image: ./images/label-studio-json-load/pastel.jpg
+image: ./images/label-studio-json-load/ls_post.jpg
 tags: ["label-studio", "labeling", "data"]
 title: The proper way to read data with Label Studio
 description: Read any kind of data, flexibly, with JSON files in Label Studio.
@@ -13,7 +13,7 @@ The easiest one is to drag and drop a file into the interface,
 but this is not always the best option, scpecially when dealing with large datasets.
 
 In this post we will see how to load data from a **JSON file**, configuring the Label Studio server
-to serve the files from a **local directory or cloud storages**.
+to serve the files from a **local directory**.
 
 ----
 
@@ -184,6 +184,18 @@ Note how every entry in the `data.json` file is a task in the project.
     height={400}
     format="webp"
 />
+
+## Conclusion
+
+In this post we have seen how to load data from a **JSON file** in Label Studio,
+configuring the Label Studio server to serve the files from a **local directory.
+This is a very flexible way to load data, as we can load any kind of data,
+and we can also load data from cloud storages following the same logic.
+If we plan to load data from cloud storages,
+we will need to setup the cloud storage in the Label Studio project configuration 
+for the correct cloud storage type. Note that depending the cloud storage type,
+we will need to prepend a different path from `/data/cloud-files/?d=` to the file path.
+
 
 ## References
 

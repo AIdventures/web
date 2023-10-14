@@ -15,7 +15,10 @@ module.exports = {
 				},
 				pink: {
 					500: "#f3c4cd",
-				}
+				},
+				green: {
+					500: "#8dbfc9",
+				},
 			}
 		},
 	},

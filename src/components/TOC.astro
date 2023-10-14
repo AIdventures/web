@@ -14,8 +14,7 @@ const toc = generateToc(headings);
 ---
 
 <aside class="">
-	<h2 class="font-semibold text-2xl lg:text-base">Table of Contents</h2>
-	<ul class="mt-4 text-base lg:text-sm">
+	<ul class="mt-4 text-lg lg:text-sm">
 		{toc.map((heading) => <TOCHeading heading={heading} />)}
 	</ul>
 </aside>

@@ -27,38 +27,60 @@ const { headings, Content } = await post.render();
 ---
 
 <Layout title={`AIdventure - ${post.data.title}`}>
-    <div class="px-6 lg:w-10/12 xl:px-12 w-full flex flex-col xl:w-6/12 mx-auto">
-        <h1 class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight xl:col-span-8 xl:col-start-2">
-            {post.data.title}
-        </h1>
-        <Image
-            src={post.data.image}
-            alt={post.data.title}
-            width={1024}
-            height={1024 / 2}
-            format="webp"
-            class="w-full rounded-2xl shadow-xl mt-6 object-cover col-span-8 col-start-2"
-        />
-        <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 xl:mb-8 col-span-8 col-start-2">
-            <span>{post.data.author}</span>
-            <span aria-hidden="true">·</span>
-            <time datetime={post.data.date}>{post.data.date}</time>
-            <span aria-hidden="true">·</span>
-            {post.data.tags.map((tag) => <span>#{tag}</span>)}
+    <div class="mb-0 lg:mb-12">
+        <div class="px-6 lg:w-10/12 xl:px-12 w-full flex flex-col xl:w-6/12 mx-auto">
+            <h1 class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight xl:col-span-8 xl:col-start-2">
+                {post.data.title}
+            </h1>
+            <Image
+                src={post.data.image}
+                alt={post.data.title}
+                width={800}
+                height={450}
+                format="webp"
+                class="w-full rounded-2xl shadow-xl mt-6 object-cover col-span-8 col-start-2"
+            />
+            <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 xl:mb-8 col-span-8 col-start-2">
+                <span>{post.data.author}</span>
+                <span aria-hidden="true">·</span>
+                <time datetime={post.data.date}>{post.data.date}</time>
+                <span aria-hidden="true">·</span>
+                {post.data.tags.map((tag) => <span>#{tag}</span>)}
+            </div>
         </div>
-    </div>
-    
-    <div class="w-full xl:w-10/12 mx-auto">
-        <div class="grid grid-cols-12 xl:grid-cols-10">
-            <main class="px-6 xl:px-12 order-2 lg:order-1 col-span-12 lg:col-span-8 lg:col-start-2 xl:col-span-6 xl:col-start-3">
-                <div class="prose max-w-none">
-                    <Content />
+        
+        <div class="w-full xl:w-10/12 mx-auto">
+            <div class="grid grid-cols-12 xl:grid-cols-10">
+                <main class="px-6 xl:px-12 order-2 lg:order-1 col-span-12 lg:col-span-8 lg:col-start-2 xl:col-span-6 xl:col-start-3">
+                    <div class=`
+                        prose max-w-none
+                        prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl
+                        prose-a:text-lila-900
+                    `>
+                        <Content />
+                    </div>
+                </main>
+                <div class="order-1 hidden lg:block lg:order-2 col-span-12 px-6 xl:px-8 mb-8 xl:mb-0 lg:col-span-2">
+                    <div class="lg:sticky lg:top-20 lg:ms-8 w-full">
+                        <h2 class="font-semibold text-2xl lg:text-base">Table of Contents</h2>
+                        <TOC headings={headings} />
+                    </div>
                 </div>
-            </main>
-            <div class="order-1 lg:order-2 col-span-12 px-6 xl:px-8 mb-8 xl:mb-0 lg:col-span-2">
-                <div class="lg:sticky lg:top-20 lg:ms-8 w-full">
-                    <TOC headings={headings} />
-                </div>
+            </div>
+        </div>
+        <!-- Display a sticky collapsible TOC positioned bottom -->
+        <div class=`
+            sticky w-full lg:hidden
+            bottom-0 
+            mt-8 py-6
+            bg-green-500
+            border-t-2 border-black
+        ` id="mobile-toc">
+            <div class="w-full text-center font-bold" id="mobile-toc-opener">
+                <h2 class="font-semibold text-xl lg:text-base">Table of Contents</h2>
+            </div>
+            <div class="w-fit text-left m-auto font-bold hidden" id="mobile-toc-content">
+                <TOC headings={headings} />
             </div>
         </div>
     </div>
@@ -114,4 +136,30 @@ const { headings, Content } = await post.render();
 			}, 2000)
 		})
 	})
+</script>
+
+<script>
+    // Logic for the mobile TOC collapsible
+    const toc = document.getElementById('mobile-toc')
+    const tocOpener = document.getElementById('mobile-toc-opener')
+    const tocContent = document.getElementById('mobile-toc-content')
+
+    // close the TOC if the user selects a heading
+    const tocLinks = Array.from(document.querySelectorAll('#mobile-toc-content a'))
+    tocLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+            tocContent?.classList.add('hidden')
+        })
+    })
+
+    tocOpener?.addEventListener('click', () => {
+        tocContent?.classList.toggle('hidden')
+    })
+
+    document.addEventListener('click', function (event) {
+        if (!toc?.contains(event.target as Node)) {
+            tocContent?.classList.add('hidden')
+        }
+    })
+
 </script>
