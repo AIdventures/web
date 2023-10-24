@@ -82,17 +82,44 @@ I recommend to *read* the application of the convoltion operations backwards, fr
 ## Why do architectures use 3×3 filters?
 
 What is the problem with 5×5 or 7×7 convolutions?
-
 Imagine we have an input volume having $C_1$ channels. 
 
 In the first scenario we use 5×5 kernels which of course should have the same number of channels $C_1$ as the input volume and a number of kernels $C_2$. The number of parameters is $(5\times5)C_1 C_2 = 25C_1 C_2$.
 
 In another scenario, we have another input volume with the same number of channels $C_1$, we will have $C_2$ kernels as output, but this time we will use two 3×3 kernels subsequently instead, as we know a 5×5 kernel has the same receptive field as two 3×3. The number of parameters is $(3\times3)C_1 C_2 + (3\times3)C_1 C_2 = 18C_1 C_2$.
 
-We can see that the number of parameters, as for the number of operations, is lower by using two 3×3 kernels subsequently.
+We can see that the **number of parameters, as for the number of operations,
+is lower by using two 3×3 kernels** subsequently.
+A final advantage of using two 3×3 kernels subsequently instead a 5×5 kernel
+is that when using 3×3 kernels when introduce in between activation maps
+which adds **more non-linearity** to our model.
 
-A final advantage of using two 3×3 kernels subsequently instead a 5×5 kernel is that when using 3×3 kernels when introduce in between activation maps which adds more non-linearity to our model.
 
+## The Pooling layers
+
+Imagine we have an input size of 224×224 and our kernel size is 3.
+Based on the formula that receptive field is
+$1 + L(k-1)$ we can write $1+L(3-1) =224 \rightarrow L \approx 112$.
+That basically means that we need to add 112 3×3 convolution layers to our neural network
+so at the end every pixel could capture the whole information that exists in the image.
+That’s the reason we use pooling layers.
+
+If we apply a Max Pooling with kernel size 2×2 and stride 2,
+for every two rows and every two columns we only have one single value.
+So that **max pooling always doubles the size of our receptive field size**,
+for that kernel and stride configuration,
+which basically means that we don't need to have a very deep neural network.
+
+
+<SEOImage
+    src={"/posts/receptive-field/max_pool.png"}
+    caption="How receptive field size increases over multiple convolutional layers"
+    alt="Receptive field increase over convolutional layers"
+    width={800}
+    height={300}
+    format="webp"
+    className="w-full"
+/>
 
 ## Credits
 
