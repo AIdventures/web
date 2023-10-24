@@ -59,9 +59,11 @@ and generally, as we go further, we have higher semantic information.
 
 If we formulate how receptive field increases as we add more convolutional layers.
 The first convolution adds to our receptive field size the same as the kernel size.
-The next one adds two, and the final one adds two too. If we generalize this,
-we can say the first convolution adds the `kernel size` and previous ones add `kernel size - 1`.
-Assuming having `L` layers, the receptive field size is `k+(L-1)(k-1)` which is the same as `1 + L(k-1)`.
+The next one adds two, and the final one adds two too.
+If we generalize this, we can say the first convolution adds the 
+$kernel\  size$ and previous ones add $kernel\ size - 1 $.
+Assuming having $L$ layers, the receptive field size is $k+(L-1)(k-1)$
+which is the same as $1 + L(k-1)$.
 
 
 <SEOImage

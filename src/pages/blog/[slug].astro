@@ -25,6 +25,8 @@ post.data.date = formatDate(post.data.date);
 
 const { headings, Content } = await post.render();
 ---
+<!-- LaTeX styles: https://blog.alexafazio.dev/blog/render-latex-in-astro/ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.css" integrity="sha384-WsHMgfkABRyG494OmuiNmkAOk8nhO1qE+Y6wns6v+EoNoTNxrWxYpl5ZYWFOLPCM" crossorigin="anonymous">
 
 <Layout title={`AIdventure - ${post.data.title}`}>
     <div class="mb-0 lg:mb-12">
