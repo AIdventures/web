@@ -9,24 +9,47 @@ description: Why do architectures use 3×3 filters? It is because of something c
 import SEOImage from "../../components/blog/SEOImage.astro"
 
 Why do architectures use 3×3 filters? It is because of something called Receptive Fields.
+In this post, we will see what is the receptive field and how it increases over convolutional layers.
+Taking this into account, we will see why architectures use 3×3 filters.
 
 ## What is the Receptive Field?
 
 The receptive field is the area of the input image that affects a particular unit of the network.
 In other words, it is the area of the input image that contributes to the calculation of a particular unit in the network.
 
-### Single Layer Case
+### Single Kernel Case
 We have our input image and we pass it through 3×3 convolution layers until we get the output.
 If we pick an output pixel from the output, that pixel depends on the 3×3 receptive field of the previous feature map,
 so we can say that the receptive field size of the pixel of the output is 3 so far. 
 
-### Multiple Layers Case
+
+<SEOImage
+    src={"/posts/receptive-field/one_kernel.png"}
+    caption="How receptive field size increases over multiple convolutional layers"
+    alt="Receptive field increase over convolutional layers"
+    width={800}
+    height={300}
+    format="webp"
+    className="w-full"
+/>
+
+### Multiple Kernels Case
 Let's see what happens to receptive field size after adding the second layer to our calculation.
 We see that if we pick the corner pixels that are involved in the initial receptive field,
 those provide from a larger 5×5 receptive field. If we recap,
 till now we have a pixel on the output that it depends on  3×3 receptive field of its previous layer,
 which depends on the 5×5 receptive field of the second layer. In other words,
 if we put two 3×3 convolution layers subsequently it has the effect of putting one 5×5 convolution layer.
+
+<SEOImage
+    src={"/posts/receptive-field/two_kernel.png"}
+    caption="How receptive field size increases over multiple convolutional layers"
+    alt="Receptive field increase over convolutional layers"
+    width={800}
+    height={300}
+    format="webp"
+    className="w-full"
+/>
 
 Now let's add a third layer to our calculation.
 Again we select the corner pixels and then find the receptive field of them in the input layer.
@@ -42,7 +65,7 @@ Assuming having `L` layers, the receptive field size is `k+(L-1)(k-1)` which is 
 
 
 <SEOImage
-    src={"/posts/receptive-field/cnn_multiple_kernels.png"}
+    src={"/posts/receptive-field/three_kernel.png"}
     caption="How receptive field size increases over multiple convolutional layers"
     alt="Receptive field increase over convolutional layers"
     width={800}
@@ -50,3 +73,26 @@ Assuming having `L` layers, the receptive field size is `k+(L-1)(k-1)` which is 
     format="webp"
     className="w-full"
 />
+
+To better understand how receptive field size increases over convolutional layers,
+I recommend to *read* the application of the convoltion operations backwards, from the output to the input.
+
+## Why do architectures use 3×3 filters?
+
+What is the problem with 5×5 or 7×7 convolutions?
+
+Imagine we have an input volume having $C_1$ channels. 
+
+In the first scenario we use 5×5 kernels which of course should have the same number of channels $C_1$ as the input volume and a number of kernels $C_2$. The number of parameters is $(5\times5)C_1 C_2 = 25C_1 C_2$.
+
+In another scenario, we have another input volume with the same number of channels $C_1$, we will have $C_2$ kernels as output, but this time we will use two 3×3 kernels subsequently instead, as we know a 5×5 kernel has the same receptive field as two 3×3. The number of parameters is $(3\times3)C_1 C_2 + (3\times3)C_1 C_2 = 18C_1 C_2$.
+
+We can see that the number of parameters, as for the number of operations, is lower by using two 3×3 kernels subsequently.
+
+A final advantage of using two 3×3 kernels subsequently instead a 5×5 kernel is that when using 3×3 kernels when introduce in between activation maps which adds more non-linearity to our model.
+
+
+## Credits
+
+- [Receptive Fields: Why 3x3 conv layer is the best?](https://www.youtube.com/watch?v=lxpQZRvfnCc)
+- [Designing Faster Neural Networks](https://medium.com/@dmangla3/designing-faster-neural-networks-e1f1dc026533)
