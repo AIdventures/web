@@ -1,0 +1,36 @@
+---
+author: Mario Parreño
+date: 08/10/2021
+image: ./images/receptive-field/receptive.jpg
+tags: ["computer vision", "convolution"]
+title: The receptive field in convolutional neural networks
+description: Why do architectures use 3×3 filters? It is because of something called Receptive Fields.
+---
+import SEOImage from "../../components/blog/SEOImage.astro"
+
+Why do architectures use 3×3 filters? It is because of something called Receptive Fields.
+
+## What is the Receptive Field?
+
+The receptive field is the area of the input image that affects a particular unit of the network. In other words, it is the area of the input image that contributes to the calculation of a particular unit in the network.
+
+### Single Layer Case
+We have our input image and we pass it through 3×3 convolution layers until we get the output. If we pick an output pixel from the output, that pixel depends on the 3×3 receptive field of the previous feature map, so we can say that the receptive field size of the pixel of the output is 3 so far. 
+
+### Multiple Layers Case
+Let's see what happens to receptive field size after adding the second layer to our calculation. We see that if we pick the corner pixels that are involved in the initial receptive field, those provide from a larger 5×5 receptive field. If we recap, till now we have a pixel on the output that it depends on  3×3 receptive field of its previous layer, which depends on the 5×5 receptive field of the second layer. In other words, if we put two 3×3 convolution layers subsequently it has the effect of putting one 5×5 convolution layer.
+
+Now let's add a third layer to our calculation. Again we select the corner pixels and then find the receptive field of them in the input layer. We can see that it covers the 7×7 area, which is the whole input. In other words, every pixel in the output feature map contains information of the whole input image, and generally, as we go further, we have higher semantic information.
+
+If we formulate how receptive field increases as we add more convolutional layers. The first convolution adds to our receptive field size the same as the kernel size. The next one adds two, and the final one adds two too. If we generalize this, we can say the first convolution adds the `kernel size` and previous ones add `kernel size - 1`. Assuming having `L` layers, the receptive field size is `k+(L-1)(k-1)` which is the same as `1 + L(k-1)`.
+
+
+<SEOImage
+    src={"/posts/receptive-field/cnn_multiple_kernels.png"}
+    caption="How receptive field size increases over multiple convolutional layers"
+    alt="Receptive field increase over convolutional layers"
+    width={800}
+    height={300}
+    format="webp"
+    className="w-full"
+/>

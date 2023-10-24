@@ -191,13 +191,6 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
-"label-studio-json-load copy 3.mdx": {
-	id: "label-studio-json-load copy 3.mdx";
-  slug: "label-studio-json-load-copy-3";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".mdx"] };
 "label-studio-json-load copy.mdx": {
 	id: "label-studio-json-load copy.mdx";
   slug: "label-studio-json-load-copy";
@@ -208,6 +201,13 @@ declare module 'astro:content' {
 "label-studio-json-load.mdx": {
 	id: "label-studio-json-load.mdx";
   slug: "label-studio-json-load";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"receptive-fields-cnns.mdx": {
+	id: "receptive-fields-cnns.mdx";
+  slug: "receptive-fields-cnns";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">
