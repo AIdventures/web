@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import TOC from "../../components/TOC.astro";
+import LightBox from "../../components/LightBox.astro";
 import { formatDate } from "../../utils/format-date";
 
 import { Image } from "astro:assets";
@@ -27,6 +28,8 @@ const { headings, Content } = await post.render();
 ---
 <!-- LaTeX styles: https://blog.alexafazio.dev/blog/render-latex-in-astro/ -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.css" integrity="sha384-WsHMgfkABRyG494OmuiNmkAOk8nhO1qE+Y6wns6v+EoNoTNxrWxYpl5ZYWFOLPCM" crossorigin="anonymous">
+
+<LightBox />
 
 <Layout title={`AIdventure - ${post.data.title}`}>
     <div class="mb-0 lg:mb-24">
@@ -86,62 +89,66 @@ const { headings, Content } = await post.render();
             </div>
         </div>
     </div>
-    <div id="lightbox-modal">
-        <img id="lightbox-image" src="">
-        <span id="close-button">&times;</span>
-    </div>
+    
 </Layout>
 
 
+
+
 <script>
-    // Add a class 'relative' to all pre elements
-    let codeBlocks = Array.from(document.querySelectorAll('pre'))
-    codeBlocks.forEach((code) => {
-        code.classList.add('relative')
-    })
+    const copy_code = () => {
+        // Add a class 'relative' to all pre elements
+        let codeBlocks = Array.from(document.querySelectorAll('pre'))
+        codeBlocks.forEach((code) => {
+            code.classList.add('relative')
+        })
 
-	let copyButtonContent = `
-    <svg class="h-5 w-5 stroke-gray-300 hover:stroke-white" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-        <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
-        <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
-    </svg>    
-    `
-	let codeBlock = Array.from(document.querySelectorAll('pre > code'))
+        let copyButtonContent = `
+        <svg class="h-5 w-5 stroke-gray-300 hover:stroke-white" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
+            <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
+        </svg>    
+        `
+        let codeBlock = Array.from(document.querySelectorAll('pre > code'))
 
-	codeBlock.forEach((code) => {
-		const button = document.createElement('button')
-		button.classList.add(
-			'absolute',
-			'top-2',
-			'right-2',
-			'p-2',
-			'rounded-md',
-			'transition-all',
-			'duration-200',
-			'flex',
-			'items-center',
-			'justify-center'
-		)
-		//add to the button a svg icon
-        button.innerHTML = copyButtonContent
-		code.parentElement?.appendChild(button)
+        codeBlock.forEach((code) => {
+            const button = document.createElement('button')
+            button.classList.add(
+                'absolute',
+                'top-2',
+                'right-2',
+                'p-2',
+                'rounded-md',
+                'transition-all',
+                'duration-200',
+                'flex',
+                'items-center',
+                'justify-center'
+            )
+            //add to the button a svg icon
+            button.innerHTML = copyButtonContent
+            code.parentElement?.appendChild(button)
 
-		button.addEventListener('click', () => {
-            if (code.textContent !== null) {
-                navigator.clipboard.writeText(code.textContent);
-            }
-			button.innerHTML = `
-            <svg class="h-5 w-5 stroke-green-400" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M5 12l5 5l10 -10" />
-            </svg>
-            `
-			setTimeout(() => {
-				button.innerHTML = copyButtonContent
-			}, 2000)
-		})
-	})
+            button.addEventListener('click', () => {
+                if (code.textContent !== null) {
+                    navigator.clipboard.writeText(code.textContent);
+                }
+                button.innerHTML = `
+                <svg class="h-5 w-5 stroke-green-400" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 12l5 5l10 -10" />
+                </svg>
+                `
+                setTimeout(() => {
+                    button.innerHTML = copyButtonContent
+                }, 2000)
+            })
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", copy_code);
+    document.addEventListener("astro:after-swap", copy_code);
 </script>
 
 <script>
@@ -168,76 +175,4 @@ const { headings, Content } = await post.render();
         }
     })
 
-</script>
-
-
-<style>
-    /* lightbox.css */
-    .lightbox-container {
-        display: flex;
-    }
-
-    .lightbox {
-        cursor: pointer;
-        margin: 10px;
-        max-width: 200px;
-        transition: transform 0.2s;
-    }
-
-    .lightbox:hover {
-        transform: scale(1.1);
-    }
-
-    #lightbox-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 1);
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-    }
-
-    #lightbox-image {
-        max-width: 90%;
-        max-height: 90%;
-    }
-
-    #close-button {
-        position: absolute;
-        top: 24px;
-        right: 48px;
-        font-size: 36px;
-        color: #333;
-        cursor: pointer;
-    }
-</style>
-
-<script>
-    // lightbox.js
-    const lightboxImages = document.querySelectorAll('.lightbox');
-    const lightboxModal = document.getElementById('lightbox-modal');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const closeButton = document.getElementById('close-button');
-
-    lightboxImages.forEach((image) => {
-        image.addEventListener('click', () => {
-            lightboxImage.src = image.src;
-            // Add class flex to display the modal
-            lightboxModal.style.display = 'flex';
-        });
-    });
-
-    closeButton.addEventListener('click', () => {
-        lightboxModal.style.display = 'none';
-    });
-
-    lightboxModal.addEventListener('click', (event) => {
-        if (event.target === lightboxModal) {
-            lightboxModal.style.display = 'none';
-        }
-    });
 </script>
