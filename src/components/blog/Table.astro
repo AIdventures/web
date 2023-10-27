@@ -1,0 +1,18 @@
+---
+// https://www.tablesgenerator.com/html_tables
+// https://codebeautify.org/htmlviewer
+type Props = {
+  className?: string;
+};
+
+const {
+  className = "w-full text-center table-auto border-collapse",
+} = Astro.props;
+---
+
+<table class={className}>
+    <caption class="caption-bottom mt-3">
+        <slot name="caption" />
+    </caption>
+    <slot />
+</table>
