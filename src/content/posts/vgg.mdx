@@ -46,86 +46,92 @@ To know more about why use 3×3 and the receptive field go to [The Receptive Fie
 
 ## Architecture & Training Details
 
-Recargind the **data**, the input is a fixed-size 224×224 RGB image. Subtracting each pixel's mean RGB value, computed on the training set.
+Regarding the **data**, the input is a fixed-size 224×224 RGB image.
+Subtracting each pixel's mean RGB value, computed on the training set.
 
-For the **architecture**, the convolutional layers use filters with a small receptive field of 3×3. The convolution stride is fixed to 1 pixel. The padding is 1, so the spatial resolution is preserved after each convolution. To carry out the spatial pooling, max-pooling layers with 2×2 pixel windows and stride two are used. Finally, for the classification, three stacked, fully-connected layers were used.
+For the **architecture**, the convolutional layers use filters with a small receptive field of 3×3.
+The convolution stride is fixed to 1 pixel. The padding is 1, so the spatial resolution is preserved
+after each convolution. To carry out the spatial pooling, max-pooling layers with 2×2 pixel windows
+and stride two are used. Finally, for the classification, three stacked, fully-connected layers were used.
 
 <Table>
-  <span slot="caption">VGG Configurations. The depth of the configurations increases
-from the left to the right, as more layers are added (the added layers are shown in bold). The
-convolutional layer parameters are denoted as conv. The ReLU activation function and the Batch Normalization is not shown for brevity.</span>
+  <span slot="caption">
+    VGG Configurations. The depth of the configurations increases
+    from the left to the right, as more layers are added (the added layers are shown in bold). The
+    convolutional layer parameters are denoted as conv. The ReLU activation function and the Batch Normalization is not shown for brevity.
+  </span>
 
   <thead>
     <tr>
-      <th class="border border-slate-300" colspan="4">VGG Configuration</th>
+      <th colspan="4">VGG Configuration</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td class="border border-slate-300">11 weight <br />layers </td>
-      <td class="border border-slate-300">13 weight <br />layers </td>
-      <td class="border border-slate-300">16 weight <br />layers </td>
-      <td class="border border-slate-300">19 weight <br />layers </td>
+      <td>11 weight <br />layers </td>
+      <td>13 weight <br />layers </td>
+      <td>16 weight <br />layers </td>
+      <td>19 weight <br />layers </td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">input (224×224 RGB image)</td>
+      <td colspan="4">input (224×224 RGB image)</td>
     </tr>
     <tr>
-      <td class="border border-slate-300">conv 3x3 @64</td>
-      <td class="border border-slate-300">conv 3x3 @64 <br /><b>conv 3x3 @64 </b></td>
-      <td class="border border-slate-300">conv 3x3 @64 <br />conv 3x3 @64 </td>
-      <td class="border border-slate-300">conv 3x3 @64 <br />conv 3x3 @64 </td>
+      <td>conv 3x3 @64</td>
+      <td>conv 3x3 @64 <br /><b>conv 3x3 @64 </b></td>
+      <td>conv 3x3 @64 <br />conv 3x3 @64 </td>
+      <td>conv 3x3 @64 <br />conv 3x3 @64 </td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Max Pooling</td>
+      <td colspan="4">Max Pooling</td>
     </tr>
     <tr>
-      <td class="border border-slate-300">conv 3x3 @128</td>
-      <td class="border border-slate-300">conv 3x3 @128 <br /><b>conv 3x3 @128 </b></td>
-      <td class="border border-slate-300">conv 3x3 @128 <br />conv 3x3 @128 </td>
-      <td class="border border-slate-300">conv 3x3 @128 <br />conv 3x3 @128 </td>
+      <td>conv 3x3 @128</td>
+      <td>conv 3x3 @128 <br /><b>conv 3x3 @128 </b></td>
+      <td>conv 3x3 @128 <br />conv 3x3 @128 </td>
+      <td>conv 3x3 @128 <br />conv 3x3 @128 </td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Max Pooling</td>
+      <td colspan="4">Max Pooling</td>
     </tr>
     <tr>
-      <td class="border border-slate-300">conv 3x3 @256 <br />conv 3x3 @256 </td>
-      <td class="border border-slate-300">conv 3x3 @256 <br />conv 3x3 @256 </td>
-      <td class="border border-slate-300">conv 3x3 @256 <br />conv 3x3 @256 <br /><b>conv 3x3 @256 </b></td>
-      <td class="border border-slate-300">conv 3x3 @256 <br />conv 3x3 @256 <br />conv 3x3 @256 <br /><b>conv 3x3 @256 </b></td>
+      <td>conv 3x3 @256 <br />conv 3x3 @256 </td>
+      <td>conv 3x3 @256 <br />conv 3x3 @256 </td>
+      <td>conv 3x3 @256 <br />conv 3x3 @256 <br /><b>conv 3x3 @256 </b></td>
+      <td>conv 3x3 @256 <br />conv 3x3 @256 <br />conv 3x3 @256 <br /><b>conv 3x3 @256 </b></td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Max Pooling</td>
+      <td colspan="4">Max Pooling</td>
     </tr>
     <tr>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 </td>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 </td>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 </td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 </td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Max Pooling</td>
+      <td colspan="4">Max Pooling</td>
     </tr>
     <tr>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 </td>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 </td>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
-      <td class="border border-slate-300">conv 3x3 @512 <br />conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 </td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 </td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
+      <td>conv 3x3 @512 <br />conv 3x3 @512 <br />conv 3x3 @512 <br /><b>conv 3x3 @512 </b></td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Max Pooling</td>
+      <td colspan="4">Max Pooling</td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Fully Connected 4096</td>
+      <td colspan="4">Fully Connected 4096</td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Fully Connected 4096</td>
+      <td colspan="4">Fully Connected 4096</td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Fully Connected Classes</td>
+      <td colspan="4">Fully Connected Classes</td>
     </tr>
     <tr>
-      <td class="border border-slate-300" colspan="4">Softmax</td>
+      <td colspan="4">Softmax</td>
     </tr>
   </tbody>
 </Table>
