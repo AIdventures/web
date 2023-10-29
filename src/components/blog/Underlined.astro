@@ -54,11 +54,13 @@ const colorHex = colors[color]
     --underline-width-scale: calc(
       var(--underline-width) / var(--underline-intrinsic-width)
     );
+    /*
     padding: 0
       calc(
         var(--underline-padding-x) +
           calc(var(--underline-cap-width) * var(--underline-width-scale))
-      );
+    );
+    */
     box-decoration-break: clone;
     background-repeat: no-repeat;
     background-image: linear-gradient(
