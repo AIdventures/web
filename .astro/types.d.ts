@@ -191,9 +191,23 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
+"depthwise_separable_convolution.mdx": {
+	id: "depthwise_separable_convolution.mdx";
+  slug: "depthwise_separable_convolution";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "label-studio-json-load.mdx": {
 	id: "label-studio-json-load.mdx";
   slug: "label-studio-json-load";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
+"mobilenet_v1.mdx": {
+	id: "mobilenet_v1.mdx";
+  slug: "mobilenet_v1";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">
