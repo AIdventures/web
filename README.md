@@ -67,14 +67,15 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 - [x] Add copy-paste code
 - [?] Add pagination - Load more
 - [x] Add tag filter
+- [x] TOC for mobile down the screen collapsible => TOC title touch and expand
 - [ ] Add search
-- [ ] TOC for mobile down the screen collapsible => TOC title touch and expand
 - [ ] Responsive test
 - [ ] Image optimization
 - [ ] Add envio correo suscripción
 - [ ] Add Google Analytics
 - [ ] Add a `manifest.json` file
 
+- [ ] Fix "our/we" y otras palabras personales en los posts
 
 ```astro
 <!-- Add a Load More button here -->
