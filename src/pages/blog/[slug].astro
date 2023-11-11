@@ -80,6 +80,8 @@ const { headings, Content } = await post.render();
             mt-8 py-6
             bg-green-500
             border-t-2 border-black
+            z-50
+            cursor-pointer
         ` id="mobile-toc">
             <div class="w-full text-center font-bold" id="mobile-toc-opener">
                 <h2 class="font-semibold text-xl lg:text-base">Table of Contents</h2>
@@ -152,26 +154,31 @@ const { headings, Content } = await post.render();
 </script>
 
 <script>
-    // Logic for the mobile TOC collapsible
-    const toc = document.getElementById('mobile-toc')
-    const tocOpener = document.getElementById('mobile-toc-opener')
-    const tocContent = document.getElementById('mobile-toc-content')
+    const collapsibleTOC = () => {
+        // Logic for the mobile TOC collapsible
+        const toc = document.getElementById('mobile-toc')
+        const tocOpener = document.getElementById('mobile-toc-opener')
+        const tocContent = document.getElementById('mobile-toc-content')
 
-    // close the TOC if the user selects a heading
-    const tocLinks = Array.from(document.querySelectorAll('#mobile-toc-content a'))
-    tocLinks.forEach((link) => {
-        link.addEventListener('click', () => {
-            tocContent?.classList.add('hidden')
+        // close the TOC if the user selects a heading
+        const tocLinks = Array.from(document.querySelectorAll('#mobile-toc-content a'))
+        tocLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                tocContent?.classList.add('hidden')
+            })
         })
-    })
 
-    tocOpener?.addEventListener('click', () => {
-        tocContent?.classList.toggle('hidden')
-    })
+        tocOpener?.addEventListener('click', () => {
+            tocContent?.classList.toggle('hidden')
+        })
 
-    document.addEventListener('click', function (event) {
-        if (!toc?.contains(event.target as Node)) {
-            tocContent?.classList.add('hidden')
-        }
-    })
+        document.addEventListener('click', function (event) {
+            if (!toc?.contains(event.target as Node)) {
+                tocContent?.classList.add('hidden')
+            }
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", collapsibleTOC);
+    document.addEventListener("astro:after-swap", collapsibleTOC);
 </script>

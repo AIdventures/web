@@ -1,7 +1,7 @@
 # https://docs.astro.build/en/recipes/docker/
 # docker build -t aidventure-image .
 # docker run -d -p 8321:4321 --name aidventure aidventure-image
-FROM node:18-buster AS runtime
+FROM node:18 AS runtime
 WORKDIR /app
 
 # Install pnpm globally
