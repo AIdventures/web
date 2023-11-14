@@ -6,7 +6,10 @@ type Props = {
 };
 
 const {
-  className = "w-full text-center table-auto border-collapse",
+  className = `
+    w-full text-center table-auto border-collapse
+    overflow-x-auto relative block md:inline-table
+  `,
 } = Astro.props;
 ---
 
