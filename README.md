@@ -68,11 +68,11 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 - [?] Add pagination - Load more
 - [x] Add tag filter
 - [x] TOC for mobile down the screen collapsible => TOC title touch and expand
+- [x] Add Google Analytics (https://www.freecodecamp.org/news/how-to-add-google-analytics-to-your-astro-website/)
 - [ ] Add search
 - [ ] Responsive test
 - [ ] Image optimization
 - [ ] Add envio correo suscripción
-- [ ] Add Google Analytics
 - [ ] Add a `manifest.json` file
 
 - [ ] Fix "our/we" y otras palabras personales en los posts

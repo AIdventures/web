@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
+import partytown from '@astrojs/partytown'
 import mdx from "@astrojs/mdx";
 
 import sitemap from "@astrojs/sitemap";
@@ -18,9 +19,17 @@ export default defineConfig({
         wrap: true
       },
       drafts: true
-    }), tailwind(), sitemap()],
-    markdown: {
-      remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex]
-    }
+    }),
+    partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
+    tailwind(),
+    sitemap()
+  ],
+  markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex]
+  }
 });
