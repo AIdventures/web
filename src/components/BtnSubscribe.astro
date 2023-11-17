@@ -28,3 +28,25 @@ import HeartIcon from './icons/HeartIcon.astro'
     </div>
   </form>
 </div>
+
+<script is:inline>
+  // When submitting the form, send the email to the API
+  // its a post request to http://localhost:8000/subscribe
+  // with the email in the body
+  document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const { email } = Object.fromEntries(new FormData(e.target))
+    const res = await fetch('http://0.0.0.0:8000/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (res.ok) {
+      alert('Thanks for subscribing!')
+    } else {
+      alert('Something went wrong :(')
+    }
+  })
+</script>
