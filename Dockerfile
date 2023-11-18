@@ -16,4 +16,4 @@ RUN pnpm run build
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
-CMD http-server -p 4321 dist
+CMD http-server --cors -p 4321 dist
