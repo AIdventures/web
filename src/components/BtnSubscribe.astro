@@ -1,12 +1,10 @@
 ---
-import Toast from './Toast.astro';
-import HeartIcon from './icons/HeartIcon.astro'
+import Toast from "./Toast.astro";
+import HeartIcon from "./icons/HeartIcon.astro";
 ---
 
 <div>
-  <h3 class="text-sm text-black mt-8">
-    Subscribe to don't miss any news!
-  </h3>
+  <h3 class="text-sm text-black mt-8">Subscribe to don't miss any news!</h3>
   <form
     class="border-black shadow bg-white border-2 justify-between mt-4 p-2 rounded-2xl sm:flex"
   >
@@ -34,44 +32,73 @@ import HeartIcon from './icons/HeartIcon.astro'
   <div id="toast_subscribe_content"></div>
 </Toast>
 
-<script is:inline>
+<script>
+  import confetti from "canvas-confetti";
   // When submitting the form, send the email to the API
   // its a post request to http://localhost:8000/subscribe
   // with the email in the body
-  document.querySelector('form').addEventListener('submit', async (e) => {
-    e.preventDefault()
-    const { email } = Object.fromEntries(new FormData(e.target))
-    const res = await fetch('http://0.0.0.0:8001/subscribe', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    if (res.ok) {
-      // Clear the input
-      e.target.querySelector('input').value = ''
+  document.querySelector("form").addEventListener("submit", async (e) => {
+    try {
+      e.preventDefault();
+      const { email } = Object.fromEntries(new FormData(e.target));
+      const res = await fetch("http://0.0.0.0:8001/subscribe", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        // Clear the input
+        e.target.querySelector("input").value = "";
+        // Set the toast content #toast_subscribe_content
+        document.querySelector("#toast_subscribe_content").innerHTML =
+          "Thanks for subscribing!";
+        // Show the toast
+        var subscribe_toast = document.getElementById("toast_subscribe");
+        // Append class 'show' to the toast
+        subscribe_toast.className += " bg-green-600 show";
+        setTimeout(function () {
+          subscribe_toast.className = subscribe_toast.className.replace(
+            "show",
+            ""
+          );
+        }, 3000);
+        // Show confetti
+        confetti({
+          particleCount: 250,
+          spread: 125,
+          origin: { y: 0.65 },
+        });
+      } else {
+        // Set the toast content #toast_subscribe_content
+        document.querySelector("#toast_subscribe_content").innerHTML =
+          "Something went wrong :(";
+        // Show the toast
+        var subscribe_toast = document.getElementById("toast_subscribe");
+        // Append class 'show' to the toast
+        subscribe_toast.className += " bg-red-600 show";
+        setTimeout(function () {
+          subscribe_toast.className = subscribe_toast.className.replace(
+            "show",
+            ""
+          );
+        }, 3000);
+      }
+    } catch (error) {
       // Set the toast content #toast_subscribe_content
-      document.querySelector('#toast_subscribe_content').innerHTML = 'Thanks for subscribing!'
-      // Show the toast
-      var subscribe_toast = document.getElementById("toast_subscribe");
-      // Append class 'show' to the toast
-      subscribe_toast.className += " bg-green-600 show";
-      setTimeout(function(){
-        subscribe_toast.className = subscribe_toast.className.replace("show", ""); },
-        3000
-      );
-    } else {
-      // Set the toast content #toast_subscribe_content
-      document.querySelector('#toast_subscribe_content').innerHTML = 'Something went wrong :('
+      document.querySelector("#toast_subscribe_content").innerHTML =
+        "Something went wrong :(";
       // Show the toast
       var subscribe_toast = document.getElementById("toast_subscribe");
       // Append class 'show' to the toast
       subscribe_toast.className += " bg-red-600 show";
-      setTimeout(function(){
-        subscribe_toast.className = subscribe_toast.className.replace("show", ""); },
-        3000
-      );
+      setTimeout(function () {
+        subscribe_toast.className = subscribe_toast.className.replace(
+          "show",
+          ""
+        );
+      }, 3000);
     }
-  })
+  });
 </script>
