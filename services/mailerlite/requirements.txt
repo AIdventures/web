@@ -1,0 +1,4 @@
+wheel==0.37.1
+fastapi[all]==0.88.0
+gunicorn==20.1.0
+mailerlite==0.1.3

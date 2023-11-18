@@ -1,4 +1,5 @@
 ---
+import Toast from './Toast.astro';
 import HeartIcon from './icons/HeartIcon.astro'
 ---
 
@@ -29,6 +30,10 @@ import HeartIcon from './icons/HeartIcon.astro'
   </form>
 </div>
 
+<Toast toast_id="toast_subscribe">
+  <div id="toast_subscribe_content"></div>
+</Toast>
+
 <script is:inline>
   // When submitting the form, send the email to the API
   // its a post request to http://localhost:8000/subscribe
@@ -36,7 +41,7 @@ import HeartIcon from './icons/HeartIcon.astro'
   document.querySelector('form').addEventListener('submit', async (e) => {
     e.preventDefault()
     const { email } = Object.fromEntries(new FormData(e.target))
-    const res = await fetch('http://0.0.0.0:8000/subscribe', {
+    const res = await fetch('http://0.0.0.0:8001/subscribe', {
       method: 'POST',
       body: JSON.stringify({ email }),
       headers: {
@@ -44,9 +49,29 @@ import HeartIcon from './icons/HeartIcon.astro'
       },
     })
     if (res.ok) {
-      alert('Thanks for subscribing!')
+      // Clear the input
+      e.target.querySelector('input').value = ''
+      // Set the toast content #toast_subscribe_content
+      document.querySelector('#toast_subscribe_content').innerHTML = 'Thanks for subscribing!'
+      // Show the toast
+      var subscribe_toast = document.getElementById("toast_subscribe");
+      // Append class 'show' to the toast
+      subscribe_toast.className += " bg-green-600 show";
+      setTimeout(function(){
+        subscribe_toast.className = subscribe_toast.className.replace("show", ""); },
+        3000
+      );
     } else {
-      alert('Something went wrong :(')
+      // Set the toast content #toast_subscribe_content
+      document.querySelector('#toast_subscribe_content').innerHTML = 'Something went wrong :('
+      // Show the toast
+      var subscribe_toast = document.getElementById("toast_subscribe");
+      // Append class 'show' to the toast
+      subscribe_toast.className += " bg-red-600 show";
+      setTimeout(function(){
+        subscribe_toast.className = subscribe_toast.className.replace("show", ""); },
+        3000
+      );
     }
   })
 </script>
