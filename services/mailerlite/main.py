@@ -14,6 +14,8 @@ import mailerlite as MailerLite
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+
 from pydantic import BaseModel
 
 
@@ -29,9 +31,7 @@ app = FastAPI()
 
 # Replace the list of allowed origins with your localhost URL
 origins = [
-    "http://localhost",
-    "http://localhost:4321",
-    "http://localhost:8321",
+    "*"
 ]
 
 app.add_middleware(
@@ -42,6 +42,7 @@ app.add_middleware(
     allow_headers=["*"],  # You can specify specific HTTP headers if needed
 )
 
+#app.add_middleware(HTTPSRedirectMiddleware)
 
 def _is_valid_email(email):
     """
@@ -100,7 +101,7 @@ async def subscribe(data: RequestData):
         dict: Response with the status of the request
 
     Examples:
-        >>> curl -X POST "http://localhost:8000/subscribe" \
+        >>> curl -X POST "https://aidventure.es/subscribe" \
             -H "accept: application/json" \
             -H "Content-Type: application/json" \
             -d '{"email": "maparlainfupv@gmail.com"}'

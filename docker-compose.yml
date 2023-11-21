@@ -1,4 +1,4 @@
-# docker-compose up
+# docker compose up --build -d
 
 version: '3'
 services:
@@ -14,6 +14,7 @@ services:
     build:
       context: ./services/mailerlite
     ports:
-      - "8001:8000"
+      - "8123:8000"
     environment:
       - MAILERLITE_API_KEY=${MAILERLITE_API_KEY}
+    
