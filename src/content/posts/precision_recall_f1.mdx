@@ -1,0 +1,114 @@
+---
+author: Mario Parreño
+date: 21/12/2023
+image: ./images/precision_recall_f1/heaven.jpg
+tags: ["metrics"]
+title: Precision, Recall and F1 Score metrics Intuition
+description: A simple explanation of the Precision, Recall and F1 Score metrics.
+---
+import Underlined from "../../components/blog/Underlined.astro"
+import Table from "../../components/blog/Table.astro"
+import SEOImage from "../../components/blog/SEOImage.astro"
+
+I know, I know, you are tired of hearing about Precision, Recall and F1 Score,
+or if not probably you can find a lot of information about them on the internet
+better than this post. But this blogs serves me as a second brain,
+so if at any time I lose my mind, I can quickly recover my ideas.
+
+That said, let's start with the post.
+
+## Introduction
+
+The Precision, Recall and F1 Score are metrics used to evaluate the performance of a classification model,
+particularly for <Underlined color="green">binary</Underlined> classification problems. This is not limited to machine learning,
+but it is also used in other fields such as information retrieval, where precision and recall
+are used to measure the effectiveness of a search engine as having two classes: relevant and irrelevant.
+
+If we expand our mind we can apply these metrics to another problems like detection ones,
+where we can consider the <Underlined>positive class</Underlined> as the class being detected (for
+example if reached a certain <a href="https://www.v7labs.com/blog/intersection-over-union-guide" target="_blank">Intersection over Union</a> threshold),
+and the <Underlined>negative class</Underlined> if the class or object is not detected.
+
+
+## Precision
+
+The precision is the ratio of the True Positives (TP)
+over the sum of the True Positives and False Positives (FP): $$\text{Precision} = \frac{TP}{TP + FP}$$.
+The precision can be interpreted as the **quality** of my predictions.
+<Underlined color="red">Of the samples that I have classified as positive, how many are actually positive</Underlined>.
+
+How the precision changes when we change the <Underlined>confidence threshold</Underlined>
+with which we assign the class?
+
+- If we <Underlined>raise the confidence threshold</Underlined> with which we assign the class,
+few samples will be positively assigned, only those that the system has high confidence in.
+This will decrease the number of false positives and we will be able to state that
+the samples classified as positive are very likely to be positive. <u>We will have a high precision</u>,
+we can be sure that the samples classified as positive are very likely to be positive,
+<u>but we will be missing a lot of samples of the positive class</u>.
+- If we <Underlined>lower the confidence threshold</Underlined> with which we assign the class,
+many samples will be positively assigned, even those that the system has low confidence in.
+This will increase the number of false positives and we will not be able to state that
+the samples classified as positive are very likely to be positive. <u>We will have a low precision</u>,
+we cannot be sure that the samples classified as positive are very likely to be positive.
+
+
+## Recall
+
+The recall is the ratio of the True Positives (TP)
+over the sum of the True Positives and False Negatives (FN): $$\text{Recall} = \frac{TP}{TP + FN}$$.
+The recall can be interpreted as the completeness or **quantity** of my predictions.
+<Underlined color="red">How many samples of the positive class I have detected</Underlined>.
+
+How the recall changes when we change the <Underlined>confidence threshold</Underlined>
+with which we assign the class?
+
+- If we <Underlined>raise the confidence threshold</Underlined> with which we assign the class,
+few samples will be positively assigned, only those that the system has high confidence in.
+This will decrease the number of true positives and increase the number of false negatives,
+as is very likely that we will be stating that a sample is negative when it is actually positive.
+<u>We will have a low recall</u>, we probably will be missing a lot of samples of the positive class,
+being unable to detect them.
+- If we <Underlined>lower the confidence threshold</Underlined> with which we assign the class,
+many samples will be positively assigned, even those that the system has low confidence in.
+This will increase the number of true positives and decrease the number of false negatives,
+all will be classified as positive. <u>We will have a high recall</u>, we will be able to detect
+almost all the samples of the positive class, <u>but we will have a lot of false positives</u>.
+
+
+## F1 Score
+
+The F1 Score is the harmonic mean of the precision and recall: $$\text{F1 Score} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$$.
+The F1 Score can be interpreted as the **harmonic mean** of the precision and recall,
+<Underlined color="yellow">it is a metric that combines precision and recall</Underlined>.
+
+Why to use F1 Score instead of the precision or recall?
+Usually when we are training a model we want to maximize the precision and recall at the same time,
+but this is not possible. As we have seen, when we increase the precision we decrease the recall,
+and vice versa. So we need a metric that combines both metrics, and the F1 Score is a good candidate.
+On the validation phase having and **unified metric** is useful to compare different models,
+and to choose the best one.
+
+
+
+## TL;DR
+
+- **Precision**: The <u>quality</u> of my predictions. Of the samples that I have classified as positive, how many are actually positive.
+- **Recall**: The <u>quantity</u> of my predictions. How many samples of the positive class I have detected.
+- **F1 Score**: The harmonic mean of the precision and recall. It is a metric that combines precision and recall.
+
+I will want to maximize the precision and recall at the same time, but this is not possible, or 
+at least not easy. So I will use the F1 Score to compare different models and to choose the best one.
+
+I will want to state that the samples that are positive really are positive (precision), and that I have detected
+all the samples of the positive class (recall).
+
+<SEOImage
+    src={"/posts/precision_recall_f1/pr_re_table.png"}
+    caption="Precision and Recall table"
+    alt="Precision and Recall table"
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>

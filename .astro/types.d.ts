@@ -212,6 +212,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
+"precision_recall_f1.mdx": {
+	id: "precision_recall_f1.mdx";
+  slug: "precision_recall_f1";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "receptive-fields-cnns.mdx": {
 	id: "receptive-fields-cnns.mdx";
   slug: "receptive-fields-cnns";
