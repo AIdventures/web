@@ -1,0 +1,337 @@
+---
+author: Mario Parreño
+date: 12/06/2017
+image: ./images/transformer/swamp.jpg
+tags: ["nlp", "transformer"]
+title: Transformer Intuition
+description: How the Transformer architecture works
+---
+import Underlined from "../../components/blog/Underlined.astro"
+import Table from "../../components/blog/Table.astro"
+import SEOImage from "../../components/blog/SEOImage.astro"
+
+Transformer architecture is everywhere today.
+The remaining idea, even with differences, adjustments and tweaks
+remains state of the art in multiple tasks,
+from natural language processing to computer vision.
+
+Next I try to give a simple but complete approach on how the Transformer works,
+so that we can understand derivatives of this architecture.
+
+## Introduction
+
+We will divide the explanation by the different parts that make up the model.
+I may omit some super technical or mathematical details in order to digest
+this better, so I recommend you to refer to the original paper
+that you can find at the end of the post.
+
+So let's go, from the beginning, block by block.
+
+## Overview
+
+The Transformer is a model that works with sequences of data.
+It is composed of two parts, the encoder and the decoder.
+
+The <Underlined>Encoder</Underlined> is in charge of transforming the input into a representation
+that the decoder can understand. The <Underlined>Decoder</Underlined> is in charge of generating
+the output based on the representation that the encoder has generated.
+
+Although different variants of the model have been proposed and
+encoder only and decoder only models have been used, we will focus
+on the original model, which is composed of both parts.
+
+Let's see a visual representation of the model.
+
+<SEOImage
+    src={"/posts/transformer/overview.png"}
+    caption="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated. Colorst don't mean tied weights."
+    alt="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+## Transforming the input
+
+Throughout the post we will use the model as a model that works with natural language,
+the language we humans use to communicate. To be able to use the words, we need to
+transform them into something that the model can understand, into numbers. The easiest
+way to do this is to use a dictionary, where each word has a unique number associated.
+This dictionary is also known as <Underlined color="green">**Vocabulary**</Underlined>.
+
+Imagine that we want to tackle a problem where we want to sort a list of characters.
+The set of characters that we can use is "A", "B", and "C". Our vocabulary could be:
+
+```python
+vocabulary = {
+    "PAD": -1,
+    "<s>": 0,
+    "<e>": 1,
+    "A": 2,
+    "B": 3,
+    "C": 4
+}
+```
+
+Note that we have added three special tokens, `PAD`, `<s>` and `<e>`. These are common
+tokens used for different purposes:
+- `PAD`: Padding token. It is used to fill the input to the same length. We need to
+    do this because to be able to process the input in batches, all the inputs must
+    have the same length, so shorter inputs are filled with this token till they
+    reach the maximum length.
+- `<s>`: Start token. It is used to indicate the beginning of the input.
+- `<e>`: End token. It is used to indicate the end of the input.
+
+The set of words and the special tokens of the vocabulary are known as <Underlined color="green">**Tokens**</Underlined>.
+
+Once we have converted the words to something the model can understand it is time to give it power.
+To do this, we are going to transform the flat, simple representations of our vocabulary into something
+richer and that captures the semantic relationships,
+the *meaning* of the word and how it relates to other words.
+But, how can we do that? Is something that the model needs to learn through
+what is known as <a href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html" target="_blank">embeddings</a>.
+The embeddings are just a learnable representation that we help us to continue transforming
+the input into something that the model can work with. Will work as a lookup table,
+where each word is represented by a vector of numbers. This embeddings are known as
+<Underlined color="green">**Word Embeddings**</Underlined>.
+
+Finally, in addition to capturing the essence of the words,
+it is important to capture the position of the words. The model by itself
+does not know the order of the words, so we need to add this information.
+Although the original paper uses a different approach, we will use a simpler
+and more widely used approach, which is to add learn a vector for each position
+in the input. This vectors are known as <Underlined color="green">**Positional Embeddings**</Underlined>
+and work in a similar lookup table way as the word embeddings, but instead of representing
+the meaning of the word, they represent the position of the word in the input.
+
+So, we have the word embeddings and the positional embeddings, but how do we combine them?
+Well, we just add them together. This is the input that we will give to the model.
+
+Here is a visual representation of the input transformation. The `block_size` is the maximum
+length of the input, the `vocab_size` is the size of the vocabulary, and the `n_embd` is the
+size of the learned embeddings.
+
+<SEOImage
+    src={"/posts/transformer/transformer_input.png"}
+    caption="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
+    alt="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+
+## The Transformer Block
+
+We have transformed the input into something that the model can understand,
+but how does the model work? The model is composed of a block that is repeated
+multiple times. This block mission is to understand the relations of input
+and output sequences through the training process. This block is known as
+<Underlined color="green">**Transformer Block**</Underlined>.
+
+The Transformer Block is composed of different parts, let's see them one by one.
+
+### Layer Normalization
+
+Normalization is always good, isn't it? Well, in this case it is.
+The Layer Normalization is a technique that helps the model to converge faster
+and to generalize better.
+Normalizing across all features but for each of the inputs to a specific layer removes
+the dependence on batches. This makes layer normalization well suited for sequence models such
+as the Transformer, because the model is trained with sequences of different lengths.
+
+### Multi-Head Attention
+
+The core of the Transformer is the Multi-Head Attention. This part is responsible
+for capturing the relationships between the tokens in the sequence. It is composed
+of three parts, the query, the key and the value. Those parts are combined to
+generate the attention matrix, which is used to capture the relationships between
+the tokens.
+
+Although at the end of the day what happens behind the neural networks is a bit of *magic*,
+the intuition is as follows:
+
+> The key/value/query concept is analogous to retrieval systems.
+For example, when you search for videos on Youtube,
+the search engine will map your <Underlined color="blue">**query**</Underlined> (text in the search bar)
+against a set of <Underlined color="blue">**keys**</Underlined> (video title, description, etc.)
+associated with candidate videos in their database,
+then present you the best matched videos (<Underlined color="blue">**values**</Underlined>).
+
+So the process starts by generating the query, key and value vectors given the input sequence
+we transformed earlier ([Transforming the input](#transforming-the-input)). We do that by applying
+a linear transformation, a matrix multiplication, to the input.
+
+<SEOImage
+    src={"/posts/transformer/multi-head_first.png"}
+    caption="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
+    alt="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
+    width={900}
+    height={350}
+    format="webp"
+    className="w-full"
+/>
+
+Next the <Underlined>**multi-head**</Underlined> part comes into play. The idea is to generate multiple
+query, key and value vectors, and then combine them. This is done to capture
+different relationships between the tokens: syntactic, semantic, spatial, etc.
+The number of heads is a hyperparameter of the model.
+
+<SEOImage
+    src={"/posts/transformer/multi-head_second.png"}
+    caption="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
+    alt="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+With each of the query, key and value vectors generated, we can now generate the attention matrix.
+This matrix is generated by applying the <Underlined>**dot product between the query and the key vectors**</Underlined>.
+The purpose of this is to capture the relationships between the tokens. The higher the dot product,
+the higher the relationship between the tokens. The dot product is <Underlined>**then scaled**</Underlined> by the square root
+of the dimension of the key vectors. This is done to avoid the dot product to be too large,
+which would make the softmax function to saturate.
+
+<SEOImage
+    src={"/posts/transformer/multi-head_third.png"}
+    caption="Transformer Multi-Head Attention. Third step, generate the attention matrix."
+    alt="Transformer Multi-Head Attention. Third step, generate the attention matrix."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+Once we have the attention matrix, we can apply the softmax function to it.
+This will generate a matrix where each row will sum to 1.
+This matrix is known as the <Underlined>**attention weights**</Underlined>. On top of this matrix
+we can apply a Dropout layer to avoid overfitting.
+
+<SEOImage
+    src={"/posts/transformer/multi-head_fourth.png"}
+    caption="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
+    alt="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+And now we can apply the attention weights to the value vectors. This will generate
+the <Underlined>**context vectors**</Underlined>. This vectors are the ones that will be used
+by the model to condition the decoder and generate the output, as the encoder and the decoder
+use similar attention mechanisms.
+
+<SEOImage
+    src={"/posts/transformer/multi-head_fifth.png"}
+    caption="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
+    alt="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+Rembember that we have multiple heads, so we need to combine them. This is done by
+concatenating the context vectors.
+
+<SEOImage
+    src={"/posts/transformer/multi-head_sixth.png"}
+    caption="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
+    alt="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+And that's all for the Multi-Head Attention. The intuition is that we have generated
+a representation of the input that captures the relationships between the tokens.
+
+
+### Masked Multi-Head Attention
+
+Also known as causal multi-head attention, this part is similar to the multi-head attention
+but with a small difference: the attention is masked. This is done because at 
+[Inference Time](#inference-time)
+<Underlined>a given *generated* token can only attend to the previous *generated* tokens</Underlined>,
+as does not have access to the future tokens.
+
+To simulate this behavior, we mask the attention matrix at training time.
+<Underlined>Overwriting</Underlined> the procedure seen in the [Multi-Head Attention](#multi-head-attention) section,
+we will add an additional step masking the attention matrix before applying the softmax.
+
+<SEOImage
+    src={"/posts/transformer/masked.png"}
+    caption="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
+    alt="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+With this, we ensure that the model can only attend to the previous tokens as the future
+tokens are <Underlined color="red">zeroed out</Underlined>.
+
+
+### Feed Forward - MLP
+
+The Feed Forward layer is a simple linear transformation followed by a non-linear activation function.
+In this case there are <Underlined color="green">**two linear transformations**</Underlined>,
+one that <Underlined>**expands the dimensionality**</Underlined> of the input by an
+arbitrary factor, and another that <Underlined>**reduces it back**</Underlined> to the original dimensionality.
+This combination of expanding and reducing the dimensionality of the input, 
+adding in between a non-linear activation function,
+helps the model effectively capture complex patterns in the input data
+while maintaining computational efficiency and preventing overfitting.
+
+<SEOImage
+    src={"/posts/transformer/mlp.png"}
+    caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
+    alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+
+### Residual Connections
+
+As you can observe the output of the Layer Normalization, the Multi-Head Attentions,
+the Masked Multi-Head Attention, and the Feed Forward layers are the same size as the input.
+To allow the gradients to flow better through the model, we add residual connections
+through the Transformer Block. Particularly after applying the Layer Normalization
+and some transforming layer, as the Multi-Head Attention and the Feed Forward layers.
+Refer to the [Overview](#overview) section to see the visual representation of the Transformer Block
+and how the residual connections are added along the Transformer Block.
+
+## The Output
+
+Linear - size of embed => vocabulary (language modeling head)
+FOR PADDING TOKENS LOSS IS NOT COMPUTER
+
+Softmax
+
+## Some Details
+
+### Training Time
+
+### Inference Time
+Auto-regressive
+
+## FAQ
+
+## Glossary
+
+## Credits
+
+- [Paper - Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [GitHub - NanoGPT, by Karpathy](https://github.com/karpathy/nanoGPT)
+- [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
+- [LLM Visualization](https://bbycroft.net/llm)
