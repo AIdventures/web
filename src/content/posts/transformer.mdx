@@ -4,10 +4,9 @@ date: 12/06/2017
 image: ./images/transformer/swamp.jpg
 tags: ["nlp", "transformer"]
 title: Transformer Intuition
-description: How the Transformer architecture works
+description: How the Transformer architecture works, a light, direct and simple explanation.
 ---
 import Underlined from "../../components/blog/Underlined.astro"
-import Table from "../../components/blog/Table.astro"
 import SEOImage from "../../components/blog/SEOImage.astro"
 
 Transformer architecture is everywhere today.
@@ -32,8 +31,8 @@ So let's go, from the beginning, block by block.
 The Transformer is a model that works with sequences of data.
 It is composed of two parts, the encoder and the decoder.
 
-The <Underlined>Encoder</Underlined> is in charge of transforming the input into a representation
-that the decoder can understand. The <Underlined>Decoder</Underlined> is in charge of generating
+The <Underlined color="purple">**Encoder**</Underlined> is in charge of transforming the input into a representation
+that the decoder can understand. The <Underlined color="brown">**Decoder**</Underlined> is in charge of generating
 the output based on the representation that the encoder has generated.
 
 Although different variants of the model have been proposed and
@@ -122,6 +121,31 @@ size of the learned embeddings.
     className="w-full"
 />
 
+We can start our code defining the embeddings and how to combine them. This part is the same
+for the Encoder and the Decoder.
+
+```python
+class Encoder(nn.Module):  # either Encoder or Decoder
+
+    def __init__(self, config):
+        super().__init__()
+        self.wte = nn.Embedding(config.vocab_size, config.n_embd)
+        self.wpe = nn.Embedding(config.block_size, config.n_embd)
+        self.drop = nn.Dropout(config.dropout)
+        # ...
+
+     def forward(self, x, targets=None):
+        b, t = x.size()  # batch size, token sequence length
+        # generate the position indices for the lookup positional embeddings table
+        pos = torch.arange(0, t) # shape (t)
+
+        # forward the Word Embeddings, Positional Embeddings and add them together
+        tok_emb = self.wte(x) # token embeddings of shape (b, t, n_embd)
+        pos_emb = self.wpe(pos) # position embeddings of shape (t, n_embd)
+        x = self.drop(tok_emb + pos_emb)
+        # ...
+```
+
 
 ## The Transformer Block
 
@@ -141,6 +165,21 @@ and to generalize better.
 Normalizing across all features but for each of the inputs to a specific layer removes
 the dependence on batches. This makes layer normalization well suited for sequence models such
 as the Transformer, because the model is trained with sequences of different lengths.
+
+The Layer Normalization that is used across the Transformer can be defined as follows:
+
+```python
+class LayerNorm(nn.Module):
+    """ LayerNorm but with an optional bias. PyTorch doesn't support simply bias=False """
+
+    def __init__(self, ndim, bias):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(ndim))
+        self.bias = nn.Parameter(torch.zeros(ndim)) if bias else None
+
+    def forward(self, input):
+        return F.layer_norm(input, self.weight.shape, self.weight, self.bias, 1e-5)
+```
 
 ### Multi-Head Attention
 
