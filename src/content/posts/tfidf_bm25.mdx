@@ -1,0 +1,112 @@
+---
+author: Mario Parreño
+date: 05/01/2024
+image: ./images/tfidf_bm25/labyrinth.jpg
+tags: ["nlp", "embedding"]
+title: TF-IDF & BM25 Explained
+description: TF-IDF and BM25 are two of the most used algorithms in Information Retrieval. In this post we will explain how they work.
+---
+import Underlined from "../../components/blog/Underlined.astro"
+import SEOImage from "../../components/blog/SEOImage.astro"
+
+This post is a summary of the [Understanding TF-IDF and BM-25](https://kmwllc.com/index.php/2020/03/20/understanding-tf-idf-and-bm-25/) article by [KMW Technology](https://kmwllc.com/).
+Here we going straight to the point, to use this post as a quick reminder of how these algorithms work.
+
+These algorithms are used <Underlined>to rank documents based on a query</Underlined>.
+They are used in search engines, recommendation systems, etc.
+Mainly they <Underlined color="green">reward the relevance</Underlined> of a query 
+with respect to a document. When applied to all documents,
+we can known which documents are more relevant to a query.
+
+## TF-IDF
+
+### Assumptions
+
+The TF-IDF algorithm is based on two concepts:
+- **Term Frequency (TF)**: The number of times a term appears in a document. It is supposed
+that the more times a document contains a term, the more likely it is to be about that term.
+Can be seen as a proxy for the <Underlined color="purple">*relevance*</Underlined> of a term in a document.
+- **Inverse Document Frequency (IDF)**: The number of documents that contain a term
+by the total number of documents, scaled logarithmically. All terms are not equally important,
+imagine filler words like "the", "a", "an", etc.
+We need to judge the <Underlined color="purple">*rarity*</Underlined> of the terms. To do so
+we account for the number of documents that contain a term from the total number of documents. But 
+there is a problem: imagine that we have 100 documents and a term like "elephant" appears in 1 document
+while the term "giraffe" occurs in 2 documents, if we simply divide the number of documents that contain
+a term by the total number of documents, we will get that "elephant" is the double (100 points) as important
+as "giraffe" (50 points). But we know that they are pretty similarly rare. To solve this problem we use
+the logarithm of the fraction. Check the following graph to see how the logarithm of the fraction
+scales the values.
+
+<SEOImage
+    src={"/posts/tfidf_bm25/idf_log.png"}
+    caption="Comparison of the IDF and the logarithm of the IDF."
+    alt="Comparison of the IDF and the logarithm of the IDF."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+### Formula
+
+The TF-IDF formula is the following:
+
+$$\text{TF-IDF}(t, d) = \text{TF}(t, d) \times \text{IDF}(t)$$
+
+Where $t$ is a term and $d$ is a document. We can expand the formula as follows:
+
+$$\text{TF-IDF}(t, d) = \text{counts of t in d} \times \log{\frac{\text{total number of documents}}{\text{number of documents containing t}}}$$
+
+
+### Problems
+
+- **Term Frequency**: The TF is not normalized by the length of the document.
+Longer documents are given an unfair advantage over shorter ones
+because they have more space to include more occurrences of a term,
+even though they might not be more relevant to the term. 
+
+
+## BM25
+
+The BM25 algorithm is based on the TF-IDF algorithm, but trying to solve some of its problems.
+
+### Assumptions
+
+- **Saturation**: The relevance of a term in a document saturates after a certain point. Is it
+really *twice* as relevant a document with 200 occurrences of a term than a document with 100 occurrence?
+We need that the term frequency contribution increases fast when the term frequency is small and 
+then increases more slowly. To achive this we will use a small trick: modify the term frequency
+with $$\frac{TF}{TF+k}$$, where $k$ is a hyperparameter. This way the term frequency contribution
+will always saturate to 1 for large values of $TF$, while for small values of $TF$ it will increase
+moderately fast. Additionaly, a side-effect of this saturation is that we end up rewarding
+<Underlined>complete matches over partial ones</Underlined>. For example, given a query searching for
+"cat and dog" and $k=1$, a document with both ocurrences of "cat" and "dog" will be more relevant
+than a document with only two ocurrences of "cat" or "dog", as the values will not be so predominant.
+
+<SEOImage
+    src={"/posts/tfidf_bm25/tf_saturation.png"}
+    caption="Comparison of the TF and the TF with saturation with different values of k."
+    alt="Comparison of the TF and the TF with saturation with different values of k."
+    width={900}
+    height={450}
+    format="webp"
+    className="w-full"
+/>
+
+- **Document Length**: 
+
+### Formula
+
+### Problems
+
+- Semantic understanding: The BM25 algorithm does not take into account the semantic understanding
+of the terms. For example, the terms "cat" and "dog" are not related, but the BM25 algorithm will
+give them the same relevance. This is a problem that is not solved by the BM25 algorithm, but
+
+
+## Credits
+
+- [Understanding TF-IDF and BM-25](https://kmwllc.com/index.php/2020/03/20/understanding-tf-idf-and-bm-25/)
+- [Breaking Down the TF-IDF Formula](https://melaniewalsh.github.io/Intro-Cultural-Analytics/05-Text-Analysis/03-TF-IDF-Scikit-Learn.html#breaking-down-the-tf-idf-formula)
+- [TF-IDF Implementation by Scikit-Learn](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)

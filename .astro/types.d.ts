@@ -240,6 +240,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
+"tfidf_bm25.mdx": {
+	id: "tfidf_bm25.mdx";
+  slug: "tfidf_bm25";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "transformer.mdx": {
 	id: "transformer.mdx";
   slug: "transformer";
