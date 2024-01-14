@@ -35,7 +35,7 @@ there is a problem: imagine that we have 100 documents and a term like "elephant
 while the term "giraffe" occurs in 2 documents, if we simply divide the number of documents that contain
 a term by the total number of documents, we will get that "elephant" is the double (100 points) as important
 as "giraffe" (50 points). But we know that they are pretty similarly rare. To solve this problem we use
-the logarithm of the fraction. Check the following graph to see how the logarithm of the fraction
+the <Underlined>logarithm of the fraction</Underlined>. Check the following graph to see how the logarithm of the fraction
 scales the values.
 
 <SEOImage
@@ -77,7 +77,8 @@ The BM25 algorithm is based on the TF-IDF algorithm, but trying to solve some of
 really *twice* as relevant a document with 200 occurrences of a term than a document with 100 occurrence?
 We need that the term frequency contribution increases fast when the term frequency is small and 
 then increases more slowly. To achive this we will use a small trick: modify the term frequency
-with $$\frac{TF}{TF+k}$$, where $k$ is a hyperparameter. This way the term frequency contribution
+with $$\frac{TF}{TF+k}$$, where <Underlined color="green">$k$ is a hyperparameter</Underlined>.
+This way the term frequency contribution
 will always saturate to 1 for large values of $TF$, while for small values of $TF$ it will increase
 moderately fast. Additionaly, a side-effect of this saturation is that we end up rewarding
 <Underlined>complete matches over partial ones</Underlined>. For example, given a query searching for
@@ -94,15 +95,39 @@ than a document with only two ocurrences of "cat" or "dog", as the values will n
     className="w-full"
 />
 
-- **Document Length**: 
+- **Document Length**: If a document is very short and contains an occurrence of a term, like "cat",
+that's a very strong signal that the document is about cats. But if a document is very long and only contains
+one occurrence of a "cat", probably the document is not about cats. To solve this problem we need to reward
+the matches in short documents more than the matches in long documents. The first step we need to do 
+is to decide what is a short and a long document.
+To do so we will use the average document length of the corpus. Going back to our saturation formula,
+$$\frac{TF}{TF+k}$$, we can adjust the $k$ hyperparameter to account for the document length.
+If we multiply $$k$$ by the ratio between the document length and the average document length
+($$\frac{doc\_length}{avg\_doc\_length}$$), we will
+get a value that will be smaller than 1 for short documents and larger than 1 for long documents. This
+way we will <Underlined>reward the matches in short documents more than the matches in long documents</Underlined>,
+as lower values of $k$ will be used for short documents than for long documents. Building on top of this,
+maybe for our problem is not so important the document length, so to control the importance of the document
+length we will use a <Underlined color="green">hyperparameter $$b$$</Underlined>, between 0 and 1,
+that will be multiplied by the ratio between the document length and the average document length.
+This hyperparameter is introduced as $$1-b+b\frac{doc\_length}{avg\_doc\_length}$$, being
+multiplied by $k$ in the saturation formula. When $$b=0$$ we will not take into account the document length,
+and when $$b=1$$ we will fully take into account the document length.
 
 ### Formula
+
+Although some modifications were proposed for the IDF part of the formula, the most 
+important changes were described in the assumptions section. The BM25 formula, then, is the following:
+
+$$\text{BM25}(t, d) = \frac{\text{TF}(t, d) \times (k_1 + 1)}{\text{TF}(t, d) + k_1 \times (1 - b + b \times \frac{\text{doc\_length}}{\text{avg\_doc\_length}})} \times \log{\frac{\text{total number of documents}}{\text{number of documents containing t}}}$$
+
 
 ### Problems
 
 - Semantic understanding: The BM25 algorithm does not take into account the semantic understanding
-of the terms. For example, the terms "cat" and "dog" are not related, but the BM25 algorithm will
-give them the same relevance. This is a problem that is not solved by the BM25 algorithm, but
+of the terms. Cannot distinguish between "cat" and "cats", for example. To solve this problem
+we need to use more complex algorithms, like word embeddings, that can capture the semantic
+meaning of the terms.
 
 
 ## Credits
