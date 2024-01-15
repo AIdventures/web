@@ -10,50 +10,87 @@ import {Image} from "astro:assets"
 ---
 
 <Layout title="AIdventure - Your Machine Learning Blog" current_page="home">
-	<Main>
-		
-		<section class="py-32 mb-12">
-			<div class="container items-center max-w-6xl px-10 mx-auto sm:px-20 md:px-32 lg:px-16">
-			  <div class="relative flex flex-wrap items-center -mx-3">
-				<div class="absolute left-2/4 w-full lg:mb-0 z-0">
-					<Image
-						src="/banner.png"
-						alt="AIdventurer"
-						width={1080}
-						height={750}
-						format="svg"
-						class="aspect-thumbnail object-cover bg-cover min-w-full"
-					/>
-				</div>
-				<div class="w-24 px-3 lg:w-1/2 z-10">
-					<h1 class="mb-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl font-heading text-gray-50">
-						Hello AIdventurer!
-					</h1>
-					<p class="mb-4 font-medium tracking-tight text-gray-400 xl:mb-6">It has never been easier to find the information we are looking for, or not to find it at all. In this blog I will try to be concise and get straight to the point. The blog will tackle the following:</p>
-					<ul>
-					  <li class="flex items-center py-2 space-x-4 xl:py-3">
-						<RobotIcon />
-						<span class="font-medium text-gray-500">
-							CV, NLP, Whatever, Machine Learning
-						</span>
-					  </li>
-					  <li class="flex items-center py-2 space-x-4 xl:py-3">
-						<HandIcon />
-						<span class="font-medium text-gray-500">
-							Hands-on tutorials with code snippets
-						</span>
-					  </li>
-					  <li class="flex items-center py-2 space-x-4 xl:py-3">
-						<PaperIcon />
-						<span class="font-medium text-gray-500">
-							Review and explanation of papers
-						</span>
-					  </li>
-					</ul>
-				</div>
-			  </div>
-			</div>
-		  </section>
-		
-	</Main>
+
+<section
+  class="relative bg-[url(/dungeonru.png)] bg-cover bg-right bg-no-repeat -mt-32 z-0"
+>
+  <div
+    class="absolute inset-0 bg-white/75 sm:bg-transparent sm:from-white/95 sm:to-white/25 ltr:sm:bg-gradient-to-r"
+  ></div>
+
+  <div
+    class="relative mx-auto max-w-screen-xl px-4 py-32 sm:px-6 lg:flex lg:min-h-screen lg:items-center lg:px-8"
+  >
+    <div class="max-w-xl text-left ltr:sm:text-left text-gray-200">
+      <h1 class="text-3xl font-extrabold sm:text-5xl">
+        Welcome
+
+        <strong class="block font-extrabold text-gold-300 text-4xl sm:text-6xl"> Aidventurer! </strong>
+      </h1>
+
+      <p class="mt-4 max-w-lg sm:text-xl/relaxed">
+        It has never been easier to find the information we are looking for, or not to find it at all. In this blog I will try to be concise and get straight to the point.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-4 text-center">
+        <a
+          href="/blog"
+          class="btn"
+        >
+          Explore
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 </Layout>
+
+
+<style>
+	.btn {
+  background: #e5e5e5;
+  box-shadow: 4px 4px #e8bc53, 9px 9px #151515;
+  color: #151515;
+  text-transform: lowercase;
+  border: solid 2px #151515;
+
+  text-decoration: none;
+
+  padding: 18px 32px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  cursor: pointer;
+  overflow: hidden;
+  transition-delay: 0s !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px;
+  font-family: freight-sans-pro, sans-serif;
+}
+.btn::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 0;
+  width: 0%;
+  height: 100%;
+  background: #733bec;
+  z-index: -1;
+  transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.btn:hover::before {
+  width: 100%;
+  left: 0;
+  right: unset;
+}
+.btn:hover {
+  box-shadow: 0 0 #ffe00b, 0 0 #151515;
+  color: white;
+}
+
+</style>

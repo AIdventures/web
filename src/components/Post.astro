@@ -14,7 +14,7 @@ post.data.date = formatDate(post.data.date)
 ---
 
 <!-- We are going to introduce the tags as metadata to filter the posts later on. -->
-<article class="post box-border box-shadow mb-12" data-tags={post.data.tags.join(",")}>
+<article class="post box-border box-shadow mb-12 bg-gray-200" data-tags={post.data.tags.join(",")}>
     <a href={`/blog/${post.slug}`}>
         <Image
             src={post.data.image}
@@ -43,7 +43,7 @@ post.data.date = formatDate(post.data.date)
                 <div class="flex flex-wrap items-center mt-4 gap-2">
                     {post.data.tags.map((tag) => (
                         <span
-                            class="px-3 py-1 text-xs lg:text-xs font-semibold text-gray-800 bg-gray-200 rounded-full"
+                            class="px-3 py-1 text-xs lg:text-xs font-semibold text-gray-800 bg-gray-300 rounded-full"
                         >
                             #{tag}
                         </span>
@@ -63,7 +63,7 @@ post.data.date = formatDate(post.data.date)
     }
     .box-shadow{
         --tw-shadow: 10px 10px;
-        --tw-shadow-colored: 10px 10px var(--tw-shadow-color);
+        --tw-shadow-colored: 10px 10px #e53170;
         box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),var(--tw-ring-shadow, 0 0 #0000),var(--tw-shadow);
         transition-duration: 0.15s;
     }

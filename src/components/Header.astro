@@ -4,12 +4,12 @@ import HamburgerIcon from '../components/icons/HamburgerIcon.astro'
 import CloseIcon from '../components/icons/CloseIcon.astro'
 
 const {current_page} = Astro.props
-const hover_effect = "relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-black after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left"
+const hover_effect = "relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-gold-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left"
 ---
 
-<header>
-    <nav class="mx-auto w-full bg-lila-500 2xl:border-y-2 justify-center sticky border-y-2 border-black mb-12">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-10 px-12">
+<header class="z-10">
+    <nav class="mx-auto w-full bg-dungeon-900 2xl:border-y-2 justify-center sticky border-y-2 border-gray-600 text-gray-200">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto h-32 px-12">
             <a href="/" class="flex items-center">
                 <AIdventureIcon />
                 <span class="text-2xl font-normal text-lila-950">AIdventure</span>

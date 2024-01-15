@@ -14,7 +14,7 @@ const {posts} = Astro.props
 <FeaturedPost post={posts[0]} />
 
 <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 max-sm:gap-y-14 mt-16 mb-12"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 mt-16 mb-12"
 >
     {posts.slice(1).map((post) => (
         <Post post={post} />
