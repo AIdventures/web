@@ -1,13 +1,14 @@
 ---
 author: Mario Parreño
 date: 12/06/2017
-image: ./images/transformer/swamp.jpg
+image: ./images/transformer/canopy.png
 tags: ["nlp", "transformer", "encoder-decoder"]
 title: Transformer Intuition
 description: How the Transformer architecture works, a light, direct and simple explanation.
 ---
-import Underlined from "../../components/blog/Underlined.astro"
-import SEOImage from "../../components/blog/SEOImage.astro"
+
+import Underlined from "../../components/blog/Underlined.astro";
+import SEOImage from "../../components/blog/SEOImage.astro";
 
 Transformer architecture is everywhere today.
 The remaining idea, even with differences, adjustments and tweaks
@@ -37,13 +38,13 @@ on the original model, which is composed of both parts.
 Let's see a visual representation of the model.
 
 <SEOImage
-    src={"/posts/transformer/overview.png"}
-    caption="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated. Colorst don't mean tied weights."
-    alt="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/overview.png"}
+  caption="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated. Colorst don't mean tied weights."
+  alt="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ## Transforming the input
@@ -70,10 +71,11 @@ vocabulary = {
 
 Note that we have added three special tokens, `PAD`, `<s>` and `<e>`. These are common
 tokens used for different purposes:
+
 - `PAD`: Padding token. It is used to fill the input to the same length. We need to
-    do this because to be able to process the input in batches, all the inputs must
-    have the same length, so shorter inputs are filled with this token till they
-    reach the maximum length.
+  do this because to be able to process the input in batches, all the inputs must
+  have the same length, so shorter inputs are filled with this token till they
+  reach the maximum length.
 - `<s>`: Start token. It is used to indicate the beginning of the input.
 - `<e>`: End token. It is used to indicate the end of the input.
 
@@ -82,7 +84,7 @@ The set of words and the special tokens of the vocabulary are known as <Underlin
 Once we have converted the words to something the model can understand it is time to give it power.
 To do this, we are going to transform the flat, simple representations of our vocabulary into something
 richer and that captures the semantic relationships,
-the *meaning* of the word and how it relates to other words.
+the _meaning_ of the word and how it relates to other words.
 But, how can we do that? Is something that the model needs to learn through
 what is known as <a href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html" target="_blank">embeddings</a>.
 The embeddings are just a learnable representation that we help us to continue transforming
@@ -107,13 +109,13 @@ length of the input, the `vocab_size` is the size of the vocabulary, and the `n_
 size of the learned embeddings.
 
 <SEOImage
-    src={"/posts/transformer/transformer_input.png"}
-    caption="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
-    alt="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/transformer_input.png"}
+  caption="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
+  alt="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 We can start our code defining the embeddings and how to combine them. This part is the same
@@ -140,7 +142,6 @@ class Encoder(nn.Module):  # either Encoder or Decoder
         x = self.drop(tok_emb + pos_emb)  # shape (batch, block_size, n_embd)
         # ...
 ```
-
 
 ## The Transformer Block
 
@@ -169,28 +170,28 @@ of three parts, the query, the key and the value. Those parts are combined to
 generate the attention matrix, which is used to capture the relationships between
 the tokens.
 
-Although at the end of the day what happens behind the neural networks is a bit of *magic*,
+Although at the end of the day what happens behind the neural networks is a bit of _magic_,
 the intuition is as follows:
 
 > The key/value/query concept is analogous to retrieval systems.
-For example, when you search for videos on Youtube,
-the search engine will map your <Underlined color="blue">**query**</Underlined> (text in the search bar)
-against a set of <Underlined color="blue">**keys**</Underlined> (video title, description, etc.)
-associated with candidate videos in their database,
-then present you the best matched videos (<Underlined color="blue">**values**</Underlined>).
+> For example, when you search for videos on Youtube,
+> the search engine will map your <Underlined color="blue">**query**</Underlined> (text in the search bar)
+> against a set of <Underlined color="blue">**keys**</Underlined> (video title, description, etc.)
+> associated with candidate videos in their database,
+> then present you the best matched videos (<Underlined color="blue">**values**</Underlined>).
 
 So the process starts by generating the query, key and value vectors given the input sequence
 we transformed earlier ([Transforming the input](#transforming-the-input)). We do that by applying
 a linear transformation, a matrix multiplication, to the input.
 
 <SEOImage
-    src={"/posts/transformer/multi-head_first.png"}
-    caption="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
-    alt="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
-    width={900}
-    height={350}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/multi-head_first.png"}
+  caption="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
+  alt="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
+  width={900}
+  height={350}
+  format="webp"
+  className="w-full"
 />
 
 ```python
@@ -198,11 +199,11 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, config):
         super(MultiHeadAttention, self).__init__()
         self.config = config
-       
+
         # key, query and value matrixes
         self.query_matrix = nn.Linear(
             config.n_embd, config.n_embd, bias=config.bias
-        ) 
+        )
         self.key_matrix = nn.Linear(
             config.n_embd, config.n_embd, bias=config.bias
         )
@@ -218,20 +219,19 @@ class MultiHeadAttention(nn.Module):
         # ...
 ```
 
-
 Next the <Underlined>**multi-head**</Underlined> part comes into play. The idea is to generate multiple
 query, key and value vectors, and then combine them. This is done to capture
 different relationships between the tokens: syntactic, semantic, spatial, etc.
 The number of heads is a hyperparameter of the model.
 
 <SEOImage
-    src={"/posts/transformer/multi-head_second.png"}
-    caption="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
-    alt="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/multi-head_second.png"}
+  caption="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
+  alt="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ```python
@@ -270,13 +270,13 @@ of the dimension of the key vectors. This is done to avoid the dot product to be
 which would make the softmax function to saturate.
 
 <SEOImage
-    src={"/posts/transformer/multi-head_third.png"}
-    caption="Transformer Multi-Head Attention. Third step, generate the attention matrix."
-    alt="Transformer Multi-Head Attention. Third step, generate the attention matrix."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/multi-head_third.png"}
+  caption="Transformer Multi-Head Attention. Third step, generate the attention matrix."
+  alt="Transformer Multi-Head Attention. Third step, generate the attention matrix."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ```python
@@ -300,13 +300,13 @@ This matrix is known as the <Underlined>**attention weights**</Underlined>. On t
 we can apply a Dropout layer to avoid overfitting.
 
 <SEOImage
-    src={"/posts/transformer/multi-head_fourth.png"}
-    caption="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
-    alt="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/multi-head_fourth.png"}
+  caption="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
+  alt="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ```python
@@ -322,7 +322,7 @@ class MultiHeadAttention(nn.Module):
         att = F.softmax(att, dim=-1)
         att = self.attn_dropout(att)
         # ...
-``` 
+```
 
 And now we can apply the attention weights to the value vectors. This will generate
 the <Underlined>**context vectors**</Underlined>. This vectors are the ones that will be used
@@ -330,15 +330,14 @@ by the model to condition the decoder and generate the output, as the encoder an
 use similar attention mechanisms.
 
 <SEOImage
-    src={"/posts/transformer/multi-head_fifth.png"}
-    caption="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
-    alt="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/multi-head_fifth.png"}
+  caption="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
+  alt="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
-
 
 ```python
 class MultiHeadAttention(nn.Module):
@@ -351,19 +350,19 @@ class MultiHeadAttention(nn.Module):
         # Multiply the attention weights by the value vectors
         out = att @ value
         # ...
-``` 
+```
 
 Rembember that we have multiple heads, so we need to combine them. This is done by
 concatenating the context vectors.
 
 <SEOImage
-    src={"/posts/transformer/multi-head_sixth.png"}
-    caption="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
-    alt="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/multi-head_sixth.png"}
+  caption="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
+  alt="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ```python
@@ -381,32 +380,33 @@ class MultiHeadAttention(nn.Module):
             batch_size, block_size_query, self.config.n_embd
         )
         return out
-``` 
+```
 
 And that's all for the Multi-Head Attention. The intuition is that we have generated
 a representation of the input that captures the relationships between the tokens.
 
-
 ### Masked Multi-Head Attention
 
 Also known as causal multi-head attention, this part is similar to the multi-head attention
-but with a small difference: the attention is masked. This is done because at 
+but with a small difference: the attention is masked. This is done because at
 [Inference Time](#inference-time)
 <Underlined>a given *generated* token can only attend to the previous *generated* tokens</Underlined>,
 as does not have access to the future tokens.
 
 To simulate this behavior, we mask the attention matrix at training time.
-<Underlined>Overwriting</Underlined> the procedure seen in the [Multi-Head Attention](#multi-head-attention) section,
-we will add an additional step masking the attention matrix before applying the softmax.
+
+<Underlined>Overwriting</Underlined> the procedure seen in the [Multi-Head Attention](#multi-head-attention)
+section, we will add an additional step masking the attention matrix before applying
+the softmax.
 
 <SEOImage
-    src={"/posts/transformer/masked.png"}
-    caption="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
-    alt="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/masked.png"}
+  caption="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
+  alt="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ```python
@@ -433,11 +433,10 @@ class MultiHeadAttention(nn.Module):
         # Apply the softmax function to the attention matrix
         att = F.softmax(att, dim=-1)
         # ...
-``` 
+```
 
 With this, we ensure that the model can only attend to the previous tokens as the future
 tokens are <Underlined color="red">zeroed out</Underlined>.
-
 
 ### Feed Forward - MLP
 
@@ -445,21 +444,20 @@ The Feed Forward layer is a simple linear transformation followed by a non-linea
 In this case there are <Underlined color="green">**two linear transformations**</Underlined>,
 one that <Underlined>**expands the dimensionality**</Underlined> of the input by an
 arbitrary factor, and another that <Underlined>**reduces it back**</Underlined> to the original dimensionality.
-This combination of expanding and reducing the dimensionality of the input, 
+This combination of expanding and reducing the dimensionality of the input,
 adding in between a non-linear activation function,
 helps the model effectively capture complex patterns in the input data
 while maintaining computational efficiency and preventing overfitting.
 
 <SEOImage
-    src={"/posts/transformer/mlp.png"}
-    caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-    alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/mlp.png"}
+  caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
+  alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
-
 
 ```python
 class MLP(nn.Module):
@@ -477,8 +475,7 @@ class MLP(nn.Module):
         x = self.c_proj(x)
         x = self.dropout(x)
         return x
-``` 
-
+```
 
 ### Residual Connections
 
@@ -514,20 +511,21 @@ class EncoderBlock(nn.Module):
 Once the input of the Encoder and the Decoder has been combined and transformed by the Transformer Blocks,
 it is time to generate the output. The output is generated by applying a linear transformation
 to the output of the last Decoder Transformer Block. This linear transformation is known as
+
 <Underlined color="green">**Language Modeling Head**</Underlined>.
 
 <SEOImage
-    src={"/posts/transformer/output.png"}
-    caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-    alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/output.png"}
+  caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
+  alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 Each embedding of the sequence is multiplied by a matrix of weights that maps those embeddings
-to the vocabulary. That is to say, each row model the probabilities (after the softmax) of  
+to the vocabulary. That is to say, each row model the probabilities (after the softmax) of 
 that each token (row) produces each of the tokens present in the vocabulary.
 
 ```python
@@ -546,7 +544,7 @@ class Encoder(nn.Module):  # Decoder does not apply the LM Head
         # ...
 ```
 
-*Note: For padding tokens the loss is not computed.*
+_Note: For padding tokens the loss is not computed._
 
 ## Last Details
 
@@ -566,48 +564,48 @@ for example by using padding (<a href="https://pytorch.org/docs/stable/generated
 A schematic representation of the training process would be:
 
 <SEOImage
-    src={"/posts/transformer/training.png"}
-    caption="Transformer training process. The model is trained in one step."
-    alt="Transformer training process. The model is trained in one step."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/training.png"}
+  caption="Transformer training process. The model is trained in one step."
+  alt="Transformer training process. The model is trained in one step."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 ### Inference Time
 
 At inference time, the model is used to generate the output sequence. This is done
 by generating the output <u>token by token</u>, also known as <Underlined color="green">**auto-regressive**</Underlined>.
-This is because the output of a given token depends on the previous tokens, so we need 
+This is because the output of a given token depends on the previous tokens, so we need
 those tokens to generate the next one. This is why we need to <Underlined>shift right the output</Underlined>,
 so that the first token is the start token `<s>` because we don't have any previous token.
 
 The process would look like:
 
 <SEOImage
-    src={"/posts/transformer/inference.png"}
-    caption="Transformer inference process. The model is used to generate the output token by token."
-    alt="Transformer inference process. The model is used to generate the output token by token."
-    width={900}
-    height={450}
-    format="webp"
-    className="w-full"
+  src={"/posts/transformer/inference.png"}
+  caption="Transformer inference process. The model is used to generate the output token by token."
+  alt="Transformer inference process. The model is used to generate the output token by token."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
 />
 
 Several things to note:
+
 - As the tokens are generated one by one, they are introduced in the input of the Decoder
-to generate the next token. **Only the output of the last token** in the Language Modeling Head
-is used to generate the next token, but we need to keep the rest of the tokens in the process
-as they are used in combination in the Multi-Head Attention.
+  to generate the next token. **Only the output of the last token** in the Language Modeling Head
+  is used to generate the next token, but we need to keep the rest of the tokens in the process
+  as they are used in combination in the Multi-Head Attention.
 - The **Encoder output can be cached** and reused for each token generated by the Decoder,
-as the input of the Decoder is the same for each token generated.
+  as the input of the Decoder is the same for each token generated.
 - The generation process can finish when the end token **`<e>` is generated**, or when
-a maximum number of tokens is generated.
+  a maximum number of tokens is generated.
 
 As an example, imagine we want to generate an arbitrary sequence of `new_tokens` length,
 the process would look like:
-
 
 ```python
 encoder_out = encoder(input_sequence)
@@ -645,11 +643,11 @@ But, how do we know that the model has captured all the relationships? Well, we 
 But we can try to capture different relationships by generating multiple query, key and value vectors,
 and then combine them. This is done to capture different relationships between the tokens: syntactic, semantic, spatial, etc.
 
-But how really works? <u>Its all about the *Query* and *Key* multiplication</u>. Suppose that we have
-just our one initial embedding representation. When we perform our *Query* and *Key* multiplication
+But how really works? <u>Its all about the _Query_ and _Key_ multiplication</u>. Suppose that we have
+just our one initial embedding representation. When we perform our _Query_ and _Key_ multiplication
 with our **single embedding**, we would en up with a **single attention matrix**. This matrix
 is used to capture the relationships between the tokens, empowering or weakening the relationships
-at *Value* matrix multiplication.
+at _Value_ matrix multiplication.
 If instead we <Underlined>**split our embeddings**</Underlined> into multiple $$h$$ heads,
 we would end up with <Underlined color="green">**$$h$$ attention matrices**</Underlined>, one per head,
 that will allow the model to <Underlined>**empower or weaken different parts**</Underlined>
@@ -665,9 +663,9 @@ of the input embedding separately.
 - **`<s>`**: Start token. It is used to indicate the beginning of the input.
 - **`<e>`**: End token. It is used to indicate the end of the input.
 - **`PAD`**: Padding token. It is used to fill the input to the same length. We need to
-    do this because to be able to process the input in batches, all the inputs must
-    have the same length, so shorter inputs are filled with this token till they
-    reach the maximum length.
+  do this because to be able to process the input in batches, all the inputs must
+  have the same length, so shorter inputs are filled with this token till they
+  reach the maximum length.
 
 ## Extra: Code Repository
 
