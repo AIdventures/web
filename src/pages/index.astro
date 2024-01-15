@@ -12,12 +12,21 @@ import {Image} from "astro:assets"
 <Layout title="AIdventure - Your Machine Learning Blog" current_page="home">
 	<Main>
 		
-		<section class="py-20 mb-12">
+		<section class="py-32 mb-12">
 			<div class="container items-center max-w-6xl px-10 mx-auto sm:px-20 md:px-32 lg:px-16">
-			  <div class="flex flex-wrap items-center -mx-3">
-				<div class="order-1 w-full px-3 lg:w-1/2 lg:order-0">
-				  <div class="w-full lg:max-w-md">
-					<h1 class="mb-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl font-heading">
+			  <div class="relative flex flex-wrap items-center -mx-3">
+				<div class="absolute left-2/4 w-full lg:mb-0 z-0">
+					<Image
+						src="/banner.png"
+						alt="AIdventurer"
+						width={1080}
+						height={750}
+						format="svg"
+						class="aspect-thumbnail object-cover bg-cover min-w-full"
+					/>
+				</div>
+				<div class="w-24 px-3 lg:w-1/2 z-10">
+					<h1 class="mb-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl font-heading text-gray-50">
 						Hello AIdventurer!
 					</h1>
 					<p class="mb-4 font-medium tracking-tight text-gray-400 xl:mb-6">It has never been easier to find the information we are looking for, or not to find it at all. In this blog I will try to be concise and get straight to the point. The blog will tackle the following:</p>
@@ -41,17 +50,6 @@ import {Image} from "astro:assets"
 						</span>
 					  </li>
 					</ul>
-				  </div>
-				</div>
-				<div class="w-full px-1 lg:px-3 mb-12 lg:w-1/2 order-0 lg:order-1 lg:mb-0">
-					<Image
-						src="/backpacking.svg"
-						alt="test"
-						width={450}
-						height={450}
-						format="svg"
-						class="bottom-border aspect-thumbnail object-cover min-w-full"
-					/>
 				</div>
 			  </div>
 			</div>
