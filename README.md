@@ -152,6 +152,11 @@ server {
 docker compose up --build -d
 ```
 
-## Posts Ideas
+## Design Ideas
 
-- [ ] TF-IDF, BM25, Bert. Ranking de documentos ante una query
+- [] Home page redesign:
+  - [Two columns, image left](https://dribbble.com/shots/18049946-Web-page-concept-of-bento-shop). 
+  - [Two columns, big character right](https://dribbble.com/shots/21954139-Hero-Header-Concept-for-SupaUI-Monster-1).
+
+## Posts Ideas
+...

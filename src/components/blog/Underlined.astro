@@ -7,18 +7,18 @@ type Props = {
 const { color = "yellow" }: Props = Astro.props;
 
 const colors = {
-  yellow: "rgba(255, 247, 152, 0.6)",
-  green: "rgba(167, 242, 164, 0.5)",
-  red: "rgba(242, 172, 172, 0.4)",
-  purple: "rgba(175, 149, 202, 0.45)",
-  blue: "rgba(162, 202, 242, 0.6)",
-  brown: "rgba(242, 202, 172, 0.5)",
+  yellow: "rgba(255, 247, 152, 0.15)",
+  green: "rgba(167, 242, 164, 0.15)",
+  red: "rgba(242, 172, 172, 0.15)",
+  purple: "rgba(175, 149, 202, 0.15)",
+  blue: "rgba(162, 202, 242, 0.15)",
+  brown: "rgba(242, 202, 172, 0.15)",
 };
 
 const colorHex = colors[color]
 ---
 
-<span class="marker-underlined">
+<span class="marker-underlined text-gray-50">
   <slot />
 </span>
 
@@ -27,7 +27,7 @@ const colorHex = colors[color]
     /* The intrinsic width of the underline stroke (in pixels). This is 
    * the same as the height of the cap images. Don't specify the
    * units! This is because of some of the calculations we do later on. */
-   --underline-intrinsic-width: 8;
+   --underline-intrinsic-width: 12;
 
     /* The actual width of the underline stroke we want to render (in pixels).
     * You can modify this, and the sizing and positioning should be calculated
@@ -82,5 +82,6 @@ const colorHex = colors[color]
         calc(var(--underline-width) * 1px),
       auto calc(var(--underline-width) * 1px),
       auto calc(var(--underline-width) * 1px);
+
   }
 </style>

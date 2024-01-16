@@ -3,6 +3,9 @@ import { ViewTransitions } from "astro:transitions";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
+// Supports weights 200-800
+import '@fontsource-variable/bricolage-grotesque';
+
 interface Props {
   title?: string;
   current_page?: string;
@@ -59,7 +62,9 @@ const {
   }
   body {
     background-color: rgb(27,31,36);
+    font-family: 'Bricolage Grotesque Variable', sans-serif;
   }
+
   pre {
     white-space: pre !important;
   }
