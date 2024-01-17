@@ -5,7 +5,9 @@ import PostList from '../components/PostList.astro';
 import TagList from '../components/TagList.astro';
 import { getCollection } from "astro:content";
 
-const posts = await getCollection("posts");
+const posts = await getCollection("posts", ({data}) => {
+	return data.draft !== true;
+});
 
 // short posts by date
 posts.sort((a, b) => {

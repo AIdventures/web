@@ -3,7 +3,10 @@ import rss from '@astrojs/rss';
 import { getCollection } from "astro:content";
 
 export async function GET(context) {
-    const blog = await getCollection('posts');
+    const blog = await getCollection("posts", ({data}) => {
+        return data.draft !== true;
+    });
+
     //Transform all dates to date objects
     blog.map((post) => post.data.date = formatDate(post.data.date));
 
