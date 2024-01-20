@@ -3,707 +3,170 @@ author: Mario Parreño
 date: 11/10/2018
 image: ./images/bert/flying.jpg
 tags: ["nlp", "transformer", "encoder"]
-title: Bert - Masking things out
+title: BERT - Masking things out
 description: Learning bidirectional representations from unlabeled text.
 draft: false
 ---
 
 import Underlined from "../../components/blog/Underlined.astro";
+import Table from "../../components/blog/Table.astro"
 import SEOImage from "../../components/blog/SEOImage.astro";
 
 
 
+Left-to-right architectures may be sub-optimal for sentence-level tasks such as sentence classification,
+and very harmful for token-level tasks such as question answering or named entity recognition.
+There are tasks where <Underlined color="green">incorporating context from left and right</Underlined> of a token
+is crucial.
+
+BERT, which stands for Bidirectional Encoder Representations from Transformers, aims to
+alleviate the problem of unidirectionality by using a <Underlined>masked language model</Underlined> (MLM) pre-training
+objective, inspired by the Cloze task. In addition, authors also use a <Underlined>next sentence prediction</Underlined>
+task that jointly pretrains text-pair representations.
 
 
-Previous methods problems (transformer) => unidirectionality constraint.
-Unlike left-to-right language model pre-training, the masked language model (MLM)
-objective enables the representation to fuse the left and the right context.
-we also use a “next sentence prediction” task that jointly pretrains text-pair representations
-
-There are two steps in our framework: pre-training and ﬁne-tuning.
-During pre-training, the model is trained on unlabeled data over different pre-training tasks.
-For ﬁnetuning, the BERT model is ﬁrst initialized with the pre-trained parameters,
-and all of the parameters are ﬁne-tuned using labeled data from the downstream tasks.
-A distinctive feature of BERT is its uniﬁed architecture across different tasks.
-
-Transformer encoder based on the original implementation
-
-
-One sentence or multiple => Separator [SEP] and sentence embeddings
-+ classiﬁcation token [CLS]
-
-
-=> Bert aims to first understand the language and then use that understanding to perform
+There are two steps in BERT framework:
+<Underlined color="blue">**pre-training**</Underlined> and <Underlined color="blue">**ﬁne-tuning**</Underlined>.
+BERT aims to first understand the language and then use that understanding to perform
 a task, instead of using the task to understand the language as previous models did.
 This way, the model can be fine-tuned to perform a wide variety of tasks with minimal
 additional training.
 
-### Architecture
-
-### Pre-training
-
-#### Masked Language Model
-
-#### Next Sentence Prediction
-
-### Fine-tuning
 
 
-Transformer architecture is everywhere today.
-The remaining idea, even with differences, adjustments and tweaks
-remains state of the art in multiple tasks,
-from natural language processing to computer vision.
-In the following post I will try to give a simple but complete approach on how the Transformer works,
-so that we can understand derivatives of this architecture.
+## Architecture
 
-We will divide the explanation by the different parts that make up the model.
-I may omit some super technical or mathematical details in order to digest
-this better, so I recommend you to refer to the original paper
-that you can find at the end of the post.
-Let's go, from the beginning, block by block.
+BERT's model architecture is a multi-layer bidirectional
+<Underlined color="brown">**Transformer Encoder**</Underlined>,
+almost identifical to the original Transformer implementation.
+If you want more details about the Transformer architecture, you can check out
+ny [Transformer blog post](/blog/transformer).
 
-## Overview
+BERT denotes the number of the Transformer encoder blocks as $L$, the hidden size as $H$,
+and the number of self-attention heads as $A$. BERT initial model designs are the following:
 
-The Transformer is a model that works with sequences of data.
-It is composed of two parts, the encoder and the decoder.
+<Table>
+  <span slot="caption">
+    BERT model configurations. $BERT_{BASE}$ was chosen to have the same model size
+    as OpenAI GPT for comparison purposes.
+  </span>
 
-The <Underlined color="purple">**Encoder**</Underlined> is in charge of transforming the input into a representation
-that the decoder can understand. The <Underlined color="brown">**Decoder**</Underlined> is in charge of generating
-the output based on the representation that the encoder has generated.
+  <thead>
+   <tr>
+      <th>Model Name</th>
+      <th>$L$ (Transformer blocks)</th>
+      <th>$H$ (Hidden size)</th>
+      <th>$A$ (Self-Attention heads)</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>$BERT_{BASE}$</td>
+    <td>12</td>
+    <td>768</td>
+    <td>12</td>
+  </tr>
+  <tr>
+    <td>$BERT_{LARGE}$</td>
+    <td>24</td>
+    <td>1024</td>
+    <td>16</td>
+  </tr>
+  </tbody>
+</Table>
 
-Although different variants of the model have been proposed and
-encoder only and decoder only models have been used, we will focus
-on the original model, which is composed of both parts.
-Let's see a visual representation of the model.
+As we will see at the [Next Sentence Prediction](#next-sentence-prediction) section,
+BERT deals with pairs of sentences. To <Underlined>differentiate between the two sentences</Underlined>,
+BERT separates them with a special token called <Underlined color="purple">**`[SEP]`**</Underlined>. In addition, BERT adds
+<Underlined color="green">learned embeddings</Underlined> to every token indicating whether it belongs to the first or second sentence.
+
+Finally, for sentence-level tasks, BERT adds a special token called <Underlined color="purple">**`[CLS]`**</Underlined> at the beginning
+of every sequence. The final hidden state of this token is used as the aggregate sequence
+representation for sentence-level tasks such as classification.
+
+
+## Pre-training
+
+The objective of pre-training is to **learn a general-purpose language representation**
+that can be used for downstream tasks. BERT focuses on two unsupervised tasks:
+learning from the <Underlined>surrounding context</Underlined>, through a masked language model, and learning
+from the <Underlined>relationship between two sentences</Underlined>, through a next sentence prediction task 
+(helpful for some downstream tasks such as question answering).
+
+Both tasks are trained at the same time, summing their losses. For the pre-training
+corpus, BERT uses the BooksCorpus (800M words) and English Wikipedia (2,500M words).
+Note that it is critical to use a document-level corpus rather than a shuffled sentence-level
+corpus, so <Underlined>long contiguous sequences</Underlined> can be used.
 
 <SEOImage
-  src={"/posts/transformer/overview.png"}
-  caption="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated. Colorst don't mean tied weights."
-  alt="Transformer architecture overview. The model is composed of two parts, the encoder and the decoder. The encoder is in charge of transforming the input into a representation that the decoder can understand. The decoder is in charge of generating the output based on the representation that the encoder has generated."
+  src={"/posts/bert/pretrain.png"}
+  caption="BERT model architecture for pre-training. The model receives a sequence of tokens as input, and outputs a sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
+  alt="BERT model architecture for pre-training. The model receives a sequence of tokens as input, and outputs a sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
   width={900}
   height={450}
   format="webp"
   className="w-full"
 />
 
-## Transforming the input
+### Masked Language Model
+
+The bidirectional context understanding can enable to capture intricate dependencies
+and relationships among words, resulting in more robust and contextually rich representations.
+
+Previous methods suffered from the unidirectionality constraint: a word can only
+attend to previous words in the self-attention layers. In order to train deep
+bidirectional representations,
+<Underlined color="green">BERT simply masks some percentage of the input tokens at random</Underlined>,
+and then predicts those masked tokens. This is different from
+traditional language modeling, where the model is trained to predict the next
+word in a sequence where only the previous words are visible. BERT authors 
+refer to this procedure as a <Underlined>masked language model</Underlined> (MLM).
+
+The procedure is as follows:
+1. Tokenize the input sequence.
+2. Replace 15% tokens with: 
+    - 80% of the time: <Underlined color="purple">**`[MASK]`**</Underlined> token.
+    - 10% of the time: a random token.
+    - 10% of the time: the original token.
+3. Feed the sequence to the model.
+4. Only for the replaced tokens, compute cross entropy loss between the output and the original sequence.
+
+### Next Sentence Prediction
+
+Some downstream tasks such as Question Answering (QA) and Natural Language Inference (NLI)
+are based on understanding the *relationship* between sentences.
+
+In order to train a model that understands sentence relationships, BERT authors
+pre-train the model with a simple task called next sentence prediction.
+For next sentence prediction two sentences are choosen at random, and the model is
+trained to predict whether the second sentence is the actual next sentence in the original
+document. The model is trained with 50% of the time the second sentence is the <Underlined>actual next sentence</Underlined>,
+and 50% of the time it is a <Underlined>random sentence</Underlined> from the corpus.
+
+BERT adds a special token called <Underlined color="purple">**`[SEP]`**</Underlined> between the two sentences.
+Finally, the model introduces a <Underlined color="purple">**`[CLS]`**</Underlined> token at the beginning of the first sentence,
+and the final hidden state of this token is used for next sentence prediction.
+
+
+## Fine-tuning
+
+Swapping out the appropiate inputs and outputs, BERT can be used for a wide variety
+of downstream tasks, whether they involve single text or text pairs.
+To do so, BERT fine-tunes all the parameters end-to-end. Compared to pre-training,
+fine-tuning is relatively inexpensive.
+
+At the output, the token representations are fed into an output layer for token-level
+tasks such as named entity recognition, and the `[CLS]` representation is fed into
+an output layer for classification tasks such as entailment or sentiment analysis.
 
-Throughout the post we will use the model as a model that works with natural language,
-the language we humans use to communicate. To be able to use the words, we need to
-transform them into something that the model can understand, into numbers. The easiest
-way to do this is to use a dictionary, where each word has a unique number associated.
-This dictionary is also known as <Underlined color="green">**Vocabulary**</Underlined>.
-
-Imagine that we want to tackle a problem where we want to sort a list of characters.
-The set of characters that we can use is "A", "B", and "C". Our vocabulary could be:
-
-```python
-vocabulary = {
-    "PAD": -1,
-    "<s>": 0,
-    "<e>": 1,
-    "A": 2,
-    "B": 3,
-    "C": 4
-}
-```
-
-Note that we have added three special tokens, `PAD`, `<s>` and `<e>`. These are common
-tokens used for different purposes:
-
-- `PAD`: Padding token. It is used to fill the input to the same length. We need to
-  do this because to be able to process the input in batches, all the inputs must
-  have the same length, so shorter inputs are filled with this token till they
-  reach the maximum length.
-- `<s>`: Start token. It is used to indicate the beginning of the input.
-- `<e>`: End token. It is used to indicate the end of the input.
-
-The set of words and the special tokens of the vocabulary are known as <Underlined color="green">**Tokens**</Underlined>.
-
-Once we have converted the words to something the model can understand it is time to give it power.
-To do this, we are going to transform the flat, simple representations of our vocabulary into something
-richer and that captures the semantic relationships,
-the _meaning_ of the word and how it relates to other words.
-But, how can we do that? Is something that the model needs to learn through
-what is known as <a href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html" target="_blank">embeddings</a>.
-The embeddings are just a learnable representation that we help us to continue transforming
-the input into something that the model can work with. Will work as a lookup table,
-where each word is represented by a vector of numbers. This embeddings are known as
-<Underlined color="green">**Word Embeddings**</Underlined>.
-
-Finally, in addition to capturing the essence of the words,
-it is important to capture the position of the words. The model by itself
-does not know the order of the words, so we need to add this information.
-Although the original paper uses a different approach, we will use a simpler
-and more widely used approach, which is to add learn a vector for each position
-in the input. This vectors are known as <Underlined color="green">**Positional Embeddings**</Underlined>
-and work in a similar lookup table way as the word embeddings, but instead of representing
-the meaning of the word, they represent the position of the word in the input.
-
-So, we have the word embeddings and the positional embeddings, but how do we combine them?
-Well, we just add them together. This is the input that we will give to the model.
-
-Here is a visual representation of the input transformation. The `block_size` is the maximum
-length of the input, the `vocab_size` is the size of the vocabulary, and the `n_embd` is the
-size of the learned embeddings.
-
-<SEOImage
-  src={"/posts/transformer/transformer_input.png"}
-  caption="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
-  alt="Transformer input representation. How an input natural lenguage sentence is transformed into a representation that the model can understand."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-We can start our code defining the embeddings and how to combine them. This part is the same
-for the Encoder and the Decoder.
-
-```python
-class Encoder(nn.Module):  # either Encoder or Decoder
-
-    def __init__(self, config):
-        super().__init__()
-        self.wte = nn.Embedding(config.vocab_size, config.n_embd)
-        self.wpe = nn.Embedding(config.block_size, config.n_embd)
-        self.drop = nn.Dropout(config.dropout)
-        # ...
-
-     def forward(self, x, targets=None):
-        b, t = x.size()  # batch size, block_size
-        # generate the position indices for the lookup positional embeddings table
-        pos = torch.arange(0, t) # shape (block_size)
-
-        # forward the Word Embeddings, Positional Embeddings and add them together
-        tok_emb = self.wte(x) # token embeddings of shape (batch, block_size, n_embd)
-        pos_emb = self.wpe(pos) # position embeddings of shape (block_size, n_embd)
-        x = self.drop(tok_emb + pos_emb)  # shape (batch, block_size, n_embd)
-        # ...
-```
-
-## The Transformer Block
-
-We have transformed the input into something that the model can understand,
-but how does the model work? The model is composed of a block that is repeated
-multiple times. This block mission is to understand the relations of input
-and output sequences through the training process. This block is known as
-<Underlined color="green">**Transformer Block**</Underlined>.
-
-The Transformer Block is composed of different parts, let's see them one by one.
-
-### Layer Normalization
-
-Normalization is always good, isn't it? Well, in this case it is.
-The <a href="https://pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html" target="_blank">Layer Normalization</a> is a technique that helps the model to converge faster
-and to generalize better.
-Normalizing across all features but for each of the inputs to a specific layer removes
-the dependence on batches. This makes layer normalization well suited for sequence models such
-as the Transformer, because the model is trained with sequences of different lengths.
-
-### Multi-Head Attention
-
-The core of the Transformer is the Multi-Head Attention. This part is responsible
-for capturing the relationships between the tokens in the sequence. It is composed
-of three parts, the query, the key and the value. Those parts are combined to
-generate the attention matrix, which is used to capture the relationships between
-the tokens.
-
-Although at the end of the day what happens behind the neural networks is a bit of _magic_,
-the intuition is as follows:
-
-> The key/value/query concept is analogous to retrieval systems.
-> For example, when you search for videos on Youtube,
-> the search engine will map your <Underlined color="blue">**query**</Underlined> (text in the search bar)
-> against a set of <Underlined color="blue">**keys**</Underlined> (video title, description, etc.)
-> associated with candidate videos in their database,
-> then present you the best matched videos (<Underlined color="blue">**values**</Underlined>).
-
-So the process starts by generating the query, key and value vectors given the input sequence
-we transformed earlier ([Transforming the input](#transforming-the-input)). We do that by applying
-a linear transformation, a matrix multiplication, to the input.
-
-<SEOImage
-  src={"/posts/transformer/multi-head_first.png"}
-  caption="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
-  alt="Transformer Multi-Head Attention. First step, generate the query, key and value vectors."
-  width={900}
-  height={350}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        self.config = config
-
-        # key, query and value matrixes
-        self.query_matrix = nn.Linear(
-            config.n_embd, config.n_embd, bias=config.bias
-        )
-        self.key_matrix = nn.Linear(
-            config.n_embd, config.n_embd, bias=config.bias
-        )
-        self.value_matrix = nn.Linear(
-            config.n_embd, config.n_embd, bias=config.bias
-        )
-        # ...
-
-    def forward(self, key, query, value, mask=None):
-        query = self.query_matrix(query)
-        key = self.key_matrix(key)
-        value = self.value_matrix(value)
-        # ...
-```
-
-Next the <Underlined>**multi-head**</Underlined> part comes into play. The idea is to generate multiple
-query, key and value vectors, and then combine them. This is done to capture
-different relationships between the tokens: syntactic, semantic, spatial, etc.
-The number of heads is a hyperparameter of the model.
-
-<SEOImage
-  src={"/posts/transformer/multi-head_second.png"}
-  caption="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
-  alt="Transformer Multi-Head Attention. Second step, split the query, key and value vectors into multiple heads."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        # ...
-
-    def forward(self, key, query, value, mask=None):
-        # ...
-        batch_size, block_size = key.size(0), key.size(1)
-        # each key, query, value will be of n_embd / n_heads
-        single_head_size = self.config.n_embd // self.config.n_heads
-        # query size can change in decoder during inference,
-        block_size_query = query.size(1)
-
-        # (batch, block_size, n_embd) -> (batch, block_size, n_heads, n_embd / n_heads)
-        # transpose to (batch, n_heads, block_size, n_embd / n_heads)
-        query = query.view(
-            batch_size, block_size_query, self.config.n_heads, single_head_size
-        ).transpose(1, 2)
-        key = key.view(
-            batch_size, block_size, self.config.n_heads, single_head_size
-        ).transpose(1, 2)
-        value = value.view(
-            batch_size, block_size, self.config.n_heads, single_head_size
-        ).transpose(1, 2)
-        # ...
-```
-
-With each of the query, key and value vectors generated, we can now generate the attention matrix.
-This matrix is generated by applying the <Underlined>**dot product between the query and the key vectors**</Underlined>.
-The purpose of this is to capture the relationships between the tokens. The higher the dot product,
-the higher the relationship between the tokens. The dot product is <Underlined>**then scaled**</Underlined> by the square root
-of the dimension of the key vectors. This is done to avoid the dot product to be too large,
-which would make the softmax function to saturate.
-
-<SEOImage
-  src={"/posts/transformer/multi-head_third.png"}
-  caption="Transformer Multi-Head Attention. Third step, generate the attention matrix."
-  alt="Transformer Multi-Head Attention. Third step, generate the attention matrix."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        # ...
-
-    def forward(self, key, query, value, mask=None):
-        # ...
-        # Compute the attention matrix
-        att = query @ key.transpose(-2, -1)
-        # Scale the attention matrix
-        att = att  / math.sqrt(single_head_size)
-        # ...
-```
-
-Once we have the attention matrix, we can apply the softmax function to it.
-This will generate a matrix where each row will sum to 1.
-This matrix is known as the <Underlined>**attention weights**</Underlined>. On top of this matrix
-we can apply a Dropout layer to avoid overfitting.
-
-<SEOImage
-  src={"/posts/transformer/multi-head_fourth.png"}
-  caption="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
-  alt="Transformer Multi-Head Attention. Fourth step, apply the softmax function to the attention matrix."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        # ...
-        self.attn_dropout = nn.Dropout(config.dropout)
-
-    def forward(self, key, query, value, mask=None):
-        # ...
-        # Apply the softmax function to the attention matrix
-        att = F.softmax(att, dim=-1)
-        att = self.attn_dropout(att)
-        # ...
-```
-
-And now we can apply the attention weights to the value vectors. This will generate
-the <Underlined>**context vectors**</Underlined>. This vectors are the ones that will be used
-by the model to condition the decoder and generate the output, as the encoder and the decoder
-use similar attention mechanisms.
-
-<SEOImage
-  src={"/posts/transformer/multi-head_fifth.png"}
-  caption="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
-  alt="Transformer Multi-Head Attention. Fifth step, apply the attention weights to the value vectors."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        # ...
-
-    def forward(self, key, query, value, mask=None):
-        # ...
-        # Multiply the attention weights by the value vectors
-        out = att @ value
-        # ...
-```
-
-Rembember that we have multiple heads, so we need to combine them. This is done by
-concatenating the context vectors.
-
-<SEOImage
-  src={"/posts/transformer/multi-head_sixth.png"}
-  caption="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
-  alt="Transformer Multi-Head Attention. Sixth step, combine the context vectors."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        # ...
-
-    def forward(self, key, query, value, mask=None):
-        # ...
-        # Re-assemble all head outputs side by side
-        # From (batch, n_heads, block_size, n_embd / n_heads)
-        # -> to (batch, block_size, n_heads, n_embd / n_heads)
-        out = out.transpose(1, 2).contiguous().view(
-            batch_size, block_size_query, self.config.n_embd
-        )
-        return out
-```
-
-And that's all for the Multi-Head Attention. The intuition is that we have generated
-a representation of the input that captures the relationships between the tokens.
-
-### Masked Multi-Head Attention
-
-Also known as causal multi-head attention, this part is similar to the multi-head attention
-but with a small difference: the attention is masked. This is done because at
-[Inference Time](#inference-time)
-<Underlined>a given *generated* token can only attend to the previous *generated* tokens</Underlined>,
-as does not have access to the future tokens.
-
-To simulate this behavior, we mask the attention matrix at training time.
-
-<Underlined>Overwriting</Underlined> the procedure seen in the [Multi-Head Attention](#multi-head-attention)
-section, we will add an additional step masking the attention matrix before applying
-the softmax.
-
-<SEOImage
-  src={"/posts/transformer/masked.png"}
-  caption="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
-  alt="Transformer Masked Multi-Head Attention. The attention matrix is masked before applying the softmax, fourth step in the Multi-Head Attention."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, config):
-        super(MultiHeadAttention, self).__init__()
-        # ...
-        # causal mask to ensure that attention
-        # is only applied to the left in the input sequence
-        self.mask = torch.tril(
-            torch.ones(
-                config.block_size, config.block_size
-            )
-        ).view(1, 1, config.block_size, config.block_size)
-
-    def forward(self, key, query, value, add_mask=False):
-        # ...
-        # Add the mask to the attention matrix
-        if add_mask:
-            att = att.masked_fill(
-                self.mask[:, :, :self.config.block_size, :self.config.block_size] == 0,
-                float('-inf')
-            )
-        # Apply the softmax function to the attention matrix
-        att = F.softmax(att, dim=-1)
-        # ...
-```
-
-With this, we ensure that the model can only attend to the previous tokens as the future
-tokens are <Underlined color="red">zeroed out</Underlined>.
-
-### Feed Forward - MLP
-
-The Feed Forward layer is a simple linear transformation followed by a non-linear activation function.
-In this case there are <Underlined color="green">**two linear transformations**</Underlined>,
-one that <Underlined>**expands the dimensionality**</Underlined> of the input by an
-arbitrary factor, and another that <Underlined>**reduces it back**</Underlined> to the original dimensionality.
-This combination of expanding and reducing the dimensionality of the input,
-adding in between a non-linear activation function,
-helps the model effectively capture complex patterns in the input data
-while maintaining computational efficiency and preventing overfitting.
-
-<SEOImage
-  src={"/posts/transformer/mlp.png"}
-  caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-  alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-```python
-class MLP(nn.Module):
-
-    def __init__(self, config):
-        super().__init__()
-        self.c_fc    = nn.Linear(config.n_embd, 4 * config.n_embd, bias=config.bias)
-        self.gelu    = nn.GELU()
-        self.c_proj  = nn.Linear(4 * config.n_embd, config.n_embd, bias=config.bias)
-        self.dropout = nn.Dropout(config.dropout)
-
-    def forward(self, x):
-        x = self.c_fc(x)
-        x = self.gelu(x)
-        x = self.c_proj(x)
-        x = self.dropout(x)
-        return x
-```
-
-### Residual Connections
-
-As you can observe the output of the Layer Normalization, the Multi-Head Attentions,
-the Masked Multi-Head Attention, and the Feed Forward layers are the same size as the input.
-To allow the gradients to flow better through the model, we add residual connections
-through the Transformer Block. Particularly after applying the Layer Normalization
-and some transforming layer, as the Multi-Head Attention and the Feed Forward layers.
-Refer to the [Overview](#overview) section to see the visual representation of the Transformer Block
-and how the residual connections are added along the Transformer Block.
-
-As an example, we can see how the residual connections are added to the Multi-Head Attention
-and the Feed Forward layers in the Encoder Block.
-
-```python
-class EncoderBlock(nn.Module):
-
-    def __init__(self, config):
-        super().__init__()
-        self.ln_1 = nn.LayerNorm(config.n_embd, bias=config.bias)
-        self.attn = MultiHeadAttention(config)
-        self.ln_2 = nn.LayerNorm(config.n_embd, bias=config.bias)
-        self.mlp = MLP(config)
-
-    def forward(self, x):
-        x = x + self.attn(self.ln_1(x))
-        x = x + self.mlp(self.ln_2(x))
-        return x
-```
-
-## The Output
-
-Once the input of the Encoder and the Decoder has been combined and transformed by the Transformer Blocks,
-it is time to generate the output. The output is generated by applying a linear transformation
-to the output of the last Decoder Transformer Block. This linear transformation is known as
-<Underlined color="green">**Language Modeling Head**</Underlined>.
-
-<SEOImage
-  src={"/posts/transformer/output.png"}
-  caption="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-  alt="Transformer Feed Forward. The input is expanded and reduced back to the original dimensionality."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-Each embedding of the sequence is multiplied by a matrix of weights that maps those embeddings
-to the vocabulary. That is to say, each row model the probabilities (after the softmax) of 
-that each token (row) produces each of the tokens present in the vocabulary.
-
-```python
-class Encoder(nn.Module):  # Decoder does not apply the LM Head
-
-    def __init__(self, config):
-        super().__init__()
-        # ...
-        self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=config.bias)
-        # ...
-
-     def forward(self, x, targets=None):
-        # ...
-        logits = self.lm_head(x)
-        # Now you can compute the loss or probabilities
-        # ...
-```
-
-_Note: For padding tokens the loss is not computed._
-
-## Last Details
-
-We have seen the main parts of the Transformer, but there are some details that we need to
-take into account and can help us to have a deeper understanding of the model.
-
-### Training Time
-
-One of the main advantages of the Transformer is that it can be trained in one step,
-in contrast to the recurrent neural networks that need to be trained in autoregressive
-fashion. This is in part thanks to the **Masked** Multi-Head Attention, which allows the model
-to attend to the previous tokens, but not to the future tokens.
-This allow us to use batches of data, which makes the training process faster.
-To do so we just need to pack token sequences of the <u>same length in the same batch</u>,
-for example by using padding (<a href="https://pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pack_padded_sequence.html" target="_blank">pack_padded_sequence function</a>).
-
-A schematic representation of the training process would be:
-
-<SEOImage
-  src={"/posts/transformer/training.png"}
-  caption="Transformer training process. The model is trained in one step."
-  alt="Transformer training process. The model is trained in one step."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-### Inference Time
-
-At inference time, the model is used to generate the output sequence. This is done
-by generating the output <u>token by token</u>, also known as <Underlined color="green">**auto-regressive**</Underlined>.
-This is because the output of a given token depends on the previous tokens, so we need
-those tokens to generate the next one. This is why we need to <Underlined>shift right the output</Underlined>,
-so that the first token is the start token `<s>` because we don't have any previous token.
-
-The process would look like:
-
-<SEOImage
-  src={"/posts/transformer/inference.png"}
-  caption="Transformer inference process. The model is used to generate the output token by token."
-  alt="Transformer inference process. The model is used to generate the output token by token."
-  width={900}
-  height={450}
-  format="webp"
-  className="w-full"
-/>
-
-Several things to note:
-
-- As the tokens are generated one by one, they are introduced in the input of the Decoder
-  to generate the next token. **Only the output of the last token** in the Language Modeling Head
-  is used to generate the next token, but we need to keep the rest of the tokens in the process
-  as they are used in combination in the Multi-Head Attention.
-- The **Encoder output can be cached** and reused for each token generated by the Decoder,
-  as the input of the Decoder is the same for each token generated.
-- The generation process can finish when the end token **`<e>` is generated**, or when
-  a maximum number of tokens is generated.
-
-As an example, imagine we want to generate an arbitrary sequence of `new_tokens` length,
-the process would look like:
-
-```python
-encoder_out = encoder(input_sequence)
-decoder_out = torch.tensor([[vocab["<s>"]]])
-for _ in range(new_tokens):
-    # forward the model to get the logits for the index in the sequence
-    logits = decoder(encoder_out, decoder_out)
-    # pluck the logits at the final step and scale by desired temperature
-    # logits shape (batch, block_size, vocab_size)
-    logits = logits[:, -1, :] / temperature
-    # optionally crop the logits to only the top k options
-    if top_k is not None:
-        v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-        logits[logits < v[:, [-1]]] = -float('Inf')
-    # apply softmax to convert logits to (normalized) probabilities
-    probs = F.softmax(logits, dim=-1)
-    # sample from the distribution
-    next_token = torch.multinomial(probs, num_samples=1)
-    # append sampled index to the running sequence and continue
-    decoder_out = torch.cat((decoder_out, next_token), dim=1)
-```
-
-This is a minimal example of how to generate a sequence of tokens using the Transformer.
-There are a lot of sampling techniques that can be used to generate the output,
-but that is out of the scope of this post. Note how we are using a <Underlined>**temperature**</Underlined>
-to scale the logits. This is done to control the randomness of the output. The higher the temperature,
-the more random the output will be.
-
-## FAQ
-
-### Why multiple heads?
-
-The intuition is that we have generated a representation of the input that captures the relationships between the tokens.
-But, how do we know that the model has captured all the relationships? Well, we don't know.
-But we can try to capture different relationships by generating multiple query, key and value vectors,
-and then combine them. This is done to capture different relationships between the tokens: syntactic, semantic, spatial, etc.
-
-But how really works? <u>Its all about the _Query_ and _Key_ multiplication</u>. Suppose that we have
-just our one initial embedding representation. When we perform our _Query_ and _Key_ multiplication
-with our **single embedding**, we would en up with a **single attention matrix**. This matrix
-is used to capture the relationships between the tokens, empowering or weakening the relationships
-at _Value_ matrix multiplication.
-If instead we <Underlined>**split our embeddings**</Underlined> into multiple $$h$$ heads,
-we would end up with <Underlined color="green">**$$h$$ attention matrices**</Underlined>, one per head,
-that will allow the model to <Underlined>**empower or weaken different parts**</Underlined>
-of the input embedding separately.
 
 ## Glossary
 
-- **`block_size`**: Maximum length of the input sequence.
-- **`vocab_size`**: Size of the vocabulary.
-- **`n_embd`**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
-- **`n_heads`**: Number of heads in the Multi-Head Attention.
-- **`head_size`**: Size of the head in the Multi-Head Attention. It is the size of the embeddings divided by the number of heads.
-- **`<s>`**: Start token. It is used to indicate the beginning of the input.
-- **`<e>`**: End token. It is used to indicate the end of the input.
-- **`PAD`**: Padding token. It is used to fill the input to the same length. We need to
-  do this because to be able to process the input in batches, all the inputs must
-  have the same length, so shorter inputs are filled with this token till they
-  reach the maximum length.
+- **$L$**: Number of Transformer encoder blocks.
+- **$H$**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
+- **$A$**: Number of self-attention heads.
+- **w**: Input sequence length.
+
 
 ## Extra: Code Repository
 
@@ -715,3 +178,4 @@ Train your owm Transformer model from scratch and don't forget to star the repos
 ## Credits
 
 - [Paper - BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)
+- [BERT Pytorch Implementation](https://github.com/codertimo/BERT-pytorch/tree/master)
