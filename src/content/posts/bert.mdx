@@ -13,7 +13,6 @@ import Table from "../../components/blog/Table.astro"
 import SEOImage from "../../components/blog/SEOImage.astro";
 
 
-
 Left-to-right architectures may be sub-optimal for sentence-level tasks such as sentence classification,
 and very harmful for token-level tasks such as question answering or named entity recognition.
 There are tasks where <Underlined color="green">incorporating context from left and right</Underlined> of a token
@@ -31,6 +30,13 @@ BERT aims to first understand the language and then use that understanding to pe
 a task, instead of using the task to understand the language as previous models did.
 This way, the model can be fine-tuned to perform a wide variety of tasks with minimal
 additional training.
+
+BERT paper proved that Transformer (self-attention) based encoder can be powerfully used
+as alternative of previous language model with proper language model training method.
+And more importantly, they showed us that this pre-trained language model can be transfer
+into any NLP task without making task specific model architecture.
+
+
 
 
 
