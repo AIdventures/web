@@ -31,13 +31,10 @@ a task, instead of using the task to understand the language as previous models 
 This way, the model can be fine-tuned to perform a wide variety of tasks with minimal
 additional training.
 
-BERT paper proved that Transformer (self-attention) based encoder can be powerfully used
+BERT paper proved that Transformer based encoder can be powerfully used
 as alternative of previous language model with proper language model training method.
-And more importantly, they showed us that this pre-trained language model can be transfer
+And more importantly, they showed that this pre-trained language model can be transferred
 into any NLP task without making task specific model architecture.
-
-
-
 
 
 ## Architecture
@@ -99,7 +96,7 @@ learning from the <Underlined>surrounding context</Underlined>, through a masked
 from the <Underlined>relationship between two sentences</Underlined>, through a next sentence prediction task 
 (helpful for some downstream tasks such as question answering).
 
-Both tasks are trained at the same time, summing their losses. For the pre-training
+<Underlined color="green">Both tasks are trained at the same time, summing their losses</Underlined>. For the pre-training
 corpus, BERT uses the BooksCorpus (800M words) and English Wikipedia (2,500M words).
 Note that it is critical to use a document-level corpus rather than a shuffled sentence-level
 corpus, so <Underlined>long contiguous sequences</Underlined> can be used.
@@ -174,14 +171,8 @@ an output layer for classification tasks such as entailment or sentiment analysi
 - **w**: Input sequence length.
 
 
-## Extra: Code Repository
-
-I developed a repository with the code of the Transformer, where you can find the code
-of the model and the training process. You can find it at <a href="https://github.com/MarioProjects/microTransformer" target="_blank">microTransformer</a>.
-
-Train your owm Transformer model from scratch and don't forget to star the repository if you like it!
-
 ## Credits
 
 - [Paper - BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)
+- [BERT Official Repository - Tensorflow](https://github.com/google-research/bert)
 - [BERT Pytorch Implementation](https://github.com/codertimo/BERT-pytorch/tree/master)
