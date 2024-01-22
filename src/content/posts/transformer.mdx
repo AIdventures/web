@@ -11,15 +11,16 @@ import Underlined from "../../components/blog/Underlined.astro";
 import SEOImage from "../../components/blog/SEOImage.astro";
 
 Transformer architecture is everywhere today.
-The remaining idea, even with differences, adjustments and tweaks
+The core idea, even with differences, adjustments and tweaks
 remains state of the art in multiple tasks,
 from natural language processing to computer vision.
-In the following post I will try to give a simple but complete approach on how the Transformer works,
-so that we can understand derivatives of this architecture.
+In the following post I will try to give a simple but complete approach to
+how the Transformer works,
+so that we can understand future derivatives of this architecture.
 
-We will divide the explanation by the different parts that make up the model.
+We will divide the explanation by the different parts that compose the model.
 I may omit some super technical or mathematical details in order to digest
-this better, so I recommend you to refer to the original paper
+this better, so I recommend you refer to the original paper
 that you can find at the end of the post.
 Let's go, from the beginning, block by block.
 
@@ -49,8 +50,8 @@ Let's see a visual representation of the model.
 
 ## Transforming the input
 
-Throughout the post we will use the model as a model that works with natural language,
-the language we humans use to communicate. To be able to use the words, we need to
+Throughout the post we will use a natural language example to explain the model.
+To be able to use the words, we need to
 transform them into something that the model can understand, into numbers. The easiest
 way to do this is to use a dictionary, where each word has a unique number associated.
 This dictionary is also known as <Underlined color="green">**Vocabulary**</Underlined>.
@@ -60,12 +61,12 @@ The set of characters that we can use is "A", "B", and "C". Our vocabulary could
 
 ```python
 vocabulary = {
-    "PAD": -1,
-    "<s>": 0,
-    "<e>": 1,
-    "A": 2,
-    "B": 3,
-    "C": 4
+    "PAD": 0,
+    "<s>": 1,
+    "<e>": 2,
+    "A": 3,
+    "B": 4,
+    "C": 5
 }
 ```
 
@@ -79,12 +80,12 @@ tokens used for different purposes:
 - `<s>`: Start token. It is used to indicate the beginning of the input.
 - `<e>`: End token. It is used to indicate the end of the input.
 
-The set of words and the special tokens of the vocabulary are known as <Underlined color="green">**Tokens**</Underlined>.
+These representations of word mappings are known as <Underlined color="green">**Tokens**</Underlined>.
 
-Once we have converted the words to something the model can understand it is time to give it power.
+Once we have converted the words to something the model can understand it is time to give them power.
 To do this, we are going to transform the flat, simple representations of our vocabulary into something
 richer and that captures the semantic relationships,
-the _meaning_ of the word and how it relates to other words.
+the _meaning_ of the word, and how it relates to other words.
 But, how can we do that? Is something that the model needs to learn through
 what is known as <a href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html" target="_blank">embeddings</a>.
 The embeddings are just a learnable representation that we help us to continue transforming
@@ -96,13 +97,13 @@ Finally, in addition to capturing the essence of the words,
 it is important to capture the position of the words. The model by itself
 does not know the order of the words, so we need to add this information.
 Although the original paper uses a different approach, we will use a simpler
-and more widely used approach, which is to add learn a vector for each position
+and more widely used approach, which is to add learned embeddings for each position
 in the input. This vectors are known as <Underlined color="green">**Positional Embeddings**</Underlined>
 and work in a similar lookup table way as the word embeddings, but instead of representing
 the meaning of the word, they represent the position of the word in the input.
 
 So, we have the word embeddings and the positional embeddings, but how do we combine them?
-Well, we just add them together. This is the input that we will give to the model.
+Well, we <Underlined>just add them together</Underlined>. This is the input that we will give to the model.
 
 Here is a visual representation of the input transformation. The `block_size` is the maximum
 length of the input, the `vocab_size` is the size of the vocabulary, and the `n_embd` is the
@@ -222,7 +223,8 @@ class MultiHeadAttention(nn.Module):
 Next the <Underlined>**multi-head**</Underlined> part comes into play. The idea is to generate multiple
 query, key and value vectors, and then combine them. This is done to capture
 different relationships between the tokens: syntactic, semantic, spatial, etc.
-The number of heads is a hyperparameter of the model.
+The number of heads is a hyperparameter of the model. For more information
+about the intuition behind the multiple heads, refer to the [FAQ](#why-multiple-heads) section.
 
 <SEOImage
   src={"/posts/transformer/multi-head_second.png"}
@@ -262,10 +264,10 @@ class MultiHeadAttention(nn.Module):
         # ...
 ```
 
-With each of the query, key and value vectors generated, we can now generate the attention matrix.
-This matrix is generated by applying the <Underlined>**dot product between the query and the key vectors**</Underlined>.
+With each of the query, key and value vectors generated, we can now generate the <Underlined color="green">**attention matrix**</Underlined>.
+This matrix is generated by applying the <Underlined>dot product between the query and the key vectors</Underlined>.
 The purpose of this is to capture the relationships between the tokens. The higher the dot product,
-the higher the relationship between the tokens. The dot product is <Underlined>**then scaled**</Underlined> by the square root
+the higher the relationship between the tokens. The dot product is <Underlined>then scaled</Underlined> by the square root
 of the dimension of the key vectors. This is done to avoid the dot product to be too large,
 which would make the softmax function to saturate.
 
@@ -387,15 +389,14 @@ a representation of the input that captures the relationships between the tokens
 
 ### Masked Multi-Head Attention
 
-Also known as causal multi-head attention, this part is similar to the multi-head attention
+Also known as <Underlined color="green">**causal** multi-head attention</Underlined>, this part is similar to the multi-head attention
 but with a small difference: the attention is masked. This is done because at
 [Inference Time](#inference-time)
 <Underlined>a given *generated* token can only attend to the previous *generated* tokens</Underlined>,
 as does not have access to the future tokens.
+To simulate this behavior, we mask the attention matrix <u>at training time</u>.
 
-To simulate this behavior, we mask the attention matrix at training time.
-
-<Underlined>Overwriting</Underlined> the procedure seen in the [Multi-Head Attention](#multi-head-attention)
+Overwriting the procedure seen in the [Multi-Head Attention](#multi-head-attention)
 section, we will add an additional step masking the attention matrix before applying
 the softmax.
 

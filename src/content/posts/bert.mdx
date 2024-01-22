@@ -134,6 +134,12 @@ The procedure is as follows:
 3. Feed the sequence to the model.
 4. Only for the replaced tokens, compute cross entropy loss between the output and the original sequence.
 
+Although MLM allows BERT to obtain a bidirectional pre-trained model,
+a downside is that it creates a mismatch between pre-training and
+fine-tuning, since the `[MASK]` token does not appear during fine-tuning.
+That's why BERT sometimes replaces the masked tokens with the original
+and random tokens.
+
 ### Next Sentence Prediction
 
 Some downstream tasks such as Question Answering (QA) and Natural Language Inference (NLI)
