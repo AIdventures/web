@@ -1,0 +1,117 @@
+---
+author: Mario Parreño
+date: 11/06/2018
+image: ./images/gpt1/garden.jpg
+tags: ["nlp", "transformer", "decoder"]
+title: GPT-1 - Improving Language Understanding by Generative Pre-Training
+description: OpenAI demonstrates that a decoder-only Transformer can perform competitively on a wide variety of language tasks.
+draft: false
+---
+
+import Underlined from "../../components/blog/Underlined.astro";
+import Table from "../../components/blog/Table.astro"
+import SEOImage from "../../components/blog/SEOImage.astro";
+
+
+
+GPT explores a <Underlined color="green">semi-supervised approach</Underlined>
+for language understanding tasks using a
+combination of <Underlined>[unsupervised pre-training](#pre-training)</Underlined>,
+assuming access to a large corpus of unlabeled text,
+and datasets with manually annotated training examples for
+<Underlined>[supervised fine-tuning](#fine-tuning)</Underlined>.
+To do so, GPT employ a two-stage training procedure:
+1. First, it uses a language modeling objetive on the unlabeled data to learn the initial parameters of 
+a neural network model.
+2. Subsequently, it adapts the model parameters to a target task using the corresponding supervised objective.
+
+Furthermore, this approach showcases zero-shot behaviors of the pre-trained model on different settings,
+demonstrating that GPT acquires useful linguistic knowledge for downstream tasks during the 
+unsupervised pre-training phase.
+
+## Architecture
+
+GPT model architecture is a multi-layer
+<Underlined color="brown">**causal Transformer Decoder**</Underlined>,
+almost identifical to the original Transformer implementation.
+If you want more details about the Transformer architecture, you can check out
+my [Transformer blog post](/blog/transformer).
+
+We can denote the number of the Transformer decoder blocks as $L$, the hidden size as $H$,
+and the number of self-attention heads as $A$. GPT initial model design is the following:
+
+<Table>
+  <span slot="caption">
+    GPT model configurations.
+  </span>
+
+  <thead>
+   <tr>
+      <th>Model Name</th>
+      <th>$L$ (Transformer blocks)</th>
+      <th>$H$ (Hidden size)</th>
+      <th>$A$ (Self-Attention heads)</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>$GPT$</td>
+    <td>12</td>
+    <td>768</td>
+    <td>12</td>
+  </tr>
+  </tbody>
+</Table>
+
+Additionally, GPT uses a bytepair encoding (BPE) vocabulary with $40.000$ merges.
+Authors use the [ftfy library](https://ftfy.readthedocs.io/en/latest/) to clean
+the raw text in BookCorpus dataset, standardize some punctuation and whitespace,
+and use the [spaCy tokenizer](https://spacy.io).
+
+
+
+## Pre-training
+
+Learn effectively from raw text is crucial to alleviating the dependence on supervised learning.
+Even in cases were considerable supervision is available, learning good representations in an unsupervised fashion
+can provide a significant performance boost.
+
+Given a <Underlined>unsupervised corpus</Underlined> of tokens,
+GPT uses a <Underlined color="green">standard language modeling objective</Underlined> to maximize the likelihood.
+This task consists of predicting a token given its previous context.
+As in the [Transformer](/blog/transformer), this task can be performed in an unsupervised way
+by taking sequences of tokens and adding a padding on the initial input,
+typically a special token, `<s>` for our illustration.
+
+<SEOImage
+  src={"/posts/gpt1/pretrain.png"}
+  caption="GPT model architecture for pre-training. The model receives a sequence of tokens as input shifted right, and outputs the sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
+  alt="BERT model architecture for pre-training. The model receives a sequence of tokens as input, and outputs a sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+
+
+## Fine-tuning
+
+GPT setup does not require fine-tuning target tasks to be in the same domain as the unlabeled
+corpus used during pre-training. During transfer, GPT utilizes task-specific input adaptations,
+always processing structured text input as a single contiguous sequence of tokens. Taking
+that into account, minimal changes to the architecture of the pre-trained model are done.
+
+
+## Glossary
+
+- **$L$**: Number of Transformer decoder blocks.
+- **$H$**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
+- **$A$**: Number of self-attention heads.
+- **w**: Input sequence length.
+
+
+## Credits
+
+- [Paper - Improving Language Understanding by Generative Pre-Training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)
+- [nanoGPT - Pytorch Implementation](https://github.com/karpathy/nanoGPT)
