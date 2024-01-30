@@ -2,7 +2,7 @@
 author: Mario Parreño
 date: 11/06/2018
 image: ./images/gpt1/garden.jpg
-tags: ["nlp", "transformer", "decoder"]
+tags: ["nlp", "transformer", "paper", "decoder"]
 title: GPT-1 - Improving Language Understanding by Generative Pre-Training
 description: OpenAI demonstrates that a decoder-only Transformer can perform competitively on a wide variety of language tasks.
 draft: false
@@ -85,8 +85,8 @@ typically a special token, `<s>` for our illustration.
 
 <SEOImage
   src={"/posts/gpt1/pretrain.png"}
-  caption="GPT model architecture for pre-training. The model receives a sequence of tokens as input shifted right, and outputs the sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
-  alt="BERT model architecture for pre-training. The model receives a sequence of tokens as input, and outputs a sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
+  caption="GPT model architecture for pre-training. The model receives a sequence of tokens shifted right as input, and outputs the sequence of tokens. The model is trained to predict the next token based only on its previous context."
+  alt="GPT model architecture for pre-training. The model receives a sequence of tokens shifted right as input, and outputs the sequence of tokens. The model is trained to predict the next token based only on its previous context."
   width={900}
   height={450}
   format="webp"
@@ -94,13 +94,45 @@ typically a special token, `<s>` for our illustration.
 />
 
 
-
 ## Fine-tuning
+
+After training the model, GPT adapts the parameters to a supervised target task.
+Given a labeled dataset $C$, where each instance consists of a sequence of input tokens,
+<Underlined>$x^1, \dots, x^m$, along with a label $y$</Underlined>. The input are passed through the pre-trained 
+model to obtain the <Underlined color="green">final transformer block's activation $h_{l}^{m}$ (`<e>`)</Underlined>,
+which is then fed into an added linear output layers with parameters $W_y$ to predict $y$.
+Authors additionally found that including
+<Underlined color="blue">language modeling as an auxiliary objective</Underlined>
+to the fine-tuning helped improving generalization and accelerating convergence.
 
 GPT setup does not require fine-tuning target tasks to be in the same domain as the unlabeled
 corpus used during pre-training. During transfer, GPT utilizes task-specific input adaptations,
 always processing structured text input as a single contiguous sequence of tokens. Taking
 that into account, minimal changes to the architecture of the pre-trained model are done.
+
+### Task-specific input transformations
+
+For some tasks, like text classification, we can directly fine-tune GPT as described above.
+For other tasks, it is possible to convert structured inputs into an ordered sequence
+that the pre-rtained model can process.These input transformations allow GPT to avoid
+making extensive changes to the architecture across tasks.
+
+**Textual entailment**. For entailment taks, simply concatenate the premise $p$ and 
+hypothesis $h$ token sequences, with a delimiter token ($) in between. Process
+and obtain final transformer block's activation.
+
+**Similarity**. For similarity taks there is no inherent ordering of the two sentences being compared.
+To reflect this, authors modify the input sequence to obtain both possible sentence orderings
+and process each independently to produce two sequence representations $h_{l}^{m}$ which are added
+element-wise before being fed into the linear output layer.
+
+**Question Answering and Commonsense Reasoning**. For these tasks, we are given a context document $z$,
+a question $q$, and a set of possible answers $\{a_{k}\}$. Authors concatenate the document context
+and question with each possible answer, adding a delimiter token in between to get
+$$ \left [ z;q;\$;a_k \right ] $$.
+Each of these sequences are processed independently to obtain scores that are later
+normalized via a softmax layer to produce an output distribution over possible answers.
+
 
 
 ## Glossary
