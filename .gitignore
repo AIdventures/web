@@ -175,3 +175,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Pagefind tmp
+public/_astro
+public/pagefind

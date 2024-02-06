@@ -1,37 +1,77 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Main from '../components/Main.astro';
-import PostList from '../components/PostList.astro';
-import TagList from '../components/TagList.astro';
+import Layout from "../layouts/Layout.astro";
+import Main from "../components/Main.astro";
+import PostList from "../components/PostList.astro";
+import TagList from "../components/TagList.astro";
 import { getCollection } from "astro:content";
 
-const posts = await getCollection("posts", ({data}) => {
-	return data.draft !== true;
+const posts = await getCollection("posts", ({ data }) => {
+  return data.draft !== true;
 });
 
 // short posts by date
 posts.sort((a, b) => {
-	const dateA = new Date(a.data.date);
-	const dateB = new Date(b.data.date);
-	return (dateB as Date).getTime() - (dateA as Date).getTime();
+  const dateA = new Date(a.data.date);
+  const dateB = new Date(b.data.date);
+  return (dateB as Date).getTime() - (dateA as Date).getTime();
 });
 ---
 
 <Layout title="AIdventure Blog" current_page="blog">
-	<Main>
+  <Main>
+    <div class="max-w-2xl mx-auto text-center mb-6">
+      <h2 class="text-3xl lg:text-5xl font-display text-black">The Blog</h2>
+      <p class="xl:text-xl tracking-tight text-black mt-3">
+        AIdventure is your passport to the ever-evolving world of Machine
+        Learning. Join me on a journey filled with insights, discoveries, and
+        tutorials covering the latest tools and techniques. Don't miss out on
+        the AI revolution!
+      </p>
+    </div>
 
-		<div class="max-w-2xl mx-auto text-center mb-6">
-			<h2 class="text-3xl lg:text-5xl font-display text-black">
-			The Blog
-			</h2>
-			<p class="xl:text-xl tracking-tight text-black mt-3">
-				AIdventure is your passport to the ever-evolving world of Machine Learning. Join me on a journey filled with insights, discoveries, and tutorials covering the latest tools and techniques. Don't miss out on the AI revolution!
-			</p>
-		</div>
+    <div transition:persist id="search" class="mb-12"></div>
 
-		<TagList posts={posts} />
-		
-		<PostList posts={posts} />
-        
-	</Main>
+    <!-- <TagList posts={posts} /> -->
+
+    <PostList posts={posts} />
+  </Main>
 </Layout>
+
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+<script src="/pagefind/pagefind-ui.js" is:inline></script>
+
+<script>
+  const loadPageFindUI = () => {
+    new PagefindUI({
+      element: "#search",
+      debounceTimeoutMs: 500,
+      resetStyles: false,
+      showEmptyFilters: false,
+      excerptLength: 15,
+      showImages: true,
+      showSubResults: true,
+    });
+  };
+
+  document.addEventListener("DOMContentLoaded", loadPageFindUI);
+  document.addEventListener("astro:after-swap", loadPageFindUI);
+</script>
+
+<style is:global>
+  :root {
+    --pagefind-ui-scale: 1;
+    --pagefind-ui-primary: #034ad8;
+    --pagefind-ui-text: #393939 !important;
+    --pagefind-ui-background: #ffffff !important;
+    --pagefind-ui-border: #333333 !important;
+    --pagefind-ui-tag: #eeeeee;
+    --pagefind-ui-border-width: 2px !important;
+    --pagefind-ui-border-radius: 0px !important;
+    --pagefind-ui-image-border-radius: 8px;
+    --pagefind-ui-image-box-ratio: 3 / 2;
+    --pagefind-ui-font: sans-serif;
+  }
+  ::placeholder {
+    color: black !important;
+  }
+</style>
