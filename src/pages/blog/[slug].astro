@@ -34,9 +34,9 @@ const { headings, Content } = await post.render();
 <LightBox />
 
 <Layout title={`AIdventure - ${post.data.title}`} current_page="blog">
-    <div class="mb-0 lg:mb-24">
+    <div class="mb-0 lg:mb-24" data-pagefind-body>
         <div class="px-6 lg:w-10/12 xl:px-12 w-full flex flex-col xl:w-6/12 mx-auto">
-            <h1 class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight xl:col-span-8 xl:col-start-2">
+            <h1 data-pagefind-weight="10" class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight xl:col-span-8 xl:col-start-2">
                 {post.data.title}
             </h1>
             <Image
@@ -93,7 +93,6 @@ const { headings, Content } = await post.render();
             </div>
         </div>
     </div>
-    
 </Layout>
 
 

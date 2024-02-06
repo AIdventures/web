@@ -21,13 +21,19 @@ the output layer is of size 5×5×1 (only 1 channel), and grouped up with the 12
 
 <SEOImage
     src={"/posts/depthwise_separable/standard.png"}
-    caption="VGG11 architecture. Each coloured block is a convolutional layer. The convolutional filter size is 3×3. The max-pooling layers are intervealed between blocks with different numbers of kernels. The number of kernels is denoted by @ symbol. The fully-connected layers are in grey."
-    alt="VGG11 architecture schema"
+    caption="Standard convolutional 3×3 filter. No padding and stride 1 are applied."
+    alt="Standard convolutional 3×3 filter. No padding and stride 1 are applied."
     width={800}
     height={300}
     format="webp"
     className="w-full"
 />
+
+```python
+# Input volume with depth 3 and outputs 128 kernels
+# Uses 3×3 convolutional kernel
+conv_layer = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=3)
+```
 
 ## Depthwise Separable Convolutions
 
@@ -44,8 +50,8 @@ Each such convolution, in the example, will provide a map of size 5×5×1, and
 
 <SEOImage
     src={"/posts/depthwise_separable/separable.png"}
-    caption="VGG11 architecture. Each coloured block is a convolutional layer. The convolutional filter size is 3×3. The max-pooling layers are intervealed between blocks with different numbers of kernels. The number of kernels is denoted by @ symbol. The fully-connected layers are in grey."
-    alt="VGG11 architecture schema"
+    caption="Depthwise 3×3 convolutional filter. No padding and stride 1 are applied. The result of each channel is stacked rather than summed."
+    alt="Depthwise 3×3 convolutional filter. No padding and stride 1 are applied. The result of each channel is stacked rather than summed."
     width={800}
     height={300}
     format="webp"
@@ -57,8 +63,8 @@ as many as the depth we want to achieve, as for the example 128 filters.
 
 <SEOImage
     src={"/posts/depthwise_separable/depth.png"}
-    caption="VGG11 architecture. Each coloured block is a convolutional layer. The convolutional filter size is 3×3. The max-pooling layers are intervealed between blocks with different numbers of kernels. The number of kernels is denoted by @ symbol. The fully-connected layers are in grey."
-    alt="VGG11 architecture schema"
+    caption="Pointwise 1×1 convolutional filter. No padding and stride 1 are applied. Convolves the channels into one plane. To obtain a desired depth, an arbitrary number of filters is used." 
+    alt="Pointwise 1×1 convolutional filter. No padding and stride 1 are applied. Convolves the channels into one plane. To obtain a desired depth, an arbitrary number of filters is used."
     width={800}
     height={300}
     format="webp"
@@ -71,13 +77,21 @@ The overall process of the depthwise separable convolution would be:
 
 <SEOImage
     src={"/posts/depthwise_separable/depthwise.png"}
-    caption="VGG11 architecture. Each coloured block is a convolutional layer. The convolutional filter size is 3×3. The max-pooling layers are intervealed between blocks with different numbers of kernels. The number of kernels is denoted by @ symbol. The fully-connected layers are in grey."
-    alt="VGG11 architecture schema"
+    caption="Depthwise separable convolution conjuction."
+    alt="Depthwise separable convolution conjuction."
     width={800}
     height={300}
     format="webp"
     className="w-full"
 />
+
+```python
+# Define depthwise separable convolutional layer
+# Note how we use the groups parameter: At groups equals to in_channels,
+# each input channel is convolved with its own set of filters
+depthwise_conv_layer = nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, groups=3)
+pointwise_conv_layer = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=1)
+```
 
 The advantage of doing depthwise separable convolutions is the **efficiency**.
 One needs much less operations for depthwise separable convolutions compared to standard convolutions.
