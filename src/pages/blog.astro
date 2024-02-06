@@ -53,8 +53,7 @@ posts.sort((a, b) => {
     });
   };
 
-  document.addEventListener("DOMContentLoaded", loadPageFindUI);
-  document.addEventListener("astro:after-swap", loadPageFindUI);
+  document.addEventListener("astro:page-load", loadPageFindUI);
 </script>
 
 <style is:global>

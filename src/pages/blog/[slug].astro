@@ -150,8 +150,7 @@ const { headings, Content } = await post.render();
         })
     }
 
-    document.addEventListener("DOMContentLoaded", copy_code);
-    document.addEventListener("astro:after-swap", copy_code);
+    document.addEventListener("astro:page-load", copy_code);
 </script>
 
 <script>
@@ -180,6 +179,5 @@ const { headings, Content } = await post.render();
         })
     }
 
-    document.addEventListener("DOMContentLoaded", collapsibleTOC);
-    document.addEventListener("astro:after-swap", collapsibleTOC);
+    document.addEventListener("astro:page-load", collapsibleTOC);
 </script>
