@@ -1,0 +1,222 @@
+---
+author: Mario Parreño
+date: 22/10/2020
+image: ./images/vit/valy.jpg
+tags: ["computer vision", "transformer", "paper", "encoder"]
+title: ViT - The Vision Transformer
+description: Vision Transformer introduced by Google. An image is worth 16x16 words.
+draft: false
+---
+
+import Underlined from "../../components/blog/Underlined.astro";
+import Table from "../../components/blog/Table.astro"
+import SEOImage from "../../components/blog/SEOImage.astro";
+
+
+Self-attention-based architectures, in particular [Transformers](/blog/transformer),
+have become the model of choice in natural language processing (NLP).
+The predominant approach is to pre-train on a large text corpus and then fine-tune
+on a smaller task-specific dataset.
+
+ViT experiments with applying a standard Transformer directly to images,
+with the fewest possible modifications. 
+To do so, ViT <Underlined>splits an image into patches</Underlined>
+and provide the sequence of linear embeddings of these patches as an input to a Transformer.
+Image patches are treatedd the same way as tokens (words) in NLP applications.
+ViT model is trained on image classification in <Underlined color="green">supervised fashion</Underlined>.
+
+When trained on mid-sized datasets ViT yields modes accuracies: Transformers lack some of the
+[inductive biases](#inductive-bias) inherent to CNNs, such as translation equivariance
+and locality, and thereforedo not generalize well when trained on insufficient amounts of data.
+However, the picture changes if ViT is trained on larger datasets, trumping inductive biases,
+achieving excellent results.
+
+## Architecture
+
+ViT's model architecture is a multi-layer
+<Underlined color="brown">**bidirectional Transformer Encoder**</Underlined>,
+following the original Transformer design as closely as possible.
+If you want more details about the Transformer architecture, you can check out
+my [Transformer blog post](/blog/transformer).
+
+ViT denotes the number of the Transformer encoder blocks as $L$, the hidden size as $H$,
+and the number of self-attention heads as $A$. ViT initial model designs are the following:
+
+<Table>
+  <span slot="caption">
+    ViT model configurations.
+  </span>
+
+  <thead>
+   <tr>
+      <th>Model Name</th>
+      <th>$L$ (Transformer blocks)</th>
+      <th>$H$ (Hidden size)</th>
+      <th>$A$ (Self-Attention heads)</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>ViT-Base</td>
+    <td>12</td>
+    <td>768</td>
+    <td>12</td>
+  </tr>
+  <tr>
+    <td>ViT-Large</td>
+    <td>24</td>
+    <td>1024</td>
+    <td>16</td>
+  </tr>
+  <tr>
+    <td>ViT-Huge</td>
+    <td>32</td>
+    <td>1280</td>
+    <td>16</td>
+  </tr>
+  </tbody>
+</Table>
+
+
+<SEOImage
+  src={"/posts/vit/architecture.png"}
+  caption="ViT model architecture. The model receives an image as input and outputs the result of its classification. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation of the image for the classificaction."
+  alt="ViT model architecture. The model receives an image as input and outputs the result of its classification. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation of the image for the classificaction."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+### The Input: Patch Embedding
+
+The standard Transformer receives as input a 1D sequence of token embeddings.
+Naive application of self-attention to images would require that each pixel attends to every other pixel.
+With quadratic cost in the number of pixels, this does not scale to realistic input sizes.
+
+To handle <Underlined>2D images</Underlined>, we reshape each image into a sequence of flattened 
+<Underlined color="green">2D patches</Underlined>
+of an arbitrary size. The resulting number of patches serves as the effective input
+sequence length for the Transformer. The Transformer uses constant 
+<Underlined color="green">latent vector size $H$</Underlined>
+through all of its layers, so the patches are mapped to $H$ dimensions with a trainable
+linear projection. ViT refers to the output of this projection as the 
+<Underlined color="red">patch embeddings</Underlined>.
+
+A simple way to perform patch division and prediction is through <Underlined color="green">2D convolution</Underlined>.
+The kernel will be of the desired patch size, introducing a stride of the patch size as well,
+so that there is no overlap between the pixels. On the other hand, to achieve $H$ dimensions,
+we will just need to set $H$ (also known as *n_embd*) as the desired output channels of the 2D convolution operation.
+
+```python
+class PatchEmbedding(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.projection = nn.Conv2d(
+            in_channels=config.in_channels, out_channels=config.n_embd,
+            kernel_size=config.patch_size, stride=config.patch_size
+        )
+        self.n_patches = (config.img_size // config.patch_size) ** 2
+
+    def forward(self, x):  # (batch, in_channels, height, width)
+        x = self.projection(x)  # (batch, n_embd, patches, patches)
+        x = x.flatten(2)  # (batch, n_embd, n_patches) - "stacking" all patches
+        x = x.transpose(1, 2)  # (batch, n_patches, n_embd)
+        return x
+```
+
+#### Adapt to Higher Resolutions
+
+<Underlined>It is often beneficial to fine-tune at higher resolution than pre-training.</Underlined>
+When feeding images of higher resolution, authors <Underlined color="green">keep the patch size the same</Underlined>,
+which results in a larger effective sequence length.
+
+ViT can handle arbitrary sequence lengths (up to memory constraints), however,
+the pre-trained positional embeddings may no longer be meaningful. We therefore perform
+<Underlined color="red">2D interpolation of the pre-trained positional embeddings</Underlined>,
+according to their location in the original image. Note that this resolution adjustmen and patch
+extraction are the only points at which an inductive bias about the 2D structure of the images is manually
+injected into the model.
+
+```python
+# example: 224:(14x14+1) -> 384: (24x24+1) (patch size 16x16)
+def resize_pos_embed(posemb, ntok_new):
+    """
+      Resize the grid of position embeddings to accommodate a new number of tokens.
+
+      Args:
+      - posemb (torch.Tensor): Position embeddings (batch_size, seq_length, n_embd).
+      - ntok_new (int): New number of tokens/seq_length.
+
+      Returns:
+      - torch.Tensor: Resized position embeddings (batch_size, ntok_new, n_embd).
+    """
+    # Rescale the grid of position embeddings when loading - 24x24+1
+    # posemb_cls is for cls token, posemb_grid for the following tokens
+    posemb_clas, posemb_grid = posemb[:, :1], posemb[0, 1:]
+    ntok_new -= 1
+
+    gsize_old = int(math.sqrt(len(posemb_grid)))  # 14
+    gsize_new = int(math.sqrt(ntok_new))          # 24
+
+    # [1, 196, n_embd] -> [1, 14, 14, n_embd] -> [1, n_embd, 14, 14]
+    posemb_grid = posemb_grid.reshape(1, gsize_old, gsize_old, -1).permute(0, 3, 1, 2)
+    # [1, n_embd, 14, 14] -> [1, n_embd, 24, 24]
+    posemb_grid = F.interpolate(posemb_grid, size=(gsize_new, gsize_new), mode='bicubic')
+    # [1, n_embd, 24, 24] -> [1, 24×24, n_embd]
+    posemb_grid = posemb_grid.permute(0, 2, 3, 1).reshape(1, gsize_new * gsize_new, -1)
+    # [1, 24×24+1, n_embd]
+    posemb = torch.cat([posemb_cls, posemb_grid], dim=1)
+    return posemb
+```
+
+### Training
+
+Similar to [BERT's](/blog/bert) <Underlined>`[class]` token</Underlined>,
+ViT prepends a learnable embedding to the sequence of embedded patches,
+whose state at the output of the Transformer encoder serves as the <Underlined>image representation</Underlined>.
+Both during pre-training and fine-tuning, a classification head is attached to the image representation
+`[class]` output. The classification head is implemented by a MLP with one hidden layer at
+pre-training time and by a single layer at fine-tuning time.
+
+<Underlined>Position embeddings</Underlined> are added to the patch embeddings
+to retain positional information. Standard learnable 1D position embeddings are used.
+
+The authors note that ViT only performs well when trained on <Underlined color="green">huge datasets</Underlined>
+with millions of images. Specifically, [ResNets](/blog/resnet) perform better with smaller
+pre-training datasets but plateau sooner than ViT, which performs better with larger pre-training.
+This result reinforces the intuition that the convolutional [inductive bias](#inductive-bias) is useful for smaller datasets,
+but for larger ones, learning the relevant patterns directly from data is sufficient, even beneficial.
+
+
+### Inductive Bias
+
+ViT has much less image-specific inductive bias than Convolutional Neural Networks (CNNs). 
+In CNNs, locality, two-dimensional neighborhood structure, and translation equivariance are
+baked into each layer throughout the whole model. In ViT, only MLP layers are local and translationally
+equivariant, while the self-attention layers are global.
+
+The position embeddings at initialization time carry <Underlined>no information about the 2D positions</Underlined>
+of the patches and all spatial relations between the patches have to be learned from scratch.
+
+
+## Glossary
+
+- **$L$**: Number of Transformer encoder blocks.
+- **$H$**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
+- **$A$**: Number of self-attention heads.
+- **num_patches**: Input sequence length.
+
+## Extra: Code Repository
+
+I have developed a repository with the code of the ViT, with the code
+of the full model and the training process.
+You can find it at <a href="https://github.com/AIdventures/microViT" target="_blank">microViT</a>.
+
+Train your own ViT model from scratch and don't forget to star the repository if you like it!
+
+
+## Credits
+
+- [Paper - An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
+- [ViT Pytorch Implementation](https://github.com/AIdventures/microViT)
