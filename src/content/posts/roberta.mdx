@@ -1,0 +1,115 @@
+---
+author: Mario Parreño
+date: 26/07/2019
+image: ./images/roberta/nebula.jpg
+tags: ["nlp", "transformer", "paper", "encoder"]
+title: RoBERTa - A Robustly Optimized BERT Pretraining Approach
+description: Optimizing BERT pretraining approach through money
+draft: false
+---
+
+import Underlined from "../../components/blog/Underlined.astro";
+import Table from "../../components/blog/Table.astro"
+import SEOImage from "../../components/blog/SEOImage.astro";
+
+
+RoBERTa, **Ro**bustly **op**timized **BERT**, presents a replication study of [BERT](/blog/bert) pretraining,
+including a careful evaluation of the impact of multiple pretraining
+hyperparameters. The authors show that
+<Underlined color="brown">BERT was significantly undertrained</Underlined>,
+and propose an <Underlined>improved recipe for training BERT</Underlined>.
+
+In summary, authors show that, under the right design choices, BERT's performance
+is competitive. Authors present a set of BERT design choices and training strategies
+that lead to better performance, as well as a novel dataset, CC-News, 
+confirming that using more data further improves performance.
+
+
+## BERT Improvements
+
+RoBERTa uses the <Underlined color="brown">same model architecture as BERT</Underlined>,
+but trains it with a few key differences.
+
+
+### Static vs. Dynamic Masking
+
+BERT relies on randomly masking and predicting tokens. The original BERT implmentation 
+performed masking once during data preprocessing, resulting in a single **static mask**.
+To avoid using the same mask for each training instance in every epoch, training data
+was duplicated 10 times so that each sequence is masked in 10 different ways.
+
+RoBERTa compares this strategy with **dynamic masking** where the mask pattern is generated
+every time that a sequence is fed into the model.This becomes crucial when pretraining
+for more steps or with larger datasets. Finally, the results show that
+<Underlined color="purple">dynamic masking is comparable or slightly better than static masking</Underlined>.
+
+### Input Format and Next Sentence Prediction
+
+Original BERT takes as input a concatenation of two **segments** (sequence of tokens),
+$x_1, \ldots, x_N$ and $y_1, \ldots, y_M$. Segments usually consist of more than one 
+natural sentence. The two segments are packed together as a single input sequence to 
+BERT with special tokens delimitig them:
+$[CLS], x_1, \ldots, x_N, [SEP], y_1, \ldots, y_M, [EOS]$, constrained
+such that $N + M < T$ for some maximum sequence length $T$.
+
+In addition to the masked language modeling objective, BERT is trained to predict
+whether the observed document segments come from the same document or not via
+an auxiliary **Next Sentence Prediction (NSP)** loss.
+
+However, some recent work questioned the necessity of the NSP loss, and RoBERTa
+compares several alternative training formats:
+
+- <Underlined color="blue">**SEGMENT-PAIR+NSP**</Underlined>: The original BERT format.
+The input is a pair of segments, which can contain multiple natural sentences. Max length 512 tokens.
+<Underlined color="green">The NSP loss is used</Underlined>.
+- <Underlined color="blue">**SENTENCE-PAIR+NSP**</Underlined>: The input is a pair of natural sentences.
+Since the input are significantly shorter, the batch size is increased to achieve similar number of total tokens.
+<Underlined color="green">The NSP loss is used</Underlined>.
+- <Underlined color="blue">**FULL-SENTENCES**</Underlined>: The input are full sentences sampled contiguously from one or more documents,
+such that the length is at most 512 tokens. Inputs may cross document boundaries, so when reach te end of a document,
+authors begin sampling sentences from the next document and add an extra separator token between documents.
+<Underlined color="red">The NSP loss is removed</Underlined>.
+- <Underlined color="blue">**DOC-SENTENCES**</Underlined>: The input are full sentences sampled contiguously from just one document,
+without crossing document boundaries. Inputs sampled near the end of a document may be shorter than 512 tokens,
+so the batch size is increased dynamically to achieve similar number of total tokens.
+<Underlined color="red">The NSP loss is removed</Underlined>.
+
+Authors find that using <Underlined color="purple">individual sentences hurts</Underlined> performance on downstream tasks, hypothesizing that
+the model is not able to learn long-range dependencies. They also find that <Underlined color="purple">**removing the NSP loss**</Underlined>
+matches or slightly improves performance on most tasks. With that in mind,
+<Underlined color="purple">RoBERTa uses the **FULL-SENTENCES** format without the NSP loss</Underlined>.
+
+### Large Batch Sizes
+
+Training with very large batch sizes can both improve optimization speed and end-task performance,
+when the learning rate is appropriately scaled. Authors observe that 
+<Underlined color="purple">training with large batches improves perplexity for masked language modeling, as well as end-task accuracy</Underlined>.
+
+### Text Encoding: Bytes BPE
+
+Byte-Pair Encoding (BPE) relies on subword units, which are extracted by performing
+statistical analysis of the training corpus. Original BERT implementation uses a
+character-level BPE vocabulary of size 30K. RoBERTa uses a byte-level BPE vocabulary
+of size 50K, which allows the model to represent any text in Unicode.
+
+Early experiments revealed only <Underlined color="purple">slight differences between these encodings</Underlined>.
+
+### Training Data
+
+Additionally, authors investigate two other important factors: the amount of training data
+used for pretraining, and the number of training passes through the data.
+
+RoBERTa combines different datasets varying sizes and domains, with over 160GB of uncompressed text.
+- **BookCorpus + English Wikipedia**: The original BERT training data.
+- **CC-News**: About English portion of the CommonCrawl News dataset.
+- **OpenWebText**: Web content extracted from URLs shared on Reddit with at least 3 upvotes.
+- **STORIES**: A subset of CommonCrawl data filtered to match the story-like style of Winograde schemas.
+
+Authors observe a small improvement when combining all datasets and training the same number of steps.
+Finally, when pretraining RoBERTa for more steps, the model's performance improves without overfitting
+symptoms, suggesting that <Underlined color="purple">RoBERTa would likely benefit from additional training</Underlined>.
+
+## Credits
+
+- [Paper - RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/abs/1907.11692)
+- [RoBERTa Official Repository - Pytorch](https://github.com/facebookresearch/fairseq/tree/main/fairseq/models/roberta)
