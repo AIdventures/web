@@ -1,0 +1,183 @@
+---
+author: Mario Parreño
+date: 02/10/2019
+image: ./images/distillbert/lakeside.jpg
+tags: ["nlp", "transformer", "paper", "encoder"]
+title: DistillBERT - A distilled version of BERT
+description: A distilled version of BERT that is smaller, faster, cheaper and lighter retaining most of its performance.
+draft: false
+---
+
+import Underlined from "../../components/blog/Underlined.astro";
+import Table from "../../components/blog/Table.astro"
+import SEOImage from "../../components/blog/SEOImage.astro";
+
+Research on pre-trained models indicatest that training even larger models still
+leads to better performances on downstream tasks. However, operating large-scale
+pre-trained models in on-the-edge and/or under constrained computational
+training or inference budgets remains challenging.
+
+DistillBERT proposes a method to pre-train a smaller general-purpose language representation model.
+Through knowledge distillation during the pre-training phase authors show that is possible to 
+<Underlined>reduce the size of a BERT model by 40% while rertaining 97% of its language understanding capabilities and being 60% faster.</Underlined>
+To achieve this, authors introduce a
+<Underlined color="red">triple loss combining language modeling, distillation and cosine-distance losses</Underlined>.
+
+## Knowledge Distillation
+
+Knowledge distillation is a compression technique in which a compact model- <Underlined color="green">the student</Underlined> - is trained
+to <Underlined>reproduce the behaviour</Underlined> of a larger model - <Underlined color="green">the teacher</Underlined> - or an ensemble of models.
+
+**The teacher** is first trained to predict an instnace class by maximizing the estimated probability of gold labels.
+A standard objective thus involves minimizing the cross-entropy between the model's predicted distribution and 
+the one-hot empirical distribution of training labels. A model performing well on the training set will predict
+an output distribution with high probability on the correct class and with <Underlined color="green">near-zero</Underlined>
+probabilities on other classes. But <Underlined>some of these *near-zero* probabilities are larger than others</Underlined> and reflect,
+in part, the generalization of the model and how well it will perform on the test set.
+
+**The student** is then trained with a distillation loss ofver the
+<Underlined color="red">soft target probabilities of the teacher</Underlined>. 
+
+## Architecture
+
+BERT's model architecture is a multi-layer
+<Underlined color="brown">**bidirectional Transformer Encoder**</Underlined>,
+almost identifical to the original Transformer implementation.
+If you want more details about the Transformer architecture, you can check out
+my [Transformer blog post](/blog/transformer).
+
+BERT denotes the number of the Transformer encoder blocks as $L$, the hidden size as $H$,
+and the number of self-attention heads as $A$. BERT initial model designs are the following:
+
+<Table>
+  <span slot="caption">
+    BERT model configurations. $BERT_{BASE}$ was chosen to have the same model size
+    as OpenAI GPT for comparison purposes.
+  </span>
+
+  <thead>
+   <tr>
+      <th>Model Name</th>
+      <th>$L$ (Transformer blocks)</th>
+      <th>$H$ (Hidden size)</th>
+      <th>$A$ (Self-Attention heads)</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>$BERT_{BASE}$</td>
+    <td>12</td>
+    <td>768</td>
+    <td>12</td>
+  </tr>
+  <tr>
+    <td>$BERT_{LARGE}$</td>
+    <td>24</td>
+    <td>1024</td>
+    <td>16</td>
+  </tr>
+  </tbody>
+</Table>
+
+As we will see at the [Next Sentence Prediction](#next-sentence-prediction) section,
+BERT deals with pairs of sentences. To <Underlined>differentiate between the two sentences</Underlined>,
+BERT separates them with a special token called <Underlined color="purple">**`[SEP]`**</Underlined>. In addition, BERT adds
+<Underlined color="green">learned embeddings</Underlined> to every token indicating whether it belongs to the first or second sentence.
+
+Finally, for sentence-level tasks, BERT adds a special token called <Underlined color="purple">**`[CLS]`**</Underlined> at the beginning
+of every sequence. The final hidden state of this token is used as the aggregate sequence
+representation for sentence-level tasks such as classification.
+
+
+## Pre-training
+
+The objective of pre-training is to **learn a general-purpose language representation**
+that can be used for downstream tasks. BERT focuses on two unsupervised tasks:
+learning from the <Underlined>surrounding context</Underlined>, through a masked language model, and learning
+from the <Underlined>relationship between two sentences</Underlined>, through a next sentence prediction task 
+(helpful for some downstream tasks such as question answering).
+
+<Underlined color="green">Both tasks are trained at the same time, summing their losses</Underlined>. For the pre-training
+corpus, BERT uses the BooksCorpus (800M words) and English Wikipedia (2,500M words).
+Note that it is critical to use a document-level corpus rather than a shuffled sentence-level
+corpus, so <Underlined>long contiguous sequences</Underlined> can be used.
+
+<SEOImage
+  src={"/posts/bert/pretrain.png"}
+  caption="BERT model architecture for pre-training. The model receives a sequence of tokens as input, and outputs a sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
+  alt="BERT model architecture for pre-training. The model receives a sequence of tokens as input, and outputs a sequence of vectors, one for each input token. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation for next sentence prediction. Some tokens are masked out with `[MASK]` tokens, and the model is trained to predict the original vocabulary id of the masked word based only on its context."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+### Masked Language Model
+
+The bidirectional context understanding can enable to capture intricate dependencies
+and relationships among words, resulting in more robust and contextually rich representations.
+
+Previous methods suffered from the unidirectionality constraint: a word can only
+attend to previous words in the self-attention layers. In order to train deep
+bidirectional representations,
+<Underlined color="green">BERT simply masks some percentage of the input tokens at random</Underlined>,
+and then predicts those masked tokens. This is different from
+traditional language modeling, where the model is trained to predict the next
+word in a sequence where only the previous words are visible. BERT authors 
+refer to this procedure as a <Underlined>masked language model</Underlined> (MLM).
+
+The procedure is as follows:
+1. Tokenize the input sequence.
+2. Replace 15% tokens with: 
+    - 80% of the time: <Underlined color="purple">**`[MASK]`**</Underlined> token.
+    - 10% of the time: a random token.
+    - 10% of the time: the original token.
+3. Feed the sequence to the model.
+4. Only for the replaced tokens, compute cross entropy loss between the output and the original sequence.
+
+Although MLM allows BERT to obtain a bidirectional pre-trained model,
+a downside is that it creates a mismatch between pre-training and
+fine-tuning, since the `[MASK]` token does not appear during fine-tuning.
+That's why BERT sometimes replaces the masked tokens with the original
+and random tokens.
+
+### Next Sentence Prediction
+
+Some downstream tasks such as Question Answering (QA) and Natural Language Inference (NLI)
+are based on understanding the *relationship* between sentences.
+
+In order to train a model that understands sentence relationships, BERT authors
+pre-train the model with a simple task called next sentence prediction.
+For next sentence prediction two sentences are choosen at random, and the model is
+trained to predict whether the second sentence is the actual next sentence in the original
+document. The model is trained with 50% of the time the second sentence is the <Underlined>actual next sentence</Underlined>,
+and 50% of the time it is a <Underlined>random sentence</Underlined> from the corpus.
+
+BERT adds a special token called <Underlined color="purple">**`[SEP]`**</Underlined> between the two sentences.
+Finally, the model introduces a <Underlined color="purple">**`[CLS]`**</Underlined> token at the beginning of the first sentence,
+and the final hidden state of this token is used for next sentence prediction.
+
+
+## Fine-tuning
+
+Swapping out the appropiate inputs and outputs, BERT can be used for a wide variety
+of downstream tasks, whether they involve single text or text pairs.
+To do so, BERT fine-tunes all the parameters end-to-end. Compared to pre-training,
+fine-tuning is relatively inexpensive.
+
+At the output, the <Underlined>token representations</Underlined> are fed into an output layer for token-level
+tasks such as named entity recognition, and the <Underlined>`[CLS]` representation</Underlined> is fed into
+an output layer for classification tasks such as entailment or sentiment analysis.
+
+
+## Glossary
+
+- **$L$**: Number of Transformer encoder blocks.
+- **$H$**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
+- **$A$**: Number of self-attention heads.
+- **w**: Input sequence length.
+
+
+## Credits
+
+- [Paper - DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter](https://arxiv.org/abs/1910.01108)
