@@ -3,7 +3,7 @@ author: Mario Parreño
 date: 12/06/2017
 image: ./images/transformer/canopy.png
 tags: ["nlp", "transformer", "paper", "encoder-decoder"]
-title: Transformer Intuition
+title: The Transformer
 description: How the Transformer architecture works, a light, direct and simple explanation.
 ---
 
@@ -386,6 +386,18 @@ class MultiHeadAttention(nn.Module):
 
 And that's all for the Multi-Head Attention. The intuition is that we have generated
 a representation of the input that captures the relationships between the tokens.
+
+As a quick recap, the Multi-Head Attention is composed of the following steps:
+
+<SEOImage
+  src={"/posts/transformer/multi-head_full.png"}
+  caption="Transformer Multi-Head Attention. Global view of the Multi-Head Attention."
+  alt="Transformer Multi-Head Attention. Global view of the Multi-Head Attention."
+  width={900}
+  height={350}
+  format="webp"
+  className="w-full"
+/>
 
 ### Masked Multi-Head Attention
 
