@@ -191,6 +191,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
+"clip.mdx": {
+	id: "clip.mdx";
+  slug: "clip";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "densenet.mdx": {
 	id: "densenet.mdx";
   slug: "densenet";
