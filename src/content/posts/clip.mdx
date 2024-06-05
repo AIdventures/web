@@ -13,165 +13,215 @@ import Table from "../../components/blog/Table.astro"
 import SEOImage from "../../components/blog/SEOImage.astro";
 
 
-Self-attention-based architectures, in particular [Transformers](/blog/transformer),
-have become the model of choice in natural language processing (NLP).
-The predominant approach is to pre-train on a large text corpus and then fine-tune
-on a smaller task-specific dataset.
+Generally, computer vision systems are trained to predict a fixed set of predetermined
+object categories. This restricted form of supervision limits their generality and usability since
+additional labeled data is needed to specify any other visual concept.
+Natural language is able to express, and therefore supervise, a much wider
+set of visual concepts trought its generality.
 
-ViT experiments with applying a standard Transformer directly to images,
-with the fewest possible modifications. 
-To do so, ViT <Underlined>splits an image into patches</Underlined>
-and provide the sequence of linear embeddings of these patches as an input to a Transformer.
-Image patches are treatedd the same way as tokens (words) in NLP applications.
-ViT model is trained on image classification in <Underlined color="green">supervised fashion</Underlined>.
+CLIP proposes <Underlined>learning directly from raw text about images</Underlined>,
+studying the behaviours of image classifiers trained with natural language supervision at large scale.
+To do so authors use the simple pre-training task of
+<Underlined color="green">predicting which caption goes with which image</Underlined>
+encoruaging the model to learn a joint representation of images and text.
 
-When trained on mid-sized datasets ViT yields modes accuracies: Transformers lack some of the
-[inductive biases](#inductive-bias) inherent to CNNs, such as translation equivariance
-and locality, and thereforedo not generalize well when trained on insufficient amounts of data.
-However, the picture changes if ViT is trained on larger datasets, trumping inductive biases,
-achieving excellent results.
-
-## Architecture
-
-ViT's model architecture is a multi-layer
-<Underlined color="brown">**bidirectional Transformer Encoder**</Underlined>,
-following the original Transformer design as closely as possible.
-If you want more details about the Transformer architecture, you can check out
-my [Transformer blog post](/blog/transformer).
-
-ViT denotes the number of the Transformer encoder blocks as $L$, the hidden size as $H$,
-and the number of self-attention heads as $A$. ViT initial model designs are the following:
+After pre-training, natural language is used to reference learned visual concepts
+(or describe new ones) enabling <Underlined>zero-shot transfer</Underlined>
+of the model to downstream tasks. This makes the model transfer non-trivially to tasks
+such as OCR, action recognition in videos, geo-localization, and many types of fine-grained classification.
 
 
+## Approach
 
+Learning from natural language does not requiere annotations to be in a classic
+"machine learning compatible format" such as the canonical 1-of-N majority vote *gold label*.
+Instead, methods wich work on natural language can learn passively from the supervision
+contained in the vast amount of text on the internet. Furthermore, it doesnt' *just* learn 
+a representation but also connect that representation to language which enables flexible
+zero-shot transfer to a wide range of tasks.
+
+To learn perception from supervision contained in natural language, CLIP uses a simple
+**contrastive pre-training task**: <Underlined>predict which caption goes with which image</Underlined>.
+
+
+
+### Contrastive Learning
+
+Trying to predict the *exact* words of the text accompanying an image is a difficult task
+due to the wide variety of descriptions, comments, and related text that co-occurs with images.
+Findings show that <Underlined>contrastive objectives can learn better representations that their equivalent predictive objetive</Underlined>,
+requiring over and order of magnitude less compute to achieve the same performance.
+
+<Underlined color="green">Given a batch of $N$ (image, text) pairs, CLIP is trained to predict which of the $N\times N$ possible (image, text) pairings accross a batch actually occured.</Underlined>
+To do this, CLIP learns a <Underlined>multi-modal embedding space</Underlined> by jointly training an image
+encode and text encoder to <Underlined color="red">maximize the cosine similarity of the image and text embeddings</Underlined>
+of the $N$ real pairs in the batch while minimizing the cosine similarity of the embeddings of the $N^2-N$ incorrect pairings.
+We minimize a <Underlined color="red">symmetric cross entropy loss over these consine similarity scores</Underlined>
+(the cosine similarity returns a value between 0 and 1 that can be interpreted as a probability).
+
+A general overview of the contrastive learning objective is shown below:
 <SEOImage
-  src={"/posts/vit/architecture.png"}
-  caption="ViT model architecture. The model receives an image as input and outputs the result of its classification. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation of the image for the classificaction."
-  alt="ViT model architecture. The model receives an image as input and outputs the result of its classification. The vector corresponding to the `[CLS]` token is used as the aggregate sequence representation of the image for the classificaction."
+  src={"/posts/clip/train.png"}
+  caption="CLIP contrastive learning objective. The model is trained to maximize the cosine similarity of the image and text embeddings of the real pairs in the batch while minimizing the cosine similarity of the embeddings of the incorrect pairings."
+  alt="CLIP contrastive learning objective. The model is trained to maximize the cosine similarity of the image and text embeddings of the real pairs in the batch while minimizing the cosine similarity of the embeddings of the incorrect pairings."
   width={900}
   height={450}
   format="webp"
   className="w-full"
 />
 
-### The Input: Patch Embedding
 
-The standard Transformer receives as input a 1D sequence of token embeddings.
-Naive application of self-attention to images would require that each pixel attends to every other pixel.
-With quadratic cost in the number of pixels, this does not scale to realistic input sizes.
+A graphical representation about consine similarity calculation:
 
-To handle <Underlined>2D images</Underlined>, we reshape each image into a sequence of flattened 
-<Underlined color="green">2D patches</Underlined>
-of an arbitrary size. The resulting number of patches serves as the effective input
-sequence length for the Transformer. The Transformer uses constant 
-<Underlined color="green">latent vector size $H$</Underlined>
-through all of its layers, so the patches are mapped to $H$ dimensions with a trainable
-linear projection. ViT refers to the output of this projection as the 
-<Underlined color="red">patch embeddings</Underlined>.
+<SEOImage
+  src={"/posts/clip/contrastive.png"}
+  caption="CLIP cosine similarity computation. The cosine similarity is computed as the dot product of the image and text embeddings divided by the product of their norms."
+  alt="CLIP cosine similarity computation. The cosine similarity is computed as the dot product of the image and text embeddings divided by the product of their norms."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
 
-A simple way to perform patch division and prediction is through <Underlined color="green">2D convolution</Underlined>.
-The kernel will be of the desired patch size, introducing a stride of the patch size as well,
-so that there is no overlap between the pixels. On the other hand, to achieve $H$ dimensions,
-we will just need to set $H$ (also known as *n_embd*) as the desired output channels of the 2D convolution operation.
+A code snippet of the contrastive learning objective is shown below:
 
 ```python
-class PatchEmbedding(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.projection = nn.Conv2d(
-            in_channels=config.in_channels, out_channels=config.n_embd,
-            kernel_size=config.patch_size, stride=config.patch_size
-        )
-        self.n_patches = (config.img_size // config.patch_size) ** 2
+# images:(batch, channels, width, height), tokenized_text:(batch, tokenizer_dim)
+images, tokenized_text = batch
 
-    def forward(self, x):  # (batch, in_channels, height, width)
-        x = self.projection(x)  # (batch, n_embd, patches, patches)
-        x = x.flatten(2)  # (batch, n_embd, n_patches) - "stacking" all patches
-        x = x.transpose(1, 2)  # (batch, n_patches, n_embd)
-        return x
+# get embeddings
+image_features = clip_model.encode_image(image)
+text_features = clip_model.encode_text(tokenized_text.squeeze(1))
+
+# normalized features
+image_features = image_features / image_features.norm(dim=1, keepdim=True)
+text_features = text_features / text_features.norm(dim=1, keepdim=True)
+
+# PUSH X,Y together and push other vectors away. cosine similarity as logits
+preds = image_features @ text_features.t()
+
+# create targets for binary cross-entropy + binary cross entropy
+targets = torch.eye(preds.size(0), dtype=torch.float32, device=preds.device)
+loss = nn.functional.binary_cross_entropy_with_logits(preds, targets)
 ```
 
-#### Adapt to Higher Resolutions
-
-<Underlined>It is often beneficial to fine-tune at higher resolution than pre-training.</Underlined>
-When feeding images of higher resolution, authors <Underlined color="green">keep the patch size the same</Underlined>,
-which results in a larger effective sequence length.
-
-ViT can handle arbitrary sequence lengths (up to memory constraints), however,
-the pre-trained positional embeddings may no longer be meaningful. We therefore perform
-<Underlined color="red">2D interpolation of the pre-trained positional embeddings</Underlined>,
-according to their location in the original image. Note that this resolution adjustmen and patch
-extraction are the only points at which an inductive bias about the 2D structure of the images is manually
-injected into the model.
-
-```python
-# example: 224:(14x14+1) -> 384: (24x24+1) (patch size 16x16)
-def resize_pos_embed(posemb, ntok_new):
-    """
-      Resize the grid of position embeddings to accommodate a new number of tokens.
-
-      Args:
-      - posemb (torch.Tensor): Position embeddings (batch_size, seq_length, n_embd).
-      - ntok_new (int): New number of tokens/seq_length.
-
-      Returns:
-      - torch.Tensor: Resized position embeddings (batch_size, ntok_new, n_embd).
-    """
-    # Rescale the grid of position embeddings when loading - 24x24+1
-    # posemb_cls is for cls token, posemb_grid for the following tokens
-    posemb_clas, posemb_grid = posemb[:, :1], posemb[0, 1:]
-    ntok_new -= 1
-
-    gsize_old = int(math.sqrt(len(posemb_grid)))  # 14
-    gsize_new = int(math.sqrt(ntok_new))          # 24
-
-    # [1, 196, n_embd] -> [1, 14, 14, n_embd] -> [1, n_embd, 14, 14]
-    posemb_grid = posemb_grid.reshape(1, gsize_old, gsize_old, -1).permute(0, 3, 1, 2)
-    # [1, n_embd, 14, 14] -> [1, n_embd, 24, 24]
-    posemb_grid = F.interpolate(posemb_grid, size=(gsize_new, gsize_new), mode='bicubic')
-    # [1, n_embd, 24, 24] -> [1, 24×24, n_embd]
-    posemb_grid = posemb_grid.permute(0, 2, 3, 1).reshape(1, gsize_new * gsize_new, -1)
-    # [1, 24×24+1, n_embd]
-    posemb = torch.cat([posemb_cls, posemb_grid], dim=1)
-    return posemb
-```
-
-### Training
-
-Similar to [BERT's](/blog/bert) <Underlined>`[class]` token</Underlined>,
-ViT prepends a learnable embedding to the sequence of embedded patches,
-whose state at the output of the Transformer encoder serves as the <Underlined>image representation</Underlined>.
-Both during pre-training and fine-tuning, a classification head is attached to the image representation
-`[class]` output. The classification head is implemented by a MLP with one hidden layer at
-pre-training time and by a single layer at fine-tuning time.
-
-<Underlined>Position embeddings</Underlined> are added to the patch embeddings
-to retain positional information. Standard learnable 1D position embeddings are used.
-
-The authors note that ViT only performs well when trained on <Underlined color="green">huge datasets</Underlined>
-with millions of images. Specifically, [ResNets](/blog/resnet) perform better with smaller
-pre-training datasets but plateau sooner than ViT, which performs better with larger pre-training.
-This result reinforces the intuition that the convolutional [inductive bias](#inductive-bias) is useful for smaller datasets,
-but for larger ones, learning the relevant patterns directly from data is sufficient, even beneficial.
+It is important to note that a <Underlined color="red">**very large batch size**</Underlined>
+of $32,768$ is used to train the model.
+This is because the contrastive objective benefits from a large batch size,
+as it allows the model to see a large number of negative examples.
 
 
-### Inductive Bias
+### Model Architecture & Training Details
 
-ViT has much less image-specific inductive bias than Convolutional Neural Networks (CNNs). 
-In CNNs, locality, two-dimensional neighborhood structure, and translation equivariance are
-baked into each layer throughout the whole model. In ViT, only MLP layers are local and translationally
-equivariant, while the self-attention layers are global.
+The image encoder is a <a href="/blog/vit" target="_blank">Vision Transformer</a>.
+The `[CLS]` token is used as the aggregate representation of the image.
 
-The position embeddings at initialization time carry <Underlined>no information about the 2D positions</Underlined>
-of the patches and all spatial relations between the patches have to be learned from scratch.
+The text encoder is a <a href="/blog/transformer" target="_blank">Transformer</a>.
+Text sequence is bracketed with `[SOS]` and `[EOS]` tokens and the activations of the highest layer
+at the `[EOS]` token are used as the feature representation of the text. Finally, the representation
+is layer normalized and then linearly projected to the multi-modal embedding space.
+
+About the training details:
+- CLIP is trained from scratch without initializing image or text encoders with any other models.
+- A linear projection is used to map from each encoder's representation to the multi-modal contrastive embedding space.
+- Models are trained for 32 epochs with Adam optimizer, decoupled weight decay, 
+and decay the learning rate using a cosine schedule.
+- A random square crop from resized images is the only data augmentation used.
+- The temperature parameter which controls the range of the logits in the softmax, $\tau$, is directly
+optimized during the training as a log-parameterized multiplicative scalar to avoid turning as a hyper-parameter.
+Is initialized to the equivalent of $0.07$ and clipped to prevent scaling the logits by more than 100,
+which we found necessary to prevent training instability. 
+- Mini batches of size $32,768$ are used to train the model.
+- CLIP uses mixed precision.
+
+### Creating a Sufficiently Large Dataset
+
+A major motivation for natural language supervision is the
+large quantities of data of this form available publicly on the internet.
+
+CLIP authors construct a new dataset of <Underlined color="red">400 million (image, text) pairs</Underlined>
+collected form a variety of publicly available sources on the Internet. To attempt to cover as broad a set
+of visual concepts as possible, we search for (image, text) pairs as part of the construction
+process whose text includes one of a set of <Underlined color="green">500,000 queries</Underlined>: 
+The base query list is all words occurring at least 100 times in
+the English version of Wikipedia. This is augmented with bi-grams
+with high pointwise mutual information as well as the names of
+all Wikipedia articles above a certain search volume, finally all
+WordNet synsets not already in the query list are added.
+
+We approximately class balance the results by including up to 
+<Underlined>20,000 (image, text) pairs per query</Underlined>.
+We refer to this dataset as WIT for WebImageText.
+
+Many of the (image, text) pairs in the dataset are only a single sentence.
 
 
-## Glossary
+### Zero Shot Transfer
 
-- **$L$**: Number of Transformer encoder blocks.
-- **$H$**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
-- **$A$**: Number of self-attention heads.
-- **num_patches**: Input sequence length.
+Authors study how CLIP behaves to unseen domains as an 
+evaluation of robustness to distribution shift and domain generalization.
+
+CLIP is pre-trained to predict if an image and a text snippet are paired together.
+To perform zero-shot classification, authors reuse this capability. To do so, for each dataset authors
+<Underlined>use the names of all the classes as the set of potential text pairings</Underlined>
+and predict the most probable (image, text) pair according to CLIP.
+
+> Tip: The feature embeddings of texts (classes) can be pre-computed and stored 
+for subsequent predictions.
+
+The way to accomodate the class names into the text encoder is to use
+prompt engineering, defining templates that need to be adapted to the specific task.
+
+<SEOImage
+  src={"/posts/clip/zero.png"}
+  caption="CLIP zero-shot transfer. Describe the task in natural language and compute the cosine similarity between the task description and the image embeddings."
+  alt="CLIP zero-shot transfer. Describe the task in natural language and compute the cosine similarity between the task description and the image embeddings."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+#### Prompt Engineering & Ensembling
+
+In some cases multiple meanings of the same word might be included as different classes
+in the dataset! As an example, at Oxford-IIIT Pet dataset, the word *boxer* 
+is, from context, clearly referring to a breed of dog, but to a text encoder lacking context
+could just as likely refer to a type of athlete.
+
+Another issue encountered is that it's relatively rare in the pre-training dataset
+for the text paired with the image to be just a single word.
+<Underlined>Usually the text is a full sentence describing the image in some way</Underlined>.
+To help bridge this distribution gap, authors found that using the
+<Underlined color="green">prompt template</Underlined> as `a photo of a {class}` to be effective,
+improving the performance over the baseline of using only the label text.
+
+In this line, authors observed that <Underlined color="green">zer-shot performance can be significantly improved by customizing the prompt text to each task</Underlined>.
+For example, <Underlined>specifying the category</Underlined> in Oxford-IIIT Pet dataset using `a photo of a {class}, a type of pet`.
+
+Extending the idea of prompt engineering, authors <Underlined>use an ensemble of multiple zero-shot classifiers</Underlined> to improve the performance.
+These classifiers are compuetd by using different context prompts such as `a photo of a {class}` and `a photo of big {class}` and `a photo of a small {class}`.
+Authors construct the ensemble over the embedding space instead the probability space,
+as that allows them to cache single set of averaged text embeddings
+so that the compute cost of the ensemble is the same as using a single classifier
+when amortized over many predictions.
+<Underlined color="red">Authors observed ensembling across many generated zero-shot classifiers to reliably improve performance</Underlined>
+For example, on ImageNet, ensembling 80 classifiers improves performance by an additional $3.5$% over a single default prompt.
+
+#### Zero-Shot vs Few-Shot
+
+While it is intuitive to expect zero-shot CLIP to underperform one-shot,
+authors found that this is not tipically the case.
+This is likely due to an important different between the zero-shot and few-shot approach.
+First, CLIP's zero-shot classifier is generated via natural language which allows
+for visual concepts to be directly specified or *communicated*. By contrast,
+supervised learning must infer concepts indirectly from training examples.
+<Underlined>Context-less example-based learning has the drawback that many different hypotheses can be consisten with the data, specially in the one-shot case. A single image often contains many different visual concepts.</Underlined>.
+
+> If our class is cats and we take images from the dataset to perform few-shot, there may be elements in the images that contain information about other classes, or even match other classes to be identified. On the other hand, a concise textual description only addresses the exact characteristics of the class we are looking for.
+
+The number of examples needed to improve the performance of the zero-shot classifier varies depending on the dataset.
+In this sense, the results highlight that zero-shot CLIP is quite weak on several specialized, complex, or abstract tasks.
 
 ## Extra: Code Repository
 
@@ -184,5 +234,5 @@ Train your own ViT model from scratch and don't forget to star the repository if
 
 ## Credits
 
-- [Paper - An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
-- [ViT Pytorch Implementation](https://github.com/AIdventures/microViT)
+- [Paper - Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
+- [Original CLIP Repository](https://github.com/OpenAI/CLIP)

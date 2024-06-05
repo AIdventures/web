@@ -152,7 +152,7 @@ def resize_pos_embed(posemb, ntok_new):
       - torch.Tensor: Resized position embeddings (batch_size, ntok_new, n_embd).
     """
     # Rescale the grid of position embeddings when loading - 24x24+1
-    # posemb_cls is for cls token, posemb_grid for the following tokens
+    # posemb_clas is for cls token, posemb_grid for the following tokens
     posemb_clas, posemb_grid = posemb[:, :1], posemb[0, 1:]
     ntok_new -= 1
 
