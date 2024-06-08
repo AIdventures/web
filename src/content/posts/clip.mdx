@@ -156,7 +156,7 @@ We refer to this dataset as WIT for WebImageText.
 Many of the (image, text) pairs in the dataset are only a single sentence.
 
 
-### Zero Shot Transfer
+### Zero-Shot Transfer
 
 Authors study how CLIP behaves to unseen domains as an 
 evaluation of robustness to distribution shift and domain generalization.
@@ -181,6 +181,41 @@ prompt engineering, defining templates that need to be adapted to the specific t
   format="webp"
   className="w-full"
 />
+
+A code snippet of the zero-shot transfer is shown below:
+
+```python
+import torch
+import clip
+from PIL import Image
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model, preprocess = clip.load("ViT-B/32", device=device)
+
+# Load the image to be encoded
+image = preprocess(Image.open("photo.png")).unsqueeze(0).to(device)
+# Load the text prompts to be encoded
+class_texts = ["a diagram", "a dog", "a cat"]
+text = clip.tokenize(class_texts).to(device)
+
+with torch.no_grad():
+    # Encode the image/s and text/s
+    image_features = model.encode_image(image)
+    text_features = model.encode_text(text)
+    
+# Normalize the features
+image_features /= image_features.norm(dim=-1, keepdim=True)
+text_features /= text_features.norm(dim=-1, keepdim=True)
+# Compute the cosine similarity between the image and text features
+similarities = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+# Pick the top 3 most similar labels for the image
+probabilities, indices = similarities[0].topk(3)
+
+# Print the result
+print("\nTop predictions:\n")
+for probability, index in zip(probabilities, indices):
+    print(f"{class_texts[index]}: {100 * probability.item():.2f}%")
+```
 
 #### Prompt Engineering & Ensembling
 
