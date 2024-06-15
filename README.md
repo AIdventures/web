@@ -151,7 +151,3 @@ server {
 ```sh
 docker compose up --build -d
 ```
-
-## Posts Ideas
-
-- [ ] TF-IDF, BM25, Bert. Ranking de documentos ante una query
