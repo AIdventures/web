@@ -97,8 +97,8 @@ if we scale the initialization appropriately.
 
 <SEOImage
   src={"/posts/lora/inference_time.png"}
-  caption="LoRA training time. The input is multiplied by W₀ and LoRA modules B and A. Finally, W₀ and B×A are summed coordinate-wise."
-  alt="LoRA training time. The input is multiplied by the pretrained frozen weights and LoRA modules B and A and $W_0$ and $BA$ are summed coordinate-wise."
+  caption="LoRA test time. The model is initialized by merging the pretrained frozen weights and LoRA modules B and A into single matrices. At inference time, the input is multiplied by the merged matrix."
+  alt="LoRA test time. The model is initialized by merging the pretrained frozen weights and LoRA modules B and A into single matrices. At inference time, the input is multiplied by the merged matrix."
   width={900}
   height={450}
   format="webp"
