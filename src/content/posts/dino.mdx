@@ -5,27 +5,309 @@ image: ./images/dino/squaar.jpg
 tags: ["computer vision", "transformer", "paper", "encoder", "self-supervised"]
 title: DINO - Emerging Properties in Self-Supervised Vision Transformers
 description: Unsupervised visual feature learning using knowledge distillation and transformers
-draft: true
+draft: false
 ---
 
 import Underlined from "../../components/blog/Underlined.astro";
 import Table from "../../components/blog/Table.astro"
 import SEOImage from "../../components/blog/SEOImage.astro";
 
+DINO, a self-**di**stillation with **no** labels framework, falls into the category of <Underlined color="green">representation learning</Underlined> algorithms,
+which are used to learn a good representation of the data.
+In this case, the data are images.
+The main goal of DINO is to learn a good representation of the images in an <Underlined color="red">self-supervised way</Underlined>.
+This representation can be used for many tasks, such as classification, retrieval, or transfer learning.
+Furthermore, learned features explicitly contain the <Underlined>scene layout</Underlined>, in particular,
+object boundaries, directly accessible in the self-attention modules of the last block of the network. 
 
-## DINO Framework: Student-Teacher Training 
+## DINO
 
-### Teacher training: EMA
+Image-level supervision often reduces the rich visual information contained in an image to a single
+concept selected from a predefined set of a few thousand categories of objects.
+Inheriting from the success of Transformers in NLP thanks to self-supervised pretraining, 
+DINO aims to <Underlined>create a pretext task that provide a richer signal than the supervised objective</Underlined>.
 
-### Preventing Collapse
+DINO simplifies self-supervised training by directly predicting the output of a teacher network,
+*built with a momentun encoder*, by using a standard cross-entropy loss.
 
-### Multi-crop training
+### Student-Teacher Framework
+
+DINO follows <Underlined color="red">knowledge distillation</Underlined> learning paradigm, where 
+<Underlined>a student network $g_\theta$ is trained to match the output of a teacher network $g_\theta$</Underlined>,
+parameterized by $\theta_s$ and $\theta_t$, respectively. Both networks share the same architecture,
+which is a [Vision Transformer (ViT)](/blog/vit) in this case. A <Underlined>MLP projection head</Underlined> with $K$ dimensions is attached
+to compare the outputs of the networks. <Underlined>The features used in downstream tasks come from the ViT backbone</Underlined>.
+
+Given an input image $x$, <Underlined>both networks output probability distributions over $K$ dimensions</Underlined>,
+obtained by normalizing the output of the networks with a softmax function. Given a fixed teacher network $g_\theta$,
+we learn to match these distributions by minimizing the <Underlined color="green">cross-entropy loss</Underlined>.
+
+To adapt the problem to <Underlined color="red">self-supervised learning</Underlined>, given an image $x$
+DINO constructs different distorted views or <Underlined>crops</Underlined> of an image by using a <Underlined color="purple">**multi-crop strategy**</Underlined>.
+Specifically, the standard setting for multi-crop training 
+is to use 2 global views at resolution $224^2$ covering an area $>50\%$ of the image,
+and several local views at resolution $96^2$ with small areas covering $< 50\%$ of the image.
+<Underlined color="green">Global and local crops are passed through the student network, while only the global ones are passed through the teacher</Underlined>.
+This encourages the <Underlined color="brown">teacher to give us generally a better representation</Underlined> because it receives global views that have more information compared to the local views that the student receives.
+At the same time, student learns to recognize fine-grained details and becomes invariant to scale changes.
+
+<SEOImage
+  src={"/posts/dino/multi-crop.png"}
+  caption="Illustration of the multi-crop strategy used in DINO. The input image is divided into global and local crops."
+  alt="Illustration of the multi-crop strategy used in DINO. The input image is divided into global and local crops."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+<Underlined>The student parameters</Underlined> $\theta_s$ are learned by minimizing the cross-entropy loss
+between the student and teacher outputs with stochastic gradient descent.
+
+<Underlined>The teacher parameters</Underlined> $\theta_t$ are not given a *priori* and is dynamically built during training.
+To do so, the <Underlined color="purple">teacher network is freezed over an epoch and updated using an **exponential moving average** (EMA)</Underlined>
+on the student weights, i.e., a momentum encoder. The update rule is <Underlined color="blue">$\theta_t \leftarrow \lambda \theta_t + (1 - \lambda) \theta_s$</Underlined>,
+with $\lambda$ following a cosine schedule from 0.996 to 1 during training.
+This leads the <Underlined color="brown">teacher to stabilize</Underlined> and provide a more robust signal to the student.
+
+<SEOImage
+  src={"/posts/dino/dino.webp"}
+  caption="DINO framework. The student network is trained to match the output of the teacher network."
+  alt="DINO framework. The student network is trained to match the output of the teacher network."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+The models are pretrained on the ImageNet dataset without labels.
+For evaluation  20 nearest neighbors are retrieved using the cosine similarity between the features of the images.
+It can be observed that reducing the size of the patches has a bigger impact on the performance than training larger models.
+
+
+### Avoiding Collapse: Sharp & Center
+
+One problem DINO has is that the model can easily collapse,
+what leads the model to output the same thing regardless of what the input is.
+Why not to output the same embedding for every image and have no error?
+
+There are two forms of collapse: regardless of the input, the model <Underlined>output is uniform</Underlined>
+along all dimensions or <Underlined>dominated by one dimension</Underlined>.
+
+To avoid this, DINO introduces two strategies:
+- **Centering**: Avoids the collapse induced by a dominant dimension. 
+    Depends on first-order batch statistics and can be interpreted as adding a bias term $c$
+    to the teacher: $g_t(x) \leftarrow g_t(x)+c$. The center $c$ is updated with an exponential moving average.
+    Applied just to the teacher.
+- **Sharpening**: The model is encouraged to output sharp predictions by using a <Underlined>**temperature scaling**</Underlined> factor.
+    This factor is applied to the logits before the softmax function.
+    Applied to the student and teacher.
+
+Authors found that the combination of both strategies is crucial to avoid collapse and achieve good performance.
+If one operation is missing, the Kullback-Leiber divergence converges to zero, indicating a collapse.
+
 
 ## Applications
 
-### Feature extraction
+### Feature extraction: KNN classification
 
-### Feature visualization
+The authors demonstrate throughout the paper that DINO is capable of extracting rich self-supervised features
+that perform particularly well even with a basic nearest neighbors classifier (*k-NN*) and without any fine-tuning.
+In this section we test the features extracted from the `CLS` token of the ViT backbone
+on the [Dogs vs. Cats Kaggle dataset](https://www.kaggle.com/competitions/dogs-vs-cats/data?select=train.zip).
+
+First we load the model and extract the features from the `CLS` token of the last block of the network.
+
+```python
+## -- Import the necessary libraries --
+
+# Load the DINO model
+model = torch.hub.load('facebookresearch/dino:main', 'dino_vits8')
+model.eval()  # move the model to some device if needed
+
+# Define the basic transformations
+transform = transforms.Compose([
+    transforms.Resize(256, interpolation=3),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+])
+
+## -- Create your dataset and dataloader --
+
+# Extract the features
+features, labels, image_names = [], [],  []
+
+with torch.no_grad():
+    for batch, label, names in tqdm(dataloader):
+        output = model(batch.to(device))
+        features.append(output.cpu().numpy())
+        labels.extend(label.cpu().numpy())
+        image_names.extend(names)
+
+# Group features
+features = np.concatenate(features)
+```
+
+Now, we can  visualize the features using a t-SNE plot, by reducing the dimensionality of the features to 2D.
+
+```python
+# Apply t-SNE
+tsne = TSNE(n_components=2, random_state=42)
+features_tsne = tsne.fit_transform(features)
+```
+
+If we create a scatter plot of the features and color them by the class,
+we can observe that the features are well separated.
+
+<SEOImage
+  src={"/posts/dino/t-SNE.png"}
+  caption="t-SNE visualization of the features extracted from the `CLS` token. Cat and dog images are well separated."
+  alt="t-SNE visualization of the features extracted from the `CLS` token. Cat and dog images are well separated."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+Finally, we can use a k-NN classifier to classify the images by using the features extracted.
+
+```python
+# Split the data into training and validation sets
+X_train, X_val, y_train, y_val, names_train, names_val = train_test_split(
+    features, labels, image_names, test_size=0.2, random_state=42, stratify=labels
+)
+
+# Create and train the KNN classifier
+knn = KNeighborsClassifier(n_neighbors=20)
+knn.fit(X_train, y_train)
+
+# Make predictions on the validation set
+y_pred = knn.predict(X_val)
+accuracy = accuracy_score(y_val, y_pred)
+```
+
+The evaluation of the model shows that the model is capable of achieving a $+99\%$ accuracy with a simple k-NN classifier.
+
+### Feature visualization: Scene layout
+
+DINO self-attention maps contain information about the segmentation of an image.
+Particularly, the self-attention maps of the last block of the network contain information about the object boundaries,
+where <Underlined>different heads can attend to different semantic regions</Underlined>.
+
+<SEOImage
+  src={"/posts/dino/visualization_extraction.png"}
+  caption="Illustration of the feature extraction and visualization process of DINO. The features are extracted from the last block of the network, extraction the information from the `CLS` token."
+  alt="Illustration of the feature extraction and visualization process of DINO. The features are extracted from the last block of the network, extraction the information from the `CLS` token."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+```python
+# Import the necessary libraries
+from PIL import Image
+import matplotlib.pyplot as plt
+
+import torch
+from torchvision import transforms
+
+# Load the model
+model = torch.hub.load('facebookresearch/dino:main', 'dino_vits8')
+model.eval()
+
+# Load an image
+image_path = "cat.jpg"
+with open(image_path, 'rb') as f:
+    img = Image.open(f)
+    img = img.convert('RGB')
+
+# Preprocess the image
+image_size = (448, 448)
+transform = transforms.Compose([
+    transforms.Resize(image_size),
+    transforms.ToTensor(),
+    transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+])
+img = transform(img)
+
+# make the image divisible by the patch size
+patch_size = 8
+w = img.shape[1] - img.shape[1] % patch_size
+h = img.shape[2] - img.shape[2] % patch_size
+img = img[:, :w, :h].unsqueeze(0)
+
+# forward the image
+with torch.no_grad():
+    attentions = model.get_last_selfattention(img.to(device))
+    # attentions shape => (batch, num_heads, num_patches+1, num_patches+1)
+    # remember we have added the [CLS] token to the sequence (+1)
+
+# we keep only the output patch attention
+# We display the self-attention for [CLS] token query (index 0)
+# and remove the entry for the [CLS] token query (apply 1:)
+attentions = attentions[0, :, 0, 1:]  # (num_heads, num_patches-1)
+
+# reshape the attentions to the square spatial shape
+nh = attentions.shape[0] # number of heads
+ph = img.shape[2] // patch_size  # number of patches along height
+pw = img.shape[3] // patch_size  # number of patches along width
+attentions = attentions.reshape(nh, pw, ph)
+
+# resize to the original image size
+attentions = torch.nn.functional.interpolate(
+    attentions.unsqueeze(0), scale_factor=patch_size, mode="nearest"
+).numpy()
+
+# Visualize the attentions
+# Create a figure with 2 rows and 3 columns (we have 6 attention heads)
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+
+# Flatten the axes array to easily iterate over it
+axes = axes.flatten()
+
+# Plot each slice of the matrix
+for i in range(6):
+    im = axes[i].imshow(attentions[i], cmap="hot", interpolation="nearest")
+    axes[i].set_title(f'Head {i+1}')
+    axes[i].axis('off')  # Turn off axis labels
+
+# Adjust the layout and display the plot
+plt.tight_layout()
+plt.show()
+```
+
+Next there is an example of how to visualize the attention maps of the last block of the network.
+
+
+<SEOImage
+  src={"/posts/dino/feature_visualization.webp"}
+  caption="DINO attention maps from multiple heads of the last block of the network. Each head attends to different semantic regions of the image."
+  alt="DINO attention maps from multiple heads of the last block of the network. Each head attends to different semantic regions of the image."
+  width={900}
+  height={450}
+  format="webp"
+  className="w-full"
+/>
+
+
+## FAQ
+
+**Why do the features used in downstream tasks come from the ViT backbone rather than the projection head?**
+
+Just like traditionally in Convolutional Neural Networks (CNNs), the features used in downstream tasks come from earlier layers of the network instead of the last layer,
+the <Underlined color="green">backbone ViT is designed to learn general features</Underlined> that capture a wide range of visual concepts.
+On the other hand, <Underlined>the projection head is more task-specific</Underlined>, reducing the dimensionality of the features
+and learning a representation that is more suitable for the specific task at hand, discarding
+information that could be useful for other tasks. 
+Finally, the projection head is a simple MLP,
+which may not preserve spatial information crucial for many downstream tasks.
+
+**Why is centering only applied to the teacher and sharpening to both the student and the teacher? Could we not apply centering to both?**
+
+Not resolved yet... Probably trial and error. My theory is that an umbalance is needed so applying the 
+same operations not lead us again to collapse.
 
 ## Extra: Code Repository
 
