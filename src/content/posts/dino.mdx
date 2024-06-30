@@ -2,7 +2,7 @@
 author: Mario Parreño
 date: 24/05/2021
 image: ./images/dino/squaar.jpg
-tags: ["computer vision", "transformer", "paper", "encoder", "self-supervised"]
+tags: ["computer vision", "transformer", "paper", "self-supervised"]
 title: DINO - Emerging Properties in Self-Supervised Vision Transformers
 description: Unsupervised visual feature learning using knowledge distillation and transformers
 draft: false
@@ -12,10 +12,8 @@ import Underlined from "../../components/blog/Underlined.astro";
 import Table from "../../components/blog/Table.astro"
 import SEOImage from "../../components/blog/SEOImage.astro";
 
-DINO, a self-**di**stillation with **no** labels framework, falls into the category of <Underlined color="green">representation learning</Underlined> algorithms,
-which are used to learn a good representation of the data.
-In this case, the data are images.
-The main goal of DINO is to learn a good representation of the images in an <Underlined color="red">self-supervised way</Underlined>.
+DINO, a self-**di**stillation with **no** labels framework, falls into the category of <Underlined color="green">representation learning</Underlined> algorithms.
+It aims to learn effective representations of image data without labeled datasets, in a <Underlined color="red">self-supervised</Underlined> fashion.
 This representation can be used for many tasks, such as classification, retrieval, or transfer learning.
 Furthermore, learned features explicitly contain the <Underlined>scene layout</Underlined>, in particular,
 object boundaries, directly accessible in the self-attention modules of the last block of the network. 
@@ -26,30 +24,27 @@ Image-level supervision often reduces the rich visual information contained in a
 concept selected from a predefined set of a few thousand categories of objects.
 Inheriting from the success of Transformers in NLP thanks to self-supervised pretraining, 
 DINO aims to <Underlined>create a pretext task that provide a richer signal than the supervised objective</Underlined>.
-
 DINO simplifies self-supervised training by directly predicting the output of a teacher network,
 *built with a momentun encoder*, by using a standard cross-entropy loss.
 
 ### Student-Teacher Framework
 
-DINO follows <Underlined color="red">knowledge distillation</Underlined> learning paradigm, where 
+DINO follows a <Underlined color="red">knowledge distillation</Underlined> learning paradigm, where 
 <Underlined>a student network $g_\theta$ is trained to match the output of a teacher network $g_\theta$</Underlined>,
 parameterized by $\theta_s$ and $\theta_t$, respectively. Both networks share the same architecture,
-which is a [Vision Transformer (ViT)](/blog/vit) in this case. A <Underlined>MLP projection head</Underlined> with $K$ dimensions is attached
-to compare the outputs of the networks. <Underlined>The features used in downstream tasks come from the ViT backbone</Underlined>.
+which is a [Vision Transformer (ViT)](/blog/vit) in this case. A MLP projection head with $K$ dimensions is attached
+to align the outputs of the networks. The features used in downstream tasks come from the `CLS` token from the ViT backbone.
 
-Given an input image $x$, <Underlined>both networks output probability distributions over $K$ dimensions</Underlined>,
-obtained by normalizing the output of the networks with a softmax function. Given a fixed teacher network $g_\theta$,
-we learn to match these distributions by minimizing the <Underlined color="green">cross-entropy loss</Underlined>.
 
-To adapt the problem to <Underlined color="red">self-supervised learning</Underlined>, given an image $x$
-DINO constructs different distorted views or <Underlined>crops</Underlined> of an image by using a <Underlined color="purple">**multi-crop strategy**</Underlined>.
+To adapt the problem to <Underlined color="red">self-supervised learning</Underlined>,
+<Underlined>given an image $x$ DINO constructs different distorted views or crops</Underlined> of an image by using a <Underlined color="purple">**multi-crop strategy**</Underlined>.
 Specifically, the standard setting for multi-crop training 
 is to use 2 global views at resolution $224^2$ covering an area $>50\%$ of the image,
 and several local views at resolution $96^2$ with small areas covering $< 50\%$ of the image.
 <Underlined color="green">Global and local crops are passed through the student network, while only the global ones are passed through the teacher</Underlined>.
-This encourages the <Underlined color="brown">teacher to give us generally a better representation</Underlined> because it receives global views that have more information compared to the local views that the student receives.
-At the same time, student learns to recognize fine-grained details and becomes invariant to scale changes.
+This encourages the <Underlined color="brown">teacher to give us generally a better representation</Underlined>
+and lead the learning process, as global views have more information compared to the local views that the student receives.
+At the same time, the student with local views learn to recognize fine-grained details and becomes invariant to scale changes.
 
 <SEOImage
   src={"/posts/dino/multi-crop.png"}
@@ -61,10 +56,15 @@ At the same time, student learns to recognize fine-grained details and becomes i
   className="w-full"
 />
 
+Given an input image $x$, *the crops*, <Underlined>both networks output probability distributions over $K$ dimensions</Underlined>,
+obtained by normalizing the output of the networks with a softmax function. Given a fixed teacher network $g_\theta$,
+we learn to match these distributions by minimizing the <Underlined color="green">cross-entropy loss</Underlined>.
+
+
 <Underlined>The student parameters</Underlined> $\theta_s$ are learned by minimizing the cross-entropy loss
 between the student and teacher outputs with stochastic gradient descent.
 
-<Underlined>The teacher parameters</Underlined> $\theta_t$ are not given a *priori* and is dynamically built during training.
+<Underlined>The teacher parameters</Underlined> $\theta_t$ are not given a *priori* and are dynamically built during training.
 To do so, the <Underlined color="purple">teacher network is freezed over an epoch and updated using an **exponential moving average** (EMA)</Underlined>
 on the student weights, i.e., a momentum encoder. The update rule is <Underlined color="blue">$\theta_t \leftarrow \lambda \theta_t + (1 - \lambda) \theta_s$</Underlined>,
 with $\lambda$ following a cosine schedule from 0.996 to 1 during training.
@@ -80,26 +80,25 @@ This leads the <Underlined color="brown">teacher to stabilize</Underlined> and p
   className="w-full"
 />
 
-The models are pretrained on the ImageNet dataset without labels.
+The models are trained on the ImageNet dataset without labels.
 For evaluation  20 nearest neighbors are retrieved using the cosine similarity between the features of the images.
 It can be observed that reducing the size of the patches has a bigger impact on the performance than training larger models.
 
 
 ### Avoiding Collapse: Sharp & Center
 
-One problem DINO has is that the model can easily collapse,
-what leads the model to output the same thing regardless of what the input is.
-Why not to output the same embedding for every image and have no error?
+One problem DINO has is that the learnt representations can easily collapse, i.e.,
+make the model output the same embedding for every image regardless of the input.
+Why not to output the same embedding for every image and technically have no error?
 
 There are two forms of collapse: regardless of the input, the model <Underlined>output is uniform</Underlined>
 along all dimensions or <Underlined>dominated by one dimension</Underlined>.
-
-To avoid this, DINO introduces two strategies:
+To avoid this, DINO introduces two strategies applied to the logits:
 - **Centering**: Avoids the collapse induced by a dominant dimension. 
-    Depends on first-order batch statistics and can be interpreted as adding a bias term $c$
+    Depends on first-order batch statistics and can be <Underlined>interpreted as adding a bias term $c$</Underlined>
     to the teacher: $g_t(x) \leftarrow g_t(x)+c$. The center $c$ is updated with an exponential moving average.
     Applied just to the teacher.
-- **Sharpening**: The model is encouraged to output sharp predictions by using a <Underlined>**temperature scaling**</Underlined> factor.
+- **Sharpening**: The model is encouraged to output sharp predictions by using a <Underlined>temperature scaling</Underlined> factor.
     This factor is applied to the logits before the softmax function.
     Applied to the student and teacher.
 
@@ -278,7 +277,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-Next there is an example of how to visualize the attention maps of the last block of the network.
+Next there is an example of how the attention maps of the last block of the network look like.
 
 
 <SEOImage

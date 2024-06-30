@@ -2,7 +2,7 @@
 author: Mario Parreño
 date: 26/02/2021
 image: ./images/clip/cosmic_carnival.jpg
-tags: ["multimodal", "transformer", "paper", "encoder"]
+tags: ["multimodal", "transformer", "paper", "self-supervised", "contrastive", "zero-shot"]
 title: CLIP - Contrastive Language-Image Pre-training
 description: Learning image and text representations jointly with a single model.
 draft: false
@@ -18,11 +18,10 @@ additional labeled data is needed to specify any other visual concept.
 Natural language is able to express, and therefore supervise, a much wider
 set of visual concepts trought its generality.
 
-CLIP proposes <Underlined>learning directly from raw text about images</Underlined>,
-studying the behaviours of image classifiers trained with natural language supervision at large scale.
+CLIP proposes <Underlined color="red">learning directly from raw text about images</Underlined>.
 To do so authors use the simple pre-training task of
 <Underlined color="green">predicting which caption goes with which image</Underlined>
-encoruaging the model to learn a joint representation of images and text.
+encoruaging the model to learn a <Underlined>joint representation of images and text</Underlined>.
 
 After pre-training, natural language is used to reference learned visual concepts
 (or describe new ones) enabling <Underlined>zero-shot transfer</Underlined>
@@ -30,7 +29,7 @@ of the model to downstream tasks. This makes the model transfer non-trivially to
 such as OCR, action recognition in videos, geo-localization, and many types of fine-grained classification.
 
 
-## Approach
+## CLIP
 
 Learning from natural language does not requiere annotations to be in a classic
 "machine learning compatible format" such as the canonical 1-of-N majority vote *gold label*.
