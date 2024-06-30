@@ -52,7 +52,7 @@ requiring over and order of magnitude less compute to achieve the same performan
 
 <Underlined color="green">Given a batch of $N$ (image, text) pairs, CLIP is trained to predict which of the $N\times N$ possible (image, text) pairings accross a batch actually occured.</Underlined>
 To do this, CLIP learns a <Underlined>multi-modal embedding space</Underlined> by jointly training an image
-encode and text encoder to <Underlined color="red">maximize the cosine similarity of the image and text embeddings</Underlined>
+encoder and text encoder to <Underlined color="red">maximize the cosine similarity of the image and text embeddings</Underlined>
 of the $N$ real pairs in the batch while minimizing the cosine similarity of the embeddings of the $N^2-N$ incorrect pairings.
 We minimize a <Underlined color="red">symmetric cross entropy loss over these consine similarity scores</Underlined>
 (the cosine similarity returns a value between 0 and 1 that can be interpreted as a probability).
