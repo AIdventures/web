@@ -50,8 +50,8 @@ If we extend it to a general rank $r$:
 
 <SEOImage
   src={"/posts/lora/lora.png"}
-  caption="Extending LoRA to a general rank $r$."
-  alt="Extending LoRA to a general rank $r$."
+  caption="Extending LoRA to a general rank r."
+  alt="Extending LoRA to a general rank r."
   width={900}
   height={450}
   format="webp"
@@ -62,8 +62,8 @@ Note that, as we increase the rank $r$ and LoRA is being applied to more weight 
 
 <SEOImage
   src={"/posts/lora/overview.png"}
-  caption="LoRA exploration space. The x-axis represents the rank $r$ and the y-axis the number of weight matrices adapted."
-  alt="LoRA exploration space. The x-axis represents the rank $r$ and the y-axis the number of weight matrices adapted."
+  caption="LoRA exploration space. The x-axis represents the rank r and the y-axis the number of weight matrices adapted."
+  alt="LoRA exploration space. The x-axis represents the rank r and the y-axis the number of weight matrices adapted."
   width={900}
   height={450}
   format="webp"
@@ -144,7 +144,7 @@ of 350GB, storing 100 full fine-tuned models would require 35TB of storage. With
 **- How to choose the rank $r$?**
   - LoRA performs competitively with a very small $r$, suggesting the update matrix $\Delta W$ could have a very small *intrinsic rank*.
 
-- **What to do if LoRA underperforms?**
+**- What to do if LoRA underperforms?**
   - If LoRA underperforms, adapt more parameters and/or increase the rank.
 
 ## Credits
