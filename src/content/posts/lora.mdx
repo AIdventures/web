@@ -77,9 +77,10 @@ Note that, as we increase the rank $r$ and LoRA is being applied to more weight 
 LoRA uses a random Gaussian Initialization for $A$ and zero for B, so $\Delta W = B A$ is zero at the beginning
 of the training. We then scale $\Delta W x$ by $\frac{\alpha}{r}$, where $\alpha$ is a constant in $r$. 
 When optimizing with Adam, tuning $\alpha$ is roughly the same as tuning the learning rate
-if we scale the initialization appropriately.
+if we scale the initialization appropriately. 
+Typically, $\alpha$ is set equal to $r$. A higher $\alpha$ results in smaller updates, which can lead to more stable but potentially slower learning. Conversely, a lower $\alpha$ results in larger updates, which can speed up learning but also increase the risk of instability.
 
-<Underlined>At training</Underlined> time $W_0$ and $\Delta W = B A$ are multiplied with the same input, and their respective output <Underlined>vectors are summed coordinate-wise</Underlined>.
+<Underlined color="green">At training</Underlined> time $W_0$ and $\Delta W = B A$ are multiplied with the same input, and their respective output <Underlined>vectors are summed coordinate-wise</Underlined>.
 
 
 <SEOImage
@@ -93,7 +94,7 @@ if we scale the initialization appropriately.
 />
 
 
-<Underlined color="green">During inference</Underlined>, <Underlined>when initializing the model</Underlined>, we can merge the two matrices into a <Underlined color="green">single matrix $W = W_0 + B A$</Underlined> and apply the same input to $W$.
+<Underlined>During inference</Underlined>, <Underlined>when initializing the model</Underlined>, we can merge the two matrices into a <Underlined color="purple">single matrix $W = W_0 + B A$</Underlined> and apply the same input to $W$.
 
 <SEOImage
   src={"/posts/lora/inference_time.png"}
