@@ -35,8 +35,8 @@ const { headings, Content } = await post.render();
 
 <Layout title={`AIdventure - ${post.data.title}`} current_page="blog">
     <div class="mb-0 lg:mb-24" data-pagefind-body>
-        <div class="px-6 lg:w-10/12 xl:px-12 w-full flex flex-col xl:w-6/12 mx-auto">
-            <h1 data-pagefind-weight="10" class="text-4xl xl:text-5xl font-bold xl:tracking-tight mt-1 xl:leading-tight xl:col-span-8 xl:col-start-2">
+        <div class="lg:w-10/12 w-full flex flex-col 2xl:w-8/12 mx-auto">
+            <h1 data-pagefind-weight="10" class="text-4xl 2xl:text-5xl font-bold 2xl:tracking-tight mt-1 2xl:leading-tight 2xl:col-span-8 2xl:col-start-2">
                 {post.data.title}
             </h1>
             <Image
@@ -47,7 +47,7 @@ const { headings, Content } = await post.render();
                 format="webp"
                 class="w-full rounded-2xl shadow-xl mt-6 object-cover col-span-8 col-start-2"
             />
-            <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 xl:mb-8 col-span-8 col-start-2">
+            <div class="flex flex-row flex-wrap gap-1 pb-3 text-sm text-gray-500 mt-6 mb-4 2xl:mb-8 col-span-8 col-start-2">
                 <span>{post.data.author}</span>
                 <span aria-hidden="true">·</span>
                 <time datetime={post.data.date}>{post.data.date}</time>
@@ -56,9 +56,9 @@ const { headings, Content } = await post.render();
             </div>
         </div>
         
-        <div class="w-full xl:w-10/12 mx-auto">
-            <div class="grid grid-cols-12 xl:grid-cols-10">
-                <main class="px-6 xl:px-12 order-2 lg:order-1 col-span-12 lg:col-span-8 lg:col-start-2 xl:col-span-6 xl:col-start-3">
+        <div class="w-full 2xl:w-8/12 mx-auto">
+            <div class="grid grid-cols-12">
+                <main class="order-2 lg:order-1 col-span-12 lg:col-span-10 lg:col-start-0">
                     <div class=`
                         prose max-w-none
                         prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl
@@ -67,7 +67,7 @@ const { headings, Content } = await post.render();
                         <Content />
                     </div>
                 </main>
-                <div class="order-1 hidden lg:block lg:order-2 col-span-12 px-6 xl:px-8 mb-8 xl:mb-0 lg:col-span-2">
+                <div class="order-1 hidden lg:block lg:order-2 col-span-12 mb-8 2xl:mb-0 lg:col-span-2">
                     <div class="lg:sticky lg:top-20 lg:ms-8 w-full">
                         <h2 class="font-semibold text-2xl lg:text-base">Table of Contents</h2>
                         <TOC headings={headings} />
