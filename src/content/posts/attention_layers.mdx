@@ -32,7 +32,7 @@ Finally, the output is the weighted dot product of the attention weights and the
 The idea of the Attention mechanism is to model the relationships between the tokens in the input sequence.
 
 The Multi-Head Attention extends this idea by computing multiple attention heads in parallel,
-splitting the query, key, and value vectors into $n_heads$ different heads.
+splitting the query, key, and value vectors into $n_{heads}$ different heads.
 If you notice, in a simple attention mechanism, when calculating the product between
 the attention weights and the value matrix, we are modeling relationships between tokens based
 on a single set of attention patterns. However, in Multi-Head Attention,
@@ -71,7 +71,7 @@ we need to compute the dot product between the Attention Scores and the Value Ve
 
 The Value Layer Weights are allways the same, as we are at inference, then Value Vectors for the tokens 
 previous to the last token are the same and we just need to compute the new last one.
-We can <Underlined color="red">**cache Value Vectors from pevious tokens and reuse them**</Underlined>.
+We can <Underlined color="red">**cache Value Vectors from previous tokens and reuse them**</Underlined>.
 
 Regarding the <Underlined color="green">Attention Scores</Underlined>, for obtaining the last token representation of the Value Reweighted we just need
 the Attention Scores of the last token. For calculating this final attention row, we just need the <Underlined color="orange">Query Vectors of the last token</Underlined> and make the dot product with all the Key Vectors. But the Key Vectors from previous tokens 
@@ -97,7 +97,7 @@ and for that one we just need the last Query Vector.
 
 Caching the Key and Value Vectors, we can save computations and **speed up the inference process**. The cost of
 caching those vectors is **$l \times b \times n \times h \times s \times 2 \times 2$**, where the final terms $2 \times 2$
-correspond to the number of caches per layer (o.e. one for Key and one for Value), and the number of bytes per floating
+correspond to the number of caches per layer (one for Key and one for Value), and the number of bytes per floating
 point value (assuming each model parameter is a 16-bit floating point value), respectively. The rest of the terms are:
 
 <Table>
@@ -162,7 +162,7 @@ and therefore the performance of the model will be affected. But, it will reduce
 The cost of caching the Key and Value Vectors is **$l \times b \times h \times s \times 2 \times 2$**.
 Note how the number of attention heads $n$ is not present in the formula.
 
-### Inneficient Parallelization
+### Inefficient Parallelization
 
 Many large Transformer models require more memory than can fit on a single GPU, employing model 
 parallelism to distribute the model across multiple GPUs. This is accomplished usually with Tensor Parallelism,
@@ -172,12 +172,12 @@ For example, 175B GPT-3 model has 96 attention heads, and if we have 8 GPUs, we 
 
 Each GPU performs the entire attention computation for its assigned heads, then all GPUs exchange the results
 of their computations. With Multi-Query Attention, **each attention head has the same set of Key and Value Vectors**,
-computing and caching the same set of Key and Value Vectors in each GPU. This is **inneficient**, as we are computing
+computing and caching the same set of Key and Value Vectors in each GPU. This is **inefficient**, as we are computing
 the same values in each GPU at the same time we are reducing the capacity of the model.
 
 ## Grouped-Query Attention
 
-Grouped-Query Attention tries to solve the inneficient parallelization of Multi-Query Attention.
+Grouped-Query Attention tries to solve the inefficient parallelization of Multi-Query Attention.
 To do so, it proposes to increase the number of Key and Value Vectors heads to an arbitrary number,
 an hyperparameter $G$. The Query Vectors are grouped in $G$ groups,
 and each group has a different set of Key and Value Vectors.
@@ -194,7 +194,7 @@ and each group has a different set of Key and Value Vectors.
 />
 
 When operating in a **multi-GPU environment** with tensor parallelism, we can essentially get the **same speed up as
-Multi-Query Attention** by setting **$G$ equal to the number of GPUs**, but with the advatange of providing the model
+Multi-Query Attention** by setting **$G$ equal to the number of GPUs**, but with the advantage of providing the model
 with more capacity and performance. The cost of caching the Key and Value Vectors is **$l \times b \times G \times h \times s \times 2 \times 2$**.
 Note how the number of attention heads $n$ is not present in the formula, being replaced by the hyperparameter $G$.
 
