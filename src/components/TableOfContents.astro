@@ -53,88 +53,97 @@ const filteredHeadings = headings.filter((h) => h.depth <= 3);
 
 <script is:inline>
   function initializeTOC() {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-100px 0px -66% 0px',
-      threshold: 0
-    };
-
-    let currentActiveId = null;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const id = entry.target.getAttribute('id');
-        
-        if (entry.isIntersecting) {
-          // Prevent redundant updates
-          if (currentActiveId === id) return;
-          currentActiveId = id;
-          
-          // Reset all links to inactive state
-          document.querySelectorAll('.toc-link').forEach((link) => {
-             link.classList.remove('active-toc');
-          });
-
-          // Find all links (desktop & mobile) pointing to this header
-          const activeLinks = document.querySelectorAll('.toc-link[href="#' + id + '"]');
-          
-          activeLinks.forEach((link) => {
-             link.classList.add('active-toc');
-          });
-        }
-      });
-    }, observerOptions);
-
-    // Observe all headers inside the article
     const headers = document.querySelectorAll('article h2, article h3');
+    let currentActiveId = null;
+    let lastScrollY = window.pageYOffset;
     
-    headers.forEach((h) => {
-      observer.observe(h);
-    });
+    function setActiveLink(id) {
+      if (currentActiveId === id) return;
+      currentActiveId = id;
+      
+      // Reset all links to inactive state
+      document.querySelectorAll('.toc-link').forEach((link) => {
+        link.classList.remove('active-toc');
+      });
 
-    // Set the first item as active on page load
-    if (headers.length > 0) {
-      const firstHeader = headers[0];
-      const firstId = firstHeader.getAttribute('id');
-      if (firstId) {
-        const firstLinks = document.querySelectorAll('.toc-link[href="#' + firstId + '"]');
-        firstLinks.forEach((link) => {
-          link.classList.add('active-toc');
-        });
-        currentActiveId = firstId;
-      }
+      // Find all links (desktop & mobile) pointing to this header
+      const activeLinks = document.querySelectorAll('.toc-link[href="#' + id + '"]');
+      activeLinks.forEach((link) => {
+        link.classList.add('active-toc');
+      });
     }
 
-    // Handle scroll to bottom - activate last section
-    function handleScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    function updateActiveSection() {
+      const scrollY = window.pageYOffset;
+      const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+      lastScrollY = scrollY;
+      
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
       
-      // Check if we're at the bottom (with small threshold)
-      if (scrollTop + windowHeight >= docHeight - 10) {
+      // Check if we're at the bottom
+      if (scrollY + windowHeight >= docHeight - 10) {
         const lastHeader = headers[headers.length - 1];
-        const lastId = lastHeader.getAttribute('id');
-        
-        if (lastId && currentActiveId !== lastId) {
-          currentActiveId = lastId;
-          
-          // Reset all links
-          document.querySelectorAll('.toc-link').forEach((link) => {
-            link.classList.remove('active-toc');
-          });
-          
-          // Activate last section
-          const lastLinks = document.querySelectorAll('.toc-link[href="#' + lastId + '"]');
-          lastLinks.forEach((link) => {
-            link.classList.add('active-toc');
-          });
+        const lastId = lastHeader?.getAttribute('id');
+        if (lastId) {
+          setActiveLink(lastId);
+          return;
         }
+      }
+      
+      // Find which section is currently "active"
+      let activeId = null;
+      
+      if (scrollDirection === 'down') {
+        // When scrolling down, activate when header passes the top threshold
+        const threshold = 150; // pixels from top
+        for (let i = headers.length - 1; i >= 0; i--) {
+          const header = headers[i];
+          const rect = header.getBoundingClientRect();
+          
+          if (rect.top <= threshold) {
+            activeId = header.getAttribute('id');
+            break;
+          }
+        }
+      } else {
+        // When scrolling up, activate section whose header is above viewport
+        // but activate it sooner (when header is still visible or just above)
+        const threshold = 150; // More generous threshold for upward scrolling
+        for (let i = headers.length - 1; i >= 0; i--) {
+          const header = headers[i];
+          const rect = header.getBoundingClientRect();
+          
+          // Activate if header is above the threshold or we're still in its content
+          if (rect.top <= threshold) {
+            activeId = header.getAttribute('id');
+            break;
+          }
+        }
+      }
+      
+      // If no section found and we're near the top, activate the first one
+      if (!activeId && scrollY < 300 && headers.length > 0) {
+        activeId = headers[0].getAttribute('id');
+      }
+      
+      if (activeId) {
+        setActiveLink(activeId);
       }
     }
     
-    // Add scroll listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Set initial active section
+    updateActiveSection();
+    
+    // Update on scroll
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      // Use requestAnimationFrame for smooth updates
+      if (scrollTimeout) {
+        window.cancelAnimationFrame(scrollTimeout);
+      }
+      scrollTimeout = window.requestAnimationFrame(updateActiveSection);
+    }, { passive: true });
   }
 
   // Initialize on both DOMContentLoaded and astro:page-load
@@ -183,4 +192,5 @@ const filteredHeadings = headings.filter((h) => h.depth <= 3);
   .custom-scrollbar::-webkit-scrollbar { width: 4px; }
   .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
   .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e7e5e4; border-radius: 20px; }
+</style>
 </style>
