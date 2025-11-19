@@ -1,16 +1,53 @@
 ---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
 
+// Get posts and sort by date
+const posts = (await getCollection('posts')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>AIdventure</title>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col">
+		
+        <header class="mb-20 mt-10">
+            <h1 class="font-serif text-5xl mb-4">AIdventure.</h1>
+            <p class="text-stone-500 font-sans">Exploring AI and machine learning — one paper, tool, and technique at a time.</p>
+        </header>
+
+        <main class="space-y-12 flex-grow">
+            {posts.map((post, index) => (
+                <a href={`/posts/${post.slug}`} class="block group">
+                    <article class="flex flex-col md:flex-row gap-6 items-start">
+                        {post.data.image && (
+                             <div class="w-full md:w-48 h-38 overflow-hidden rounded-lg bg-stone-200 shrink-0">
+                                <Image src={post.data.image} alt="" class="w-full h-full object-cover transition transform group-hover:scale-105 duration-500" loading={index === 0 ? "eager" : "lazy"} />
+                             </div>
+                        )}
+                        <div>
+                            <h2 class="text-2xl font-serif font-medium group-hover:text-stone-600 transition-colors">
+                                {post.data.title}
+                            </h2>
+                            <p class="text-stone-400 text-sm mt-2 font-sans mb-2">
+                                {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </p>
+                            <p class="text-stone-600 leading-relaxed">
+                                {post.data.description}
+                            </p>
+                        </div>
+                    </article>
+                </a>
+            ))}
+        </main>
+
+        <Footer />
 	</body>
 </html>

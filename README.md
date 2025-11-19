@@ -41,3 +41,21 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## Build and test
+
+Here are the available commands for your Astro blog. To build the project:
+```bash
+pnpm build
+```
+
+This will create a production-ready build in the `dist/` directory. To preview the built site:
+```bash
+pnpm preview
+```
+
+This will serve the production build locally so you can test it before deploying. To run in development mode:
+```bash
+pnpm dev
+```
+This runs the dev server with hot reloading (which you're likely already familiar with).

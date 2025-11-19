@@ -1,0 +1,155 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter((h) => h.depth <= 3);
+---
+
+<nav class="toc-container">
+  
+  <details class="lg:hidden bg-white/40 border border-stone-200 rounded-lg p-4 mb-8">
+    <summary class="font-sans font-bold cursor-pointer list-none flex justify-between items-center text-stone-600">
+      <span>Table of Contents</span>
+      <span class="text-xl">+</span>
+    </summary>
+    <ul class="mt-4 space-y-3">
+      {filteredHeadings.map((heading) => (
+        <li class={`text-sm ${heading.depth === 3 ? 'pl-4' : ''}`}>
+          <a href={`#${heading.slug}`} class="toc-link mobile-link text-stone-600 block transition-colors">
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </details>
+
+  <div class="hidden lg:block max-h-[80vh] overflow-y-auto overflow-x-hidden custom-scrollbar">
+    <h2 class="font-sans text-xs font-bold uppercase tracking-widest text-stone-400 mb-6">
+      On this page
+    </h2>
+    <ul class="space-y-1 border-l border-stone-200">
+      {filteredHeadings.map((heading) => (
+        <li>
+          <a 
+            href={`#${heading.slug}`} 
+            class={`
+              toc-link desktop-link block py-1 text-sm
+              ${heading.depth === 3 ? 'pl-6' : 'pl-4'}
+              border-l-2 border-transparent -ml-[3px]
+              text-stone-500 hover:text-stone-900
+              transition-colors duration-200
+            `}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+</nav>
+
+<script is:inline>
+  function initializeTOC() {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-100px 0px -66% 0px',
+      threshold: 0
+    };
+
+    let currentActiveId = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const id = entry.target.getAttribute('id');
+        
+        if (entry.isIntersecting) {
+          // Prevent redundant updates
+          if (currentActiveId === id) return;
+          currentActiveId = id;
+          
+          // Reset all links to inactive state
+          document.querySelectorAll('.toc-link').forEach((link) => {
+             link.classList.remove('active-toc');
+          });
+
+          // Find all links (desktop & mobile) pointing to this header
+          const activeLinks = document.querySelectorAll('.toc-link[href="#' + id + '"]');
+          
+          activeLinks.forEach((link) => {
+             link.classList.add('active-toc');
+          });
+        }
+      });
+    }, observerOptions);
+
+    // Observe all headers inside the article
+    const headers = document.querySelectorAll('article h2, article h3');
+    
+    headers.forEach((h) => {
+      observer.observe(h);
+    });
+
+    // Set the first item as active on page load
+    if (headers.length > 0) {
+      const firstHeader = headers[0];
+      const firstId = firstHeader.getAttribute('id');
+      if (firstId) {
+        const firstLinks = document.querySelectorAll('.toc-link[href="#' + firstId + '"]');
+        firstLinks.forEach((link) => {
+          link.classList.add('active-toc');
+        });
+        currentActiveId = firstId;
+      }
+    }
+  }
+
+  // Initialize on both DOMContentLoaded and astro:page-load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTOC);
+  } else {
+    initializeTOC();
+  }
+  
+  // Also support Astro view transitions if enabled
+  document.addEventListener('astro:page-load', initializeTOC);
+</script>
+
+<style>
+  /* DEFINING THE ACTIVE STATE 
+    We use a CSS class '.active-toc' controlled by the script above.
+  */
+
+  /* Desktop Active State */
+  .desktop-link {
+    transition: all 0.2s ease;
+  }
+  
+  .desktop-link.active-toc {
+    color: #000000 !important;
+    /* Use text-shadow to simulate bold without changing width */
+    text-shadow: 0 0 0.5px currentColor;
+    letter-spacing: -0.01em;
+    border-left-color: #333333 !important;
+    transform: translateX(4px);
+  }
+
+  /* Mobile Active State */
+  .mobile-link {
+    transition: all 0.2s ease;
+  }
+  
+  .mobile-link.active-toc {
+    color: #000000 !important;
+    text-shadow: 0 0 0.5px currentColor;
+    letter-spacing: -0.01em;
+    text-decoration: underline;
+  }
+
+  /* Scrollbar Aesthetics */
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e7e5e4; border-radius: 20px; }
+</style>

@@ -1,0 +1,21 @@
+---
+interface Props {
+  color?: 'yellow' | 'green' | 'purple' | 'blue' | 'red';
+}
+
+const { color = 'yellow' } = Astro.props;
+
+const colors = {
+  yellow: 'bg-yellow-200',
+  green: 'bg-green-200',
+  purple: 'bg-purple-200',
+  blue: 'bg-blue-200',
+  red: 'bg-red-200',
+};
+
+const selectedColor = colors[color] || colors.yellow;
+---
+
+<span class={`${selectedColor} px-1 rounded-md decoration-clone box-decoration-clone`}>
+  <slot />
+</span>
