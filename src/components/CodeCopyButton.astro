@@ -1,0 +1,154 @@
+---
+// This component adds copy buttons to all code blocks
+---
+
+<script>
+  function setupCodeCopyButtons() {
+    // Find all pre elements (code blocks)
+    const codeBlocks = document.querySelectorAll('pre');
+
+    codeBlocks.forEach((pre) => {
+      // Skip if already processed
+      if (pre.parentElement?.classList.contains('code-block-wrapper')) {
+        return;
+      }
+
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper';
+      
+      // Insert wrapper before pre and move pre into wrapper
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      // Create copy button
+      const button = document.createElement('button');
+      button.className = 'code-copy-button';
+      button.setAttribute('aria-label', 'Copy code');
+      button.innerHTML = `
+        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+          <path d="M9 15C9 12.1716 9 10.7574 9.87868 9.87868C10.7574 9 12.1716 9 15 9L16 9C18.8284 9 20.2426 9 21.1213 9.87868C22 10.7574 22 12.1716 22 15V16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H15C12.1716 22 10.7574 22 9.87868 21.1213C9 20.2426 9 18.8284 9 16L9 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M16.9999 9C16.9975 6.04291 16.9528 4.51121 16.092 3.46243C15.9258 3.25989 15.7401 3.07418 15.5376 2.90796C14.4312 2 12.7875 2 9.5 2C6.21252 2 4.56878 2 3.46243 2.90796C3.25989 3.07417 3.07418 3.25989 2.90796 3.46243C2 4.56878 2 6.21252 2 9.5C2 12.7875 2 14.4312 2.90796 15.5376C3.07417 15.7401 3.25989 15.9258 3.46243 16.092C4.51121 16.9528 6.04291 16.9975 9 16.9999" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <svg class="check-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+          <path d="M3 13.3333C3 13.3333 4.5 14 6.5 17C6.5 17 6.78485 16.5192 7.32133 15.7526M17 6C14.7085 7.14577 12.3119 9.55181 10.3879 11.8223" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M8 13.3333C8 13.3333 9.5 14 11.5 17C11.5 17 17 8.5 22 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      `;
+
+      // Add click handler
+      button.addEventListener('click', async () => {
+        const code = pre.querySelector('code');
+        const text = code?.textContent || '';
+
+        try {
+          await navigator.clipboard.writeText(text);
+          
+          // Add the "copied" class for green styling
+          button.classList.add('copied');
+          
+          // Show check icon
+          const copyIcon = button.querySelector('.copy-icon');
+          const checkIcon = button.querySelector('.check-icon');
+          
+          if (copyIcon && checkIcon) {
+            copyIcon.classList.add('hidden');
+            checkIcon.classList.remove('hidden');
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+              copyIcon.classList.remove('hidden');
+              checkIcon.classList.add('hidden');
+              button.classList.remove('copied');
+            }, 2000);
+          }
+        } catch (err) {
+          console.error('Failed to copy code:', err);
+        }
+      });
+
+      wrapper.appendChild(button);
+    });
+  }
+
+  // Run on page load
+  setupCodeCopyButtons();
+
+  // Re-run after view transitions (if using Astro's view transitions)
+  document.addEventListener('astro:page-load', setupCodeCopyButtons);
+</script>
+
+<style is:global>
+  .code-block-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+    display: block;
+    isolation: isolate;
+  }
+
+  .code-block-wrapper pre {
+    margin: 0 !important;
+    position: relative;
+  }
+
+  .code-copy-button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.5rem;
+    background-color: rgba(103, 103, 103, 0.45);
+    border: 1px solid rgb(144, 144, 144);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(144, 144, 144);
+    opacity: 1;
+    z-index: 10;
+  }
+
+  .code-block-wrapper:hover .code-copy-button {
+    opacity: 1;
+  }
+
+    /* --- 1. HOVER STATE --- */
+    /* Brighten everything up so the user knows it's clickable */
+    .code-copy-button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* Subtle lift */
+    }
+
+    /* --- 2. ACTIVE STATE (Click) --- */
+    /* Gives the button a tactile "pressed" feel */
+    .code-copy-button:active {
+        background-color: rgba(255, 255, 255, 0.15);
+        transform: scale(0.95); /* Shrinks slightly */
+    }
+
+    /* --- 3. SUCCESS STATE (The "Copied" Class) --- */
+    /* You toggle this class with JS when the user clicks */
+    .code-copy-button.copied {
+        border-color: #63bd84; /* Green Border */
+        color: #9ce5b7; /* Green Icon/Text */
+        background-color: rgba(74, 222, 128, 0.1); /* Faint green background */
+    }
+
+  .code-copy-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .code-copy-button .hidden {
+    display: none;
+  }
+
+  /* Ensure code blocks don't have conflicting margins */
+  .code-block-wrapper + .code-block-wrapper {
+    margin-top: 1.5rem;
+  }
+</style>
+

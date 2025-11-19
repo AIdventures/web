@@ -27,7 +27,6 @@
   pre {
     border-radius: 0.5rem;
     padding: 1rem;
-    margin: 1.5rem 0;
     border: 1px solid rgba(0,0,0,0.05);
     overflow-x: auto;
   }
@@ -185,6 +184,16 @@
 
   .prose tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  /* Code block wrapper for copy button */
+  .prose .code-block-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+  }
+
+  .prose .code-block-wrapper pre {
+    margin: 0;
   }
 }
 
