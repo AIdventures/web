@@ -104,6 +104,37 @@ const filteredHeadings = headings.filter((h) => h.depth <= 3);
         currentActiveId = firstId;
       }
     }
+
+    // Handle scroll to bottom - activate last section
+    function handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      
+      // Check if we're at the bottom (with small threshold)
+      if (scrollTop + windowHeight >= docHeight - 10) {
+        const lastHeader = headers[headers.length - 1];
+        const lastId = lastHeader.getAttribute('id');
+        
+        if (lastId && currentActiveId !== lastId) {
+          currentActiveId = lastId;
+          
+          // Reset all links
+          document.querySelectorAll('.toc-link').forEach((link) => {
+            link.classList.remove('active-toc');
+          });
+          
+          // Activate last section
+          const lastLinks = document.querySelectorAll('.toc-link[href="#' + lastId + '"]');
+          lastLinks.forEach((link) => {
+            link.classList.add('active-toc');
+          });
+        }
+      }
+    }
+    
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
   }
 
   // Initialize on both DOMContentLoaded and astro:page-load
