@@ -11,11 +11,14 @@ description: 'Fine-tuning large language models via trainable rank decomposition
 pubDate: 2021-06-17
 image: ./images/lora/mystic.jpg
 ---
+
+import Highlight from '../../components/Highlight.astro';
+
 ## Abstract
 
 Do we need to fine-tune all the parameters? How expressive should the matrix updates be?
 
-As we want to fine-tune larger models, retraining all the parameters becomes less feasible. **Lo**w-**R**ank **A**daptation (LoRA) proposes to <mark style="background: #FFF3A3A6;">freeze the pretrained model weights and inject trainable rank decomposition matrices</mark> into each layer of the architecture. LoRA reduces the trainable parameters while performing on-par than full fine-tuning.
+As we want to fine-tune larger models, retraining all the parameters becomes less feasible. **Lo**w-**R**ank **A**daptation (LoRA) proposes to <Highlight color="yellow">freeze the pretrained model weights and inject trainable rank decomposition matrices</Highlight> into each layer of the architecture. LoRA reduces the trainable parameters while performing on-par than full fine-tuning.
 
 > The principal idea apply to any dense layers in deep learning models.
 
@@ -45,11 +48,11 @@ LoRA uses a random Gaussian Initialization for $A$ and zero for B, so $\Delta W 
 
 Typically, $\alpha$ is set equal to $r$. A higher $\alpha$ results in smaller updates, which can lead to more stable but potentially slower learning. Conversely, a lower $\alpha$ results in larger updates, which can speed up learning but also increase the risk of instability.
 
-<mark style="background: #ABF7F7A6;">At training</mark> time $W_0$ and $\Delta W = B A$ are multiplied with the same input, and their respective output <mark style="background: #FFF3A3A6;">vectors are summed coordinate-wise</mark>.
+<Highlight color="cyan">At training</Highlight> time $W_0$ and $\Delta W = B A$ are multiplied with the same input, and their respective output <Highlight color="yellow">vectors are summed coordinate-wise</Highlight>.
 
 ![LoRA training time](./images/lora/train_time.png)
 
-<mark style="background: #ABF7F7A6;">During inference</mark>, <mark style="background: #FFF3A3A6;">when initializing the model</mark>, we can <mark style="background: #FFF3A3A6;">merge the two matrices</mark> into a single matrix $W = W_0 + B A$ and apply the same input to $W$.
+<Highlight color="cyan">During inference</Highlight>, <Highlight color="yellow">when initializing the model</Highlight>, we can <Highlight color="yellow">merge the two matrices</Highlight> into a single matrix $W = W_0 + B A$ and apply the same input to $W$.
 
 ![LoRA inference time](./images/lora/inference_time.png)
 
@@ -58,13 +61,13 @@ Typically, $\alpha$ is set equal to $r$. A higher $\alpha$ results in smaller up
 
 In the Transformer architecture there are four weight matrices in the self-attention module ($W_q$, $W_k$, $W_v$, $W_o$) and two in the MLP module. Authors limit the study to **only adapting the attention weights** for downstream tasks and freeze the MLP modules.
 
-The most significant benefit comes from the <mark style="background: #FFF3A3A6;">reduction in memory</mark> and storage usage. For a large Transformer trained with Adam, we reduce the VRAM usage by up to $2/3$ if $r \ll d_{model}$ as we do not need to store the optimizer states for the frozen parameters. This allows to train with significantly fewer GPUs and around a 25% speedup during the training compared to full fine-tuning, as we do not need to calculate the gradient for the vast majority of the parameters.
+The most significant benefit comes from the <Highlight color="yellow">reduction in memory</Highlight> and storage usage. For a large Transformer trained with Adam, we reduce the VRAM usage by up to $2/3$ if $r \ll d_{model}$ as we do not need to store the optimizer states for the frozen parameters. This allows to train with significantly fewer GPUs and around a 25% speedup during the training compared to full fine-tuning, as we do not need to calculate the gradient for the vast majority of the parameters.
 
 ## Benefits 
 
-- **Computing Efficiency**: LoRA makes training more efficient and lowers the hardware barrier to entry by up to 3 times when using adaptive optimizers since <mark style="background: #BBFABBA6;">LoRA does not need to calculate the grandients or maintain the optimizer states for most parameters</mark>. Instead LoRA only optimize the injected, much smaller low-rank matrices.
+- **Computing Efficiency**: LoRA makes training more efficient and lowers the hardware barrier to entry by up to 3 times when using adaptive optimizers since <Highlight color="green">LoRA does not need to calculate the grandients or maintain the optimizer states for most parameters</Highlight>. Instead LoRA only optimize the injected, much smaller low-rank matrices.
 
-- **No Additional Latency**: By merging the trainable matrices with the frozen weights when deployed, $W= W_0 + BA$, introducing <mark style="background: #BBFABBA6;">no inference additional latency</mark>.
+- **No Additional Latency**: By merging the trainable matrices with the frozen weights when deployed, $W= W_0 + BA$, introducing <Highlight color="green">no inference additional latency</Highlight>.
 
 - **Task Switching**: A pre-trained model can be shared and used to build many small LoRA modules for different tasks. The shared model can be freezed and efficiently switch tasks by replacing the LoRA modules. Note that both $W_O$ and $BA$ are in $\mathbb{R}^{d \times k}$, so when we need to switch to another downstream task, we can recover $W_0$ by subtracting $BA$ and adding a different $B'A'$, a quick operation with very little memory overhead.
 

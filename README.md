@@ -71,6 +71,16 @@ This runs the dev server with hot reloading (which you're likely already familia
 <mark style="background: #FFB86CA6;">  (ORANGE)
 ```
 
+## Migration Scripts
+
+To migrate legacy mark tags from posts, use the `scripts/migrate_marks.py` script:
+
+```bash
+python3 scripts/migrate_marks.py
+```
+
+This script scans `src/content/posts` for MDX files containing `<mark>` tags with specific background colors and replaces them with the `<Highlight>` component.
+
 ## To-Review
 
 From time to time need to review:

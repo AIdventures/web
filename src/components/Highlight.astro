@@ -1,16 +1,19 @@
 ---
 interface Props {
-  color?: 'yellow' | 'green' | 'purple' | 'blue' | 'red';
+  color?: 'yellow' | 'green' | 'purple' | 'blue' | 'red' | 'orange' | 'brown' | 'cyan';
 }
 
 const { color = 'yellow' } = Astro.props;
 
 const colors = {
-  yellow: 'bg-yellow-200',
-  green: 'bg-green-200',
-  purple: 'bg-purple-200',
-  blue: 'bg-blue-200',
-  red: 'bg-red-200',
+  yellow: 'bg-[#FFF3A3A6]',
+  green: 'bg-[#BBFABBA6]',
+  purple: 'bg-[#D2B3FFA6]',
+  blue: 'bg-[#ADCCFFA6]',
+  red: 'bg-[#FFB8EBA6]',
+  orange: 'bg-[#FFB86CA6]',
+  brown: 'bg-[#D8C0AFD8]',
+  cyan: 'bg-[#ABF7F7A6]',
 };
 
 const selectedColor = colors[color] || colors.yellow;

@@ -10,14 +10,17 @@ description: 'Multi-head, Multi-Query & Grouped-Query Attention layers clearly e
 pubDate: 2024-09-11
 image: ./images/speeding_attention/snowy.jpg
 ---
+
+import Highlight from '../../components/Highlight.astro';
+
 This post delves into the fascinating world of attention layers,
 exploring their evolution from the base multi-head attention to more recent variants
 like multi-query and grouped-query attention.
 We'll examine why these newer architectures appeared
 and how they address the limitations of their predecessors.
 
-As advance, the <mark style="background: #FFF3A3A6;">inference complexities</mark>, spatial and temporal,
-are the core of the improvements, focusing on how to <mark style="background: #FFF3A3A6;">reduce the cache</mark> needed
+As advance, the <Highlight color="yellow">inference complexities</Highlight>, spatial and temporal,
+are the core of the improvements, focusing on how to <Highlight color="yellow">reduce the cache</Highlight> needed
 without losing the performance of the model.
 
 
@@ -36,9 +39,9 @@ If you notice, in a simple attention mechanism, when calculating the product bet
 the attention weights and the value matrix, we are modeling relationships between tokens based
 on a single set of attention patterns. However, in Multi-Head Attention,
 we create multiple sets of queries, keys, and values through linear projections of the input.
-This allows us to apply the <mark style="background: #FFF3A3A6;">attention mechanism separately for each *head*</mark>,
+This allows us to apply the <Highlight color="yellow">attention mechanism separately for each *head*</Highlight>,
 enabling the model to 
-<mark style="background: #BBFABBA6;">capture different aspects of the relationships between tokens simultaneously</mark>.
+<Highlight color="green">capture different aspects of the relationships between tokens simultaneously</Highlight>.
 Each head can focus on different features or patterns in the data,
 providing multiple perspectives on the input.
 The outputs from all heads are then combined,
@@ -55,19 +58,19 @@ or embedding size. The $head\_size$ is the size of the hidden layer in each head
 
 Transformer models are huge and different optimization techniques appeared to speed up the inference.
 The objective of our model inference is to produce the next token that follows the last token in the intput sequence (next token prediction).
-What do we need to compute this? Just the <mark style="background:rgba(216, 192, 175, 0.85);">final embedding of the last token</mark>, the last token representation of the Value Reweighted.
+What do we need to compute this? Just the <Highlight color="brown">final embedding of the last token</Highlight>, the last token representation of the Value Reweighted.
 
 To obtain this embedding, last token representation of the Value Reweighted,
 we need to compute the dot product between the Attention Scores and the Value Vectors.
 
 The Value Layer Weights are allways the same, as we are at inference, then Value Vectors for the tokens 
 previous to the last token are the same and we just need to compute the new last one.
-We can <mark style="background: #FFB8EBA6;">**cache Value Vectors from previous tokens and reuse them**</mark>.
+We can <Highlight color="red">**cache Value Vectors from previous tokens and reuse them**</Highlight>.
 
-Regarding the <mark style="background: #BBFABBA6;">Attention Scores</mark>, for obtaining the last token representation of the Value Reweighted we just need
-the Attention Scores of the last token. For calculating this final attention row, we just need the <mark style="background: #FFB86CA6;">Query Vectors of the last token</mark> and make the dot product with all the Key Vectors. But the Key Vectors from previous tokens 
+Regarding the <Highlight color="green">Attention Scores</Highlight>, for obtaining the last token representation of the Value Reweighted we just need
+the Attention Scores of the last token. For calculating this final attention row, we just need the <Highlight color="orange">Query Vectors of the last token</Highlight> and make the dot product with all the Key Vectors. But the Key Vectors from previous tokens 
 are the same than when were computed in the previous step,
-then we can <mark style="background: #D2B3FFA6;">**cache Key Vectors from pevious tokens and reuse them**</mark>.
+then we can <Highlight color="purple">**cache Key Vectors from pevious tokens and reuse them**</Highlight>.
 
 And with this last token embedding and the Key and Value vectors cached,
 we can iterate over the Transformer blocks and compute the final embedding of the last token representation.

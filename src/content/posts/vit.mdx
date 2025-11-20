@@ -11,17 +11,20 @@ description: 'Google shows how treating image patches as tokens can revolutioniz
 pubDate: 2020-10-22
 image: ./images/vit/valy.jpg
 ---
+
+import Highlight from '../../components/Highlight.astro';
+
 ## Abstract
   
 Self-attention-based architectures, in particular [[Transformer - Attention Is All You Need|Transformers]], have become the model of choice in natural language processing (NLP). The predominant approach is to pre-train on a large text corpus and then fine-tune on a smaller task-specific dataset.
 
-ViT experiments with applying a standard Transformer directly to images, with the fewest possible modifications. To do so, <mark style="background: #BBFABBA6;">ViT splits an image into patches</mark> and provide the sequence of linear embeddings of these patches as an input to a Transformer. Image patches are treated the same way as tokens (words) in NLP applications. ViT model is trained on image classification in <mark style="background: #BBFABBA6;">supervised fashion</mark>.  
+ViT experiments with applying a standard Transformer directly to images, with the fewest possible modifications. To do so, <Highlight color="green">ViT splits an image into patches</Highlight> and provide the sequence of linear embeddings of these patches as an input to a Transformer. Image patches are treated the same way as tokens (words) in NLP applications. ViT model is trained on image classification in <Highlight color="green">supervised fashion</Highlight>.  
 
-When trained on mid-sized datasets ViT yields modest accuracies: Transformers lack some of the inductive biases inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well when trained on insufficient amounts of data. However, the picture changes if <mark style="background: #FFF3A3A6;">ViT is trained on larger datasets</mark>, trumping inductive biases, achieving excellent results.
+When trained on mid-sized datasets ViT yields modest accuracies: Transformers lack some of the inductive biases inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well when trained on insufficient amounts of data. However, the picture changes if <Highlight color="yellow">ViT is trained on larger datasets</Highlight>, trumping inductive biases, achieving excellent results.
 
 ## Architecture
 
-ViT's model architecture is a multi-layer <mark style="background:rgba(216, 192, 175, 0.85);">bidirectional Transformer Encoder</mark>, inspired in [[BERT - Bidirectional Encoder Representations from Transformers|BERT]] and following the original [[Transformer - Attention Is All You Need|Transformer]] design as closely as possible.
+ViT's model architecture is a multi-layer <Highlight color="brown">bidirectional Transformer Encoder</Highlight>, inspired in [[BERT - Bidirectional Encoder Representations from Transformers|BERT]] and following the original [[Transformer - Attention Is All You Need|Transformer]] design as closely as possible.
 
 ![ViT architecture](./images/vit/architecture.png)
 
@@ -39,9 +42,9 @@ and the number of self-attention heads as $A$. ViT initial model designs are the
 
 The standard Transformer receives as input a 1D sequence of token embeddings. Naive application of self-attention to images would require that each pixel attends to every other pixel. With quadratic cost in the number of pixels, this does not scale to realistic input sizes.
 
-To handle 2D images, we reshape each image into a sequence of <mark style="background: #BBFABBA6;">flattened 2D patches of an arbitrary size</mark>. The resulting number of patches serves as the effective input sequence length for the Transformer. The Transformer uses constant latent vector size $H$ through all of its layers, so the patches are mapped to $H$ dimensions with a trainable linear projection. ViT refers to the output of this projection as the patch embeddings.
+To handle 2D images, we reshape each image into a sequence of <Highlight color="green">flattened 2D patches of an arbitrary size</Highlight>. The resulting number of patches serves as the effective input sequence length for the Transformer. The Transformer uses constant latent vector size $H$ through all of its layers, so the patches are mapped to $H$ dimensions with a trainable linear projection. ViT refers to the output of this projection as the patch embeddings.
 
-<mark style="background: #FFF3A3A6;">A simple way to perform patch division and prediction is through 2D convolution</mark>. The kernel will be of the desired patch size, introducing a stride of the patch size as well, so that there is no overlap between the pixels. On the other hand, <mark style="background: #FFF3A3A6;">to achieve H dimensions</mark>, we will just need to set $H$ (also known as *n_embd*) as the <mark style="background: #FFF3A3A6;">desired output channels</mark> of the 2D convolution operation.
+<Highlight color="yellow">A simple way to perform patch division and prediction is through 2D convolution</Highlight>. The kernel will be of the desired patch size, introducing a stride of the patch size as well, so that there is no overlap between the pixels. On the other hand, <Highlight color="yellow">to achieve H dimensions</Highlight>, we will just need to set $H$ (also known as *n_embd*) as the <Highlight color="yellow">desired output channels</Highlight> of the 2D convolution operation.
 
 ```python
 class PatchEmbedding(nn.Module):
@@ -62,9 +65,9 @@ class PatchEmbedding(nn.Module):
 
 #### Adapt to Higher Resolutions
 
-<mark style="background: #ABF7F7A6;">It is often beneficial to fine-tune at higher resolution than pre-training</mark>. When feeding images of higher resolution, authors <mark style="background: #BBFABBA6;">keep the patch size the same</mark>, <mark style="background: #FFF3A3A6;">which results in a larger effective sequence length</mark>.
+<Highlight color="cyan">It is often beneficial to fine-tune at higher resolution than pre-training</Highlight>. When feeding images of higher resolution, authors <Highlight color="green">keep the patch size the same</Highlight>, <Highlight color="yellow">which results in a larger effective sequence length</Highlight>.
 
-ViT can handle arbitrary sequence lengths (up to memory constraints), however, the pre-trained positional embeddings may no longer be meaningful. We therefore perform <mark style="background: #FFF3A3A6;">2D interpolation of the pre-trained positional embeddings</mark>, according to their location in the original image. Note that this resolution adjustment and patch extraction are the only points at which an inductive bias about the 2D structure of the images is manually injected into the model. 
+ViT can handle arbitrary sequence lengths (up to memory constraints), however, the pre-trained positional embeddings may no longer be meaningful. We therefore perform <Highlight color="yellow">2D interpolation of the pre-trained positional embeddings</Highlight>, according to their location in the original image. Note that this resolution adjustment and patch extraction are the only points at which an inductive bias about the 2D structure of the images is manually injected into the model. 
 
 ```python
 # example: 224:(14x14+1) -> 384: (24x24+1) (patch size 16x16)
@@ -111,17 +114,17 @@ def resize_pos_embed(posemb: torch.Tensor, ntok_new: int) -> torch.Tensor:
 
 ### Training
 
-Similar to [[BERT - Bidirectional Encoder Representations from Transformers|BERT's]] <mark style="background: #BBFABBA6;">[class] token</mark>, ViT prepends a learnable embedding to the sequence of embedded patches, whose state at the output of the Transformer encoder serves as the <mark style="background: #FFF3A3A6;">image representation</mark>. Both during pre-training and fine-tuning, a classification head is attached to the image representation `[class]` output. The classification head is implemented by a MLP with one hidden layer at pre-training time and by a single layer at fine-tuning time.
+Similar to [[BERT - Bidirectional Encoder Representations from Transformers|BERT's]] <Highlight color="green">[class] token</Highlight>, ViT prepends a learnable embedding to the sequence of embedded patches, whose state at the output of the Transformer encoder serves as the <Highlight color="yellow">image representation</Highlight>. Both during pre-training and fine-tuning, a classification head is attached to the image representation `[class]` output. The classification head is implemented by a MLP with one hidden layer at pre-training time and by a single layer at fine-tuning time.
 
-<mark style="background: #FFF3A3A6;">Position embeddings</mark> are added to the patch embeddings to retain positional information. Standard learnable 1D position embeddings are used.  
+<Highlight color="yellow">Position embeddings</Highlight> are added to the patch embeddings to retain positional information. Standard learnable 1D position embeddings are used.  
 
-The authors note that ViT only performs well when <mark style="background: #ABF7F7A6;">trained on huge datasets</mark> with millions of images. Specifically, [[ResNet - Deep Residual Learning for Image Recognition]] perform better with smaller pre-training datasets but plateau sooner than ViT, which performs better with larger pre-training. This result reinforces the intuition that the convolutional inductive-bias is useful for smaller datasets, but for larger ones, learning the relevant patterns directly from data is sufficient, even beneficial.
+The authors note that ViT only performs well when <Highlight color="cyan">trained on huge datasets</Highlight> with millions of images. Specifically, [[ResNet - Deep Residual Learning for Image Recognition]] perform better with smaller pre-training datasets but plateau sooner than ViT, which performs better with larger pre-training. This result reinforces the intuition that the convolutional inductive-bias is useful for smaller datasets, but for larger ones, learning the relevant patterns directly from data is sufficient, even beneficial.
 
 ### Inductive Bias
 
 ViT has much less image-specific inductive bias than Convolutional Neural Networks (CNNs). In CNNs, locality, two-dimensional neighborhood structure, and translation equivariance are baked into each layer throughout the whole model. In ViT, only MLP layers are local and translationally equivariant, while the self-attention layers are global. 
 
-The position embeddings at initialization time carry <mark style="background: #FFF3A3A6;">no information about the 2D positions</mark> 
+The position embeddings at initialization time carry <Highlight color="yellow">no information about the 2D positions</Highlight> 
 of the patches and all spatial relations between the patches have to be learned from scratch.
 
 ## References
