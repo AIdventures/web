@@ -63,7 +63,17 @@ This runs the dev server with hot reloading (which you're likely already familia
 
 ## Highlight colors
 ```html
-<mark style="background: #FFF3A3A6;">
-<mark style="background: #BBFABBA6;">
-<mark style="background: #ba9375d9;"> -> <mark style="background:rgba(216, 192, 175, 0.85);">
+<mark style="background: #FFF3A3A6;">  (YELLOW)
+<mark style="background: #BBFABBA6;">  (GREEN)
+<mark style="background: #ba9375d9;"> -> <mark style="background:rgba(216, 192, 175, 0.85);">  (BROWN)
+<mark style="background: #FFB8EBA6;">  (RED)
+<mark style="background: #D2B3FFA6;">  (PURPLE)
+<mark style="background: #FFB86CA6;">  (ORANGE)
 ```
+
+## To-Review
+
+From time to time need to review:
+
+- Obsidian links `[[` and `]]`.
+- Obsidian images `![[`.

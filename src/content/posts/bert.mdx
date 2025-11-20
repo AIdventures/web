@@ -35,7 +35,7 @@ The objective of pre-training is to **learn a general-purpose language represent
 - Learning from the <mark style="background: #FFF3A3A6;">relationship between two sentences</mark>, through a next sentence prediction task (helpful for some downstream tasks such as question answering).
 
 <mark style="background: #BBFABBA6;">Both tasks are trained at the same time, summing their losses</mark>. For the pre-training corpus, BERT uses the BooksCorpus (800M words) and English Wikipedia (2,500M words). Note that it is critical to use a document-level corpus rather than a shuffled sentence-level corpus, so <mark style="background: #FFF3A3A6;">long contiguous sequences</mark> can be used.
-![[bert_arch.png]]
+![BERT architecture](./images/bert/bert_arch.png)
 ### Masked Language Model
 
 The bidirectional context understanding can enable to capture intricate dependencies and relationships among words, resulting in more robust and contextually rich representations.
