@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import TableOfContents from '../components/TableOfContents.astro';
 import Footer from '../components/Footer.astro';
 import CodeCopyButton from '../components/CodeCopyButton.astro';
+import Search from '../components/Search';
 import '../styles/global.css';
 
 import type { ImageMetadata } from 'astro';
@@ -30,6 +31,7 @@ const { frontmatter, headings } = Astro.props as Props;
     
     <header class="mb-12 flex justify-between items-center font-sans">
       <a href="/" class="font-bold text-xl tracking-tight hover:opacity-70 transition">AIdventure</a>
+      <Search client:load />
     </header>
 
     <main class="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-12">
