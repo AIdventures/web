@@ -59,3 +59,11 @@ This will serve the production build locally so you can test it before deploying
 pnpm dev
 ```
 This runs the dev server with hot reloading (which you're likely already familiar with).
+
+
+## Highlight colors
+```html
+<mark style="background: #FFF3A3A6;">
+<mark style="background: #BBFABBA6;">
+<mark style="background: #ba9375d9;"> -> <mark style="background:rgba(216, 192, 175, 0.85);">
+```
