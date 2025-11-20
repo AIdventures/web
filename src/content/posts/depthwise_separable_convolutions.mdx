@@ -1,0 +1,59 @@
+---
+title: Depthwise Separable Convolutions
+authors: Mario Parreño
+publication_date: 2018-10-10
+tags:
+  - cv
+  - cnn
+description: 'Efficient convolutions for mobile and embedded devices'
+pubDate: 2016-08-25
+image: ./images/depthwise_separable_convolutions/thecave.jpg
+---
+Commonly used in networks as [[MobileNet v1 - Efficient Convolutional Neural Networks|MobileNet]], the depthwise separable convolutions consists of two steps: depthwise convolutions and $1\times1$ convolutions.
+
+## Standard convolution  
+
+Before describing the depthwise separable convolution, it is worth revisiting the typical convolution. For a concrete example, let's say an input layer of size $7\times7\times3$ (height $\times$ width $\times$ channels), and 128 filters of size $3\times3\times3$, after applying one filter, the output layer is of size $5\times5\times1$ (only 1 channel), and grouped up with the 128 filters, $5\times5\times128$.
+![Standard convolution](./images/depthwise_separable_convolutions/convolution_standard.png)
+
+Illustrated through code:
+```python
+# Input volume with depth 3 and outputs 128 kernels
+# Uses 3×3 convolutional kernel
+conv_layer = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=3)
+```
+
+## Depthwise Separable Convolutions
+
+Let's see how we can achieve the <mark style="background: #FFF3A3A6;">same transformation</mark> as the standard convolution <mark style="background: #ABF7F7A6;">with less computation</mark>.
+
+We **first** apply <mark style="background:rgba(216, 192, 175, 0.85);">depthwise convolution</mark> to the input layer. Instead of using a single filter of size $3\times3\times3$, we will use 3 <mark style="background: #FFB8EBA6;">kernels separately</mark>. Each filter has a size of $3\times3\times1$, each kernel convolves with 1 channel of the input layer (<mark style="background: #FFB8EBA6;">1 channel only, not all channels!</mark>). Each such convolution, in the example, will provide a map of size $5\times5\times1$, and **we will stack them** to create a $5\times5\times3$ image. We shrunk the spatial dimension, **but the depth is still the same as before**.
+![Depthwise separable convolution](./images/depthwise_separable_convolutions/convolution_separable.png)
+
+Then, it's time for the **second** step, <mark style="background: #D2B3FFA6;">extend the depth by applying $1\times1$ convolutions</mark>, as many as the depth we want to achieve, as for the example 128 filters.
+![Depthwise separable convolution](./images/depthwise_separable_convolutions/convolution_depth.png)
+
+With these steps, we also (as in the standard convolution) transform the input layer $7\times7\times3$ into the output layer $5\times5\times128$ as for the standard convolution. The overall process of the depthwise separable convolution would be:
+![Depthwise separable convolution](./images/depthwise_separable_convolutions/convolution_depthwise.png)
+
+Which would be defined as:
+```python
+# Define depthwise separable convolutional layer
+# Note how we use the groups parameter: At groups equals to in_channels,
+# each input channel is convolved with its own set of filters
+depthwise_conv_layer = nn.Conv2d(
+	in_channels=3, out_channels=3, kernel_size=3, groups=3
+)
+pointwise_conv_layer = nn.Conv2d(
+	in_channels=3, out_channels=128, kernel_size=1
+)
+```
+
+The advantage of doing depthwise separable convolutions is the **<mark style="background: #ABF7F7A6;">efficiency</mark>**. One needs much <mark style="background: #ABF7F7A6;">less operations</mark> for depthwise separable convolutions compared to standard convolutions.
+
+Meanwhile for the standard convolutions we need to move 128 filters with dimensionality $3\times3\times3$ around the input $5\times5$ times, i.e., $128\times3\times3\times5\times5 =$ **86400 multiplications**, the depthwise separable convolution uses 3 kernels $3\times3\times1$ that moves $5\times5$ times, and after that, 128 filters of dimensionality $1\times1\times3$ that moves $5\times5$ times over the previous output, i.e., $3\times3\times3\times1\times5\times5 + 128\times1\times1\times3\times5\times5 =$ **9600 multiplications**, <mark style="background: #FFF3A3A6;">only about the 12% of the cost of the standard convolution</mark> (for this example convolution configuration).
+
+
+## References
+- [A Comprehensive Introduction to Different Types of Convolutions in Deep Learning](https://towardsdatascience.com/a-comprehensive-introduction-to-different-types-of-convolutions-in-deep-learning-669281e58215)
+- [Designing Faster Neural Networks](https://medium.com/@dmangla3/designing-faster-neural-networks-e1f1dc026533)
