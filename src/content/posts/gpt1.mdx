@@ -55,10 +55,15 @@ GPT setup does not require fine-tuning target tasks to be in the same domain as 
 For some tasks, like text classification, we can directly fine-tune GPT as described above. For other tasks, it is possible to convert structured inputs into an ordered sequence that the pre-trained model can process. These input transformations allow GPT to avoid making extensive changes to the architecture across tasks.  
 
 - **Textual entailment**. For entailment tasks, simply concatenate the premise $p$ and hypothesis $h$ token sequences, with a delimiter token ($) in between. Process and obtain final transformer block's activation.
-
 - **Similarity**. For similarity tasks there is no inherent ordering of the two sentences being compared. To reflect this, authors modify the input sequence to obtain both possible sentence orderings and process each independently to produce two sequence representations $h_{l}^{m}$ which are added element-wise before being fed into the linear output layer.
-
 - **Question Answering and Commonsense Reasoning**. For these tasks, we are given a context document $z$, a question $q$, and a set of possible answers $\{a_{k}\}$. Authors concatenate the document context and question with each possible answer, adding a delimiter token in between to get $[z; q; \text{\textdollar}; a_k]$. Each of these sequences are processed independently to obtain scores that are later normalized via a softmax layer to produce an output distribution over possible answers.
+
+## Glossary
+
+- **$L$**: Number of Transformer decoder blocks.
+- **$H$**: Size of the embeddings. An embedding is a learnable representation of the words of the vocabulary.
+- **$A$**: Number of self-attention heads.
+- **w**: Input sequence length.
 
 ## References
 
