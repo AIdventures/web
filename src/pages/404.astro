@@ -1,0 +1,50 @@
+---
+import Footer from "../components/Footer.astro";
+import Search from "../components/Search";
+import "../styles/global.css";
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>404 - Page Not Found | AIdventure</title>
+    </head>
+    <body
+        class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col"
+    >
+        <header
+            class="mb-12 flex justify-between items-center font-sans"
+        >
+            <a href="/" class="font-bold text-xl tracking-tight hover:opacity-70 transition">AIdventure</a>
+            <Search client:load />
+        </header>
+
+        <main
+            class="flex-grow flex flex-col items-center justify-center text-center gap-2 my-12"
+        >
+            <h1 class="font-serif text-xl text-stone-300 select-none leading-none">404</h1>
+            <span class="font-serif text-2xl text-stone-300 text-primary">Page Not Found</span>
+            
+            <p class="text-stone-500 font-sans max-w-md leading-relaxed mt-4">
+                It seems you've ventured into an uncharted region of the latent space. 
+                The page you are looking for might have been moved, deleted, or never existed.
+            </p>
+
+            <a 
+                href="/" 
+                class="mt-4 px-6 py-3 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors font-sans text-sm font-medium flex items-center gap-1"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+                <path d="M11 6H15.5C17.9853 6 20 8.01472 20 10.5C20 12.9853 17.9853 15 15.5 15H4" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M6.99998 12C6.99998 12 4.00001 14.2095 4 15C3.99999 15.7906 7 18 7 18" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+                Return Home
+            </a>
+        </main>
+
+        <Footer />
+    </body>
+</html>
+
