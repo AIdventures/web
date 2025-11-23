@@ -1,161 +1,298 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import Footer from '../components/Footer.astro';
-import Search from '../components/Search';
-import '../styles/global.css';
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import Footer from "../components/Footer.astro";
+import Search from "../components/Search";
+import "../styles/global.css";
 
 // Get posts and sort by date
-const posts = (await getCollection('posts')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+const posts = (await getCollection("posts")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>AIdventure</title>
-	</head>
-	<body class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col">
-		
-        <header class="mb-12 mt-10 flex flex-col sm:flex-row justify-between items-start gap-6">
-            <div>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>AIdventure</title>
+    </head>
+    <body
+        class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col"
+    >
+        <header
+            class="relative mb-12 mt-4 sm:mt-10 flex flex-col sm:flex-row justify-between items-start gap-6"
+        >
+            <div class="pr-12 sm:pr-0">
                 <h1 class="font-serif text-5xl mb-4">AIdventure.</h1>
-                <p class="text-stone-500 font-sans">Exploring AI and machine learning — one paper, tool, and technique at a time.</p>
+                <p class="text-stone-500 font-sans">
+                    Exploring AI and machine learning — one paper, tool, and
+                    technique at a time.
+                </p>
             </div>
-            <div class="flex items-center gap-4 self-end sm:self-start">
+            <div
+                class="absolute top-0 right-0 sm:static flex items-center gap-4"
+            >
                 <Search client:load />
-                <div class="flex items-center bg-stone-100 rounded-lg p-1 gap-1">
-                    <button id="view-grid" class="p-1.5 rounded text-stone-400 hover:text-stone-800 hover:bg-white transition-all" aria-label="Grid View">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
-                            <path d="M13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9 3V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M15 3V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M21.0001 9L3.00014 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M21.0001 15L3.00014 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <div
+                    class="hidden sm:flex items-center bg-stone-100 rounded-lg p-1 gap-1"
+                >
+                    <button
+                        id="view-grid"
+                        class="cursor-pointer p-1.5 rounded text-stone-400 hover:text-stone-800 hover:bg-white transition-all"
+                        aria-label="Grid View"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="20"
+                            height="20"
+                            color="currentColor"
+                            fill="none"
+                        >
+                            <path
+                                d="M13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3Z"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M9 3V21"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M15 3V21"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M21.0001 9L3.00014 9"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M21.0001 15L3.00014 15"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
                         </svg>
                     </button>
-                    <button id="view-list" class="p-1.5 rounded text-stone-800 bg-white shadow-sm transition-all" aria-label="List View">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
-                            <path d="M10 5L20 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M4 12L20 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M4 19L14 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <button
+                        id="view-list"
+                        class="cursor-pointer p-1.5 rounded text-stone-800 bg-white shadow-sm transition-all"
+                        aria-label="List View"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="20"
+                            height="20"
+                            color="currentColor"
+                            fill="none"
+                        >
+                            <path
+                                d="M10 5L20 5"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M4 12L20 12"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M4 19L14 19"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
                         </svg>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main id="posts-container" class="space-y-12 flex-grow">
-            {posts.map((post, index) => (
-                <a href={`/posts/${post.slug}`} class="block group post-item">
-                    <article class="post-article flex flex-col md:flex-row gap-6 items-start transition-all duration-300">
-                        {post.data.image && (
-                             <div class="post-image-wrapper w-full md:w-48 h-38 overflow-hidden rounded-lg bg-stone-200 shrink-0 transition-all duration-300">
-                                <Image src={post.data.image} alt="" class="w-full h-full object-cover transition transform group-hover:scale-105 duration-500" loading={index === 0 ? "eager" : "lazy"} />
-                             </div>
-                        )}
-                        <div class="post-content flex flex-col flex-grow">
-                            <h2 class="text-2xl font-serif font-medium group-hover:text-stone-600 transition-colors">
-                                {post.data.title}
-                            </h2>
-                            <p class="text-stone-400 text-sm mt-2 font-sans mb-2">
-                                {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                            </p>
-                            <p class="text-stone-600 leading-relaxed">
-                                {post.data.description}
-                            </p>
-                        </div>
-                    </article>
-                </a>
-            ))}
+        <main
+            id="posts-container"
+            class="flex flex-col gap-8 sm:gap-12 flex-grow"
+        >
+            {
+                posts.map((post, index) => (
+                    <a
+                        href={`/posts/${post.slug}`}
+                        class="block group post-item"
+                    >
+                        <article class="post-article flex flex-col sm:flex-row gap-6 items-start transition-all duration-300">
+                            {post.data.image && (
+                                <div class="post-image-wrapper w-full sm:w-48 h-48 sm:h-40 overflow-hidden rounded-lg bg-stone-200 shrink-0 transition-all duration-300">
+                                    <Image
+                                        src={post.data.image}
+                                        alt=""
+                                        class="w-full h-full object-cover transition transform group-hover:scale-105 duration-500"
+                                        loading={index === 0 ? "eager" : "lazy"}
+                                    />
+                                </div>
+                            )}
+                            <div class="post-content flex flex-col flex-grow">
+                                <h2 class="text-2xl font-serif font-medium group-hover:text-stone-600 transition-colors">
+                                    {post.data.title}
+                                </h2>
+                                <p class="text-stone-400 text-sm mt-2 font-sans mb-2">
+                                    {post.data.pubDate.toLocaleDateString(
+                                        "en-US",
+                                        {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        },
+                                    )}
+                                </p>
+                                <p class="text-stone-600 leading-relaxed">
+                                    {post.data.description}
+                                </p>
+                            </div>
+                        </article>
+                    </a>
+                ))
+            }
         </main>
 
         <Footer />
 
         <script>
-            const container = document.getElementById('posts-container');
-            const gridBtn = document.getElementById('view-grid');
-            const listBtn = document.getElementById('view-list');
-            const articles = document.querySelectorAll('.post-article');
-            const imageWrappers = document.querySelectorAll('.post-image-wrapper');
-            const descriptions = document.querySelectorAll('.post-content p:last-child');
+            const container = document.getElementById("posts-container");
+            const gridBtn = document.getElementById("view-grid");
+            const listBtn = document.getElementById("view-list");
+            const articles = document.querySelectorAll(".post-article");
+            const imageWrappers = document.querySelectorAll(
+                ".post-image-wrapper",
+            );
+            const descriptions = document.querySelectorAll(
+                ".post-content p:last-child",
+            );
 
             // List View Classes
-            const containerListClasses = ['space-y-12'];
-            const containerGridClasses = ['grid', 'grid-cols-1', 'sm:grid-cols-2', 'gap-8'];
-            
-            const articleListClasses = ['flex-col', 'md:flex-row', 'gap-6'];
-            const articleGridClasses = ['flex-col', 'gap-4', 'h-full'];
+            const containerListClasses = [
+                "flex",
+                "flex-col",
+                "gap-8",
+                "sm:gap-12",
+            ];
+            const containerGridClasses = [
+                "grid",
+                "grid-cols-1",
+                "sm:grid-cols-2",
+                "gap-8",
+            ];
 
-            const imgListClasses = ['md:w-48', 'h-38'];
-            const imgGridClasses = ['h-48'];
+            const articleListClasses = ["flex-col", "sm:flex-row", "gap-6"];
+            const articleGridClasses = ["flex-col", "gap-4", "h-full"];
+
+            const imgListClasses = ["sm:w-48", "h-48", "sm:h-40"];
+            const imgGridClasses = ["h-48"];
 
             function setView(view: string) {
                 if (!container || !gridBtn || !listBtn) return;
-
-                if (view === 'grid') {
+                
+                // If view is grid, or window width is smaller than 640px, set view to grid
+                if (view === "grid" || window.innerWidth < 640) {
                     // Update Container
                     container.classList.remove(...containerListClasses);
                     container.classList.add(...containerGridClasses);
 
                     // Update Items
-                    articles.forEach(article => {
+                    articles.forEach((article) => {
                         article.classList.remove(...articleListClasses);
                         article.classList.add(...articleGridClasses);
                     });
-                    imageWrappers.forEach(wrapper => {
+                    imageWrappers.forEach((wrapper) => {
                         wrapper.classList.remove(...imgListClasses);
                         wrapper.classList.add(...imgGridClasses);
                     });
-                    descriptions.forEach(desc => {
-                        desc.classList.add('line-clamp-3');
+                    descriptions.forEach((desc) => {
+                        desc.classList.add("line-clamp-3");
                     });
 
                     // Update Buttons
-                    gridBtn.classList.add('text-stone-800', 'bg-white', 'shadow-sm');
-                    gridBtn.classList.remove('text-stone-400', 'hover:bg-white');
-                    
-                    listBtn.classList.remove('text-stone-800', 'bg-white', 'shadow-sm');
-                    listBtn.classList.add('text-stone-400', 'hover:bg-white');
+                    gridBtn.classList.add(
+                        "text-stone-800",
+                        "bg-white",
+                        "shadow-sm",
+                    );
+                    gridBtn.classList.remove(
+                        "text-stone-400",
+                        "hover:bg-white",
+                    );
 
-                    localStorage.setItem('posts-view', 'grid');
+                    listBtn.classList.remove(
+                        "text-stone-800",
+                        "bg-white",
+                        "shadow-sm",
+                    );
+                    listBtn.classList.add("text-stone-400", "hover:bg-white");
                 } else {
                     // Update Container
                     container.classList.add(...containerListClasses);
                     container.classList.remove(...containerGridClasses);
 
                     // Update Items
-                    articles.forEach(article => {
+                    articles.forEach((article) => {
                         article.classList.add(...articleListClasses);
                         article.classList.remove(...articleGridClasses);
                     });
-                    imageWrappers.forEach(wrapper => {
+                    imageWrappers.forEach((wrapper) => {
                         wrapper.classList.add(...imgListClasses);
                         wrapper.classList.remove(...imgGridClasses);
                     });
-                    descriptions.forEach(desc => {
-                        desc.classList.remove('line-clamp-3');
+                    descriptions.forEach((desc) => {
+                        desc.classList.remove("line-clamp-3");
                     });
 
                     // Update Buttons
-                    listBtn.classList.add('text-stone-800', 'bg-white', 'shadow-sm');
-                    listBtn.classList.remove('text-stone-400', 'hover:bg-white');
-                    
-                    gridBtn.classList.remove('text-stone-800', 'bg-white', 'shadow-sm');
-                    gridBtn.classList.add('text-stone-400', 'hover:bg-white');
+                    listBtn.classList.add(
+                        "text-stone-800",
+                        "bg-white",
+                        "shadow-sm",
+                    );
+                    listBtn.classList.remove(
+                        "text-stone-400",
+                        "hover:bg-white",
+                    );
 
-                    localStorage.setItem('posts-view', 'list');
+                    gridBtn.classList.remove(
+                        "text-stone-800",
+                        "bg-white",
+                        "shadow-sm",
+                    );
+                    gridBtn.classList.add("text-stone-400", "hover:bg-white");
                 }
             }
 
             // Initialize
-            const savedView = localStorage.getItem('posts-view') || 'list';
+            const savedView = localStorage.getItem("posts-view") || "list";
             setView(savedView);
 
-            gridBtn?.addEventListener('click', () => setView('grid'));
-            listBtn?.addEventListener('click', () => setView('list'));
+            gridBtn?.addEventListener("click", () => {
+                setView("grid");
+                localStorage.setItem("posts-view", "grid");
+            });
+
+            listBtn?.addEventListener("click", () => {
+                setView("list");
+                localStorage.setItem("posts-view", "list");
+            });
+
+            window.addEventListener("resize", () => {
+                const savedView = localStorage.getItem("posts-view") || "list";
+                setView(savedView);
+            });
         </script>
-	</body>
+    </body>
 </html>

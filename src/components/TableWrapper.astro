@@ -1,0 +1,46 @@
+---
+// This component wraps tables to make them scrollable on small screens
+---
+
+<script>
+  function setupTableWrappers() {
+    // Find all table elements inside prose
+    const tables = document.querySelectorAll('.prose table');
+
+    tables.forEach((table) => {
+      // Skip if already processed
+      if (table.parentElement?.classList.contains('table-wrapper')) {
+        return;
+      }
+
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'table-wrapper';
+      
+      // Insert wrapper before table and move table into wrapper
+      table.parentNode?.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
+  }
+
+  // Run on page load
+  setupTableWrappers();
+
+  // Re-run after view transitions (if using Astro's view transitions)
+  document.addEventListener('astro:page-load', setupTableWrappers);
+</script>
+
+<style is:global>
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  /* Remove margin from table since wrapper handles it */
+  .table-wrapper table {
+    margin: 0;
+  }
+</style>
+
