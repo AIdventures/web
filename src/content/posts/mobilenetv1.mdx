@@ -1,0 +1,158 @@
+---
+title: MobileNet v1 - Efficient Convolutional Neural Networks
+authors: Andrew G. Howard et al.
+tags:
+  - cv
+  - cnn
+description: 'Efficient convolutional neural networks for mobile vision applications'
+pubDate: 2017-04-17
+image: ./images/mobilenetv1/redish.jpg
+---
+
+import Highlight from '../../components/Highlight.astro';
+
+## Abstract
+
+MobileNet V1 is a deep learning architecture designed specifically for mobile and
+<Highlight color="yellow">embedded devices with limited computational resources</Highlight>.
+The main contributions of MobileNet V1 are:
+
+1. Depthwise Separable Convolutions: MobileNet V1 replaces standard convolutions with
+depthwise separable convolutions that split the convolution into a
+<Highlight color="green">depthwise convolution and a pointwise convolution</Highlight>.
+This **reduces the number of parameters and computations required**, making the model more efficient.
+
+## Main Ideas
+
+
+The MobileNet model is based on [depthwise separable convolutions](/blog/depthwise_separable_convolution) which is a form of factorized convolutions which **factorize a standard convolution into a depthwise convolution and a $1\times1$ convolution called a pointwise convolution**.
+
+**The standard convolution** operation has the effect of **filtering features** based on the convolutional kernels and **combining features** in order to produce a new representation. The **filtering and combination steps can be split into two steps** via the use of factorized convolutions called **depthwise separable convolutions** for substantial reduction in computational cost.
+
+**Depthwise separable convolution are made up of two layers**: depthwise convolutions and pointwise convolutions. 
+- We use **depthwise convolutions to apply a single filter per each input channel (input depth)**.
+- **Pointwise convolution**, a simple $1\times1$ convolution, is then used to create a **linear combination** of the output of the depthwise layer.
+
+MobileNet uses $3\times3$ depthwise separable convolutions which uses between 8 to 9 times less computation than standard convolutions at only a small reduction in accuracy.
+
+Authors found that it was important to put very little or no weight decay (L2 regularization) on the depthwise filters since their are so few parameters in them.
+
+## Architecture & Training Details
+
+Regarding the **data**, contrary to training large models we use less regularization
+and data augmentation techniques because **small models have less trouble with overfitting**.
+
+For the **architecture**, MobileNet uses $3\times3$ depthwise separable convolutions.
+All layers are followed by a batchnorm and ReLU nonlinearity with the exception
+of the final fully connected layer which has no nonlinearity and feeds into
+a softmax layer for classification. Downsampling is handled with **strided convolution**
+in the depthwise convolutions as well as in the first layer.
+
+| Operation / Stride | Filter Shape | Input Size |
+| :--- | :--- | :--- |
+| $\textnormal{conv / s2}$ | $3 \times 3 \times 3 \times 32$ | $224 \times 224 \times 3$ |
+| $\textnormal{conv dw / s1}$ | $3 \times 3 \times 32 \, \textnormal{dw}$ | $112 \times 112 \times 32$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 32 \times 64$ | $112 \times 112 \times 32$ |
+| $\textnormal{conv dw / s2}$ | $3 \times 3 \times 64 \, \textnormal{dw}$ | $112 \times 112 \times 64$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 64 \times 128$ | $56 \times 56 \times 64$ |
+| $\textnormal{conv dw / s1}$ | $3 \times 3 \times 128 \, \textnormal{dw}$ | $56 \times 56 \times 128$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 128 \times 128$ | $56 \times 56 \times 128$ |
+| $\textnormal{conv dw / s2}$ | $3 \times 3 \times 128 \, \textnormal{dw}$ | $56 \times 56 \times 128$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 128 \times 256$ | $28 \times 28 \times 128$ |
+| $\textnormal{conv dw / s1}$ | $3 \times 3 \times 256 \, \textnormal{dw}$ | $28 \times 28 \times 256$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 256 \times 256$ | $28 \times 28 \times 256$ |
+| $\textnormal{conv dw / s2}$ | $3 \times 3 \times 256 \, \textnormal{dw}$ | $28 \times 28 \times 256$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 256 \times 512$ | $14 \times 14 \times 256$ |
+| $$5 \times \begin{bmatrix}\textnormal{conv dw / s1}\\\textnormal{conv / s1}\end{bmatrix}$$ | $$\begin{bmatrix}3 \times 3 \times 512 \, \textnormal{dw}\\1 \times 1 \times 512 \times 512 \end{bmatrix}$$ | $$\begin{bmatrix}14 \times 14 \times 512\\14 \times 14 \times 512 \end{bmatrix}$$ |
+| $\textnormal{conv dw / s2}$ | $3 \times 3 \times 512 \, \textnormal{dw}$ | $14 \times 14 \times 512$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 512 \times 1024$ | $7 \times 7 \times 512$ |
+| $\textnormal{conv dw / s1}$ | $3 \times 3 \times 1024 \, \textnormal{dw}$ | $7 \times 7 \times 1024$ |
+| $\textnormal{conv / s1}$ | $1 \times 1 \times 1024 \times 1024$ | $7 \times 7 \times 1024$ |
+| $\textnormal{Avg Pool / s1}$ | $\textnormal{Pool} \, 7 \times 7$ | $7 \times 7 \times 1024$ |
+| $\textnormal{FC / s1}$ | $1024 \times 1000$ | $1 \times 1 \times 1024$ |
+| $\textnormal{Softmax / s1}$ | $\textnormal{Classifier}$ | $1 \times 1 \times 1000$ |
+
+_MobileNet Body Architecture. `dw` stands for depthwise convolution and `s` for stride._
+
+## Code
+
+The basic Depthwise Separable Convolution block can be built as follows:
+
+1. Given the input volume `x` the first <Highlight color="yellow">depthwise convolution</Highlight>
+will have the same output channels as the input channels ones.
+We will create *same* convolutions, using $3\times3$ kernels with stride 1 and padding 1,
+applying downsampling when needed through stride 2.
+Finally, for the depthwise convolution, we will use the parameter
+[groups](https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d) that
+is equals to the number of input-output channels, i.e., if `groups` is equals to input channels,
+each input channel is convolved with its own set of filters.
+2. Next we apply the <Highlight color="yellow">pointwise convolution</Highlight>, which takes the previous volume and
+applies as many $1\times1$ kernels as output channels are required.
+
+```python
+class Block(nn.Module):
+    '''Depthwise conv + Pointwise conv'''
+    def __init__(self, in_planes, out_planes, stride=1):
+        super(Block, self).__init__()
+        self.conv1 = nn.Conv2d(
+            in_planes, in_planes,
+            kernel_size=3, stride=stride, padding=1, bias=False,
+            groups=in_planes
+        )
+        self.bn1 = nn.BatchNorm2d(in_planes)
+        self.conv2 = nn.Conv2d(
+            in_planes, out_planes,
+            kernel_size=1, stride=1, padding=0, bias=False
+        )
+        self.bn2 = nn.BatchNorm2d(out_planes)
+
+    def forward(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(out)))
+        return out
+```
+
+With the basic depthwise separable convolution building block,
+we can create MobileNet network as follows:
+
+```python
+class MobileNet(nn.Module):
+    # (128,2) means conv planes=128, conv stride=2, by default conv stride=1
+    cfg = [
+      64, (128,  2),
+      128, (256, 2),
+      256, (512, 2),
+      512, 512, 512, 512, 512,
+      (1024, 2),
+      1024
+    ]
+
+    def __init__(self, num_classes=10):
+        super(MobileNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(32)
+        self.layers = self._make_layers(in_planes=32)
+        self.linear = nn.Linear(1024, num_classes)
+
+    def _make_layers(self, in_planes):
+        layers = []
+        for x in self.cfg:
+            out_planes = x if isinstance(x, int) else x[0]
+            stride = 1 if isinstance(x, int) else x[1]
+            layers.append(Block(in_planes, out_planes, stride))
+            in_planes = out_planes
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.layers(out)
+        out = F.avg_pool2d(out, 2)
+        out = out.view(out.size(0), -1)
+        out = self.linear(out)
+        return out
+```
+
+## Credits
+
+- [Paper - MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/abs/1704.04861)
+- [Depthwise separable convolution](/blog/depthwise_separable_convolution)
