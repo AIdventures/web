@@ -1,0 +1,25 @@
+---
+// https://www.tablesgenerator.com/html_tables
+// https://codebeautify.org/htmlviewer
+type Props = {
+  className?: string;
+};
+
+const {
+  className = `
+    w-full text-center table-auto border-collapse
+    overflow-x-auto relative block md:inline-table
+  `,
+} = Astro.props;
+---
+
+<table class={className + " md-table -mb-2"}>
+    <slot />
+</table>
+<style is:global>
+  .md-table th, .md-table td, .md-table tr {
+    border-top: 1px solid #cacaca;
+    border-bottom: 1px solid #cacaca;
+    white-space: nowrap;
+  }
+</style>
