@@ -1,5 +1,5 @@
 ---
-title: VGG - Very Deep Convolutional Networks for Large-Scale Image Recognition
+title: VGG - Very Deep Convolutional Networks
 authors: Karen Simonyan, Andrew Zisserman
 tags:
   - cv
@@ -19,36 +19,36 @@ To date, convolutional filters of different sizes have been used, such as the Al
 
 ## Main Ideas
 
-The paper addresses an important aspect of ConvNet architecture design – its depth.
+The paper addresses an important aspect of ConvNet architecture design - its depth.
 To this end, authours fix other parameters of the architecture,
 and steadily increase the depth of the network by adding more convolutional layers,
-which is feasible due to the use of very small (3×3) convolution filters in all layers.
+which is feasible due to the use of very small ($3\times3$) convolution filters in all layers.
 
-The proposed network uses very **small 3×3 receptive fields throughout the whole net**,
+The proposed network uses very **small $3\times3$ receptive fields throughout the whole net**,
 which are convolved with the input at every pixel (with stride 1).
-It is easy to see that a stack of two 3×3 convolutional layers (without spatial pooling in between)
-has an effective receptive field of 5×5; **three such layers have a 7×7 effective receptive field**.
-<Highlight color="yellow">So what have we gained by using, for instance, a stack of three 3×3 convolutional layers
-instead of a single 7×7 layer?</Highlight> First, <Highlight color="green">incorporates three non-linear rectification layers
+It is easy to see that a stack of two $3\times3$ convolutional layers (without spatial pooling in between)
+has an effective receptive field of $5\times5$; **three such layers have a $7\times7$ effective receptive field**.
+<Highlight color="yellow">So what have we gained by using, for instance, a stack of three $3\times3$ convolutional layers
+instead of a single $7\times7$ layer?</Highlight> First, <Highlight color="green">incorporates three non-linear rectification layers
 instead of a single one</Highlight>, which makes the decision function more discriminative.
 Second, <Highlight color="green">decreases the number of parameters</Highlight>: assuming that both the input and
-the output of a three-layer 3×3 convolution stack has $C$ channels,
+the output of a three-layer $3\times3$ convolution stack has $C$ channels,
 the stack is parametrized by $3(3^2C^2)=27C^2$ weights; at the same time,
-a single 7×7 convolutional layer would require $7^2C^2=49C^2 $ parameters, i.e., 81% more.
-This can be seen as imposing a regularisation on the 7×7 convolutional filters,
-forcing them to have a decomposition through the 3×3 filters (with non-linearity injected in between).
-To know more about why use 3×3 and the receptive field go to [The Receptive Field in Convolutional Neural Networks](/blog/receptive-fields-cnns).
+a single $7\times7$ convolutional layer would require $7^2C^2=49C^2 $ parameters, i.e., 81% more.
+This can be seen as imposing a regularisation on the $7\times7$ convolutional filters,
+forcing them to have a decomposition through the $3\times3$ filters (with non-linearity injected in between).
+To know more about why use $3\times3$ and the receptive field go to [The Receptive Field in Convolutional Neural Networks](/blog/receptive-fields-cnns).
 
 ![VGG11 architecture](./images/vgg/vgg_architecture.png)
 
 ## Architecture & Training Details
 
-Regarding the **data**, the input is a fixed-size 224×224 RGB image.
+Regarding the **data**, the input is a fixed-size $224\times224$ RGB image.
 Subtracting each pixel's mean RGB value, computed on the training set.
 
-For the **architecture**, the convolutional layers use filters with a small receptive field of 3×3.
+For the **architecture**, the convolutional layers use filters with a small receptive field of $3\times3$.
 The convolution stride is fixed to 1 pixel. The padding is 1, so the spatial resolution is preserved
-after each convolution. To carry out the spatial pooling, max-pooling layers with 2×2 pixel windows
+after each convolution. To carry out the spatial pooling, max-pooling layers with $2\times2$ pixel windows
 and stride two are used. Finally, for the classification, three stacked, fully-connected layers were used.
 
 <Table>
