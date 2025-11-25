@@ -1,14 +1,21 @@
 ---
 import { getCollection } from "astro:content";
-import Footer from "../components/Footer.astro";
-import Search from "../components/Search";
-import PostCard from "../components/PostCard.astro";
-import "../styles/global.css";
+import Footer from "../../components/Footer.astro";
+import Search from "../../components/Search";
+import PostCard from "../../components/PostCard.astro";
+import "../../styles/global.css";
 
-// Get posts and sort by date
-const posts = (await getCollection("posts")).sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
+  return tags.map(tag => ({ params: { tag }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+const allPosts = await getCollection("posts");
+const posts = allPosts
+    .filter(post => post.data.tags?.includes(tag))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <html lang="en">
@@ -16,7 +23,7 @@ const posts = (await getCollection("posts")).sort(
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <title>AIdventure - Exploring AI and machine learning</title>
+        <title>AIdventure - #{tag}</title>
     </head>
     <body
         class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col"
@@ -25,10 +32,11 @@ const posts = (await getCollection("posts")).sort(
             class="relative mb-12 mt-4 sm:mt-10 flex flex-col sm:flex-row justify-between items-start gap-6"
         >
             <div class="pr-12 sm:pr-0">
-                <h1 class="font-serif text-5xl mb-4">AIdventure.</h1>
-                <p class="text-stone-500 font-sans">
-                    Exploring AI and machine learning — one paper, tool, and
-                    technique at a time.
+                <a href="/" class="block">
+                    <h1 class="font-serif text-3xl sm:text-4xl mb-2 hover:text-stone-600 transition-colors">AIdventure.</h1>
+                </a>
+                <p class="text-stone-500 font-sans text-lg">
+                    Posts tagged with <span class="font-medium text-stone-800">#{tag}</span>
                 </p>
             </div>
             <div
@@ -157,6 +165,7 @@ const posts = (await getCollection("posts")).sort(
                 "grid-cols-1",
                 "sm:grid-cols-2",
                 "gap-8",
+                "sm:gap-12",
             ];
 
             const articleListClasses = ["flex-col", "sm:flex-row", "gap-6"];

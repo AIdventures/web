@@ -14,6 +14,7 @@ interface Props {
     title: string;
     pubDate: Date;
     image?: ImageMetadata;
+    tags?: string[];
   };
   headings: Array<{ depth: number; slug: string; text: string }>;
 }
@@ -43,6 +44,19 @@ const { frontmatter, headings } = Astro.props as Props;
             <h1 class="text-4xl md:text-5xl font-serif font-medium mb-4">{frontmatter.title}</h1>
             <p class="text-stone-500 font-sans text-sm">{frontmatter.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             
+            {frontmatter.tags && frontmatter.tags.length > 0 && (
+              <div class="mt-4 flex flex-row items-baseline gap-2">
+                <p class="text-stone-500 font-sans text-xs">Tags:</p>
+                <div class="flex flex-wrap gap-2">
+                    {frontmatter.tags.map((tag) => (
+                        <a href={`/tags/${tag}`} class="text-xs bg-stone-100 text-stone-600 px-2 py-1 rounded-full hover:bg-stone-200 transition-colors no-underline">
+                            #{tag}
+                        </a>
+                    ))}
+                </div>
+              </div>
+            )}
+
             {/* Mobile ToC appears here naturally via flow, Desktop via grid */}
             <div class="lg:hidden mt-8">
                <TableOfContents headings={headings} />
