@@ -15,7 +15,7 @@ import Highlight from '../../components/Highlight.astro';
 ## Abstract
 Research on pre-trained models indicate that training even larger models still leads to better performances on downstream tasks. However, operating large-scale pre-trained models in on-the-edge and/or under constrained computational training or inference budgets remains challenging. 
 
-DistillBERT proposes a method to pre-train a smaller general-purpose language representation model. Through knowledge distillation during the pre-training phase authors show that is possible to reduce the size of a [[BERT - Bidirectional Encoder Representations from Transformers|BERT]] model by 40% while retaining 97% of its language understanding capabilities and being 60% faster. To achieve this, authors introduce a <Highlight color="green">triple loss combining language modeling, distillation and cosine-distance losses</Highlight>.
+DistillBERT proposes a method to pre-train a smaller general-purpose language representation model. Through knowledge distillation during the pre-training phase authors show that is possible to reduce the size of a [BERT](./bert) model by 40% while retaining 97% of its language understanding capabilities and being 60% faster. To achieve this, authors introduce a <Highlight color="green">triple loss combining language modeling, distillation and cosine-distance losses</Highlight>.
 
 ## Architecture
 
@@ -25,7 +25,7 @@ The teacher is a $BERT_{BASE}$ model. The student, DistillBERT, has the same gen
 
 An important element in the training procedure is to find the right initialization for the student to converge. Taking advantage of the common dimensionality between teacher and student networks, <Highlight color="green">DistilBERT initializes the student's weights from the teacher by taking one layer out of two</Highlight>.
 
-Finally, following previous approaches like [[RoBERTa - Robustly Optimized BERT Pretraining]], DistilBERT uses a <Highlight color="yellow">dynamic masking strategy without the next sentence prediction objective</Highlight>. Also, the student is distilled on very large batches leveraging gradient accumulation, up to 4K examples per batch.
+Finally, following previous approaches like [RoBERTa](./roberta), DistilBERT uses a <Highlight color="yellow">dynamic masking strategy without the next sentence prediction objective</Highlight>. Also, the student is distilled on very large batches leveraging gradient accumulation, up to 4K examples per batch.
 
 ![DistillBERT architecture](./images/distillbert/overview.png)
 
@@ -35,7 +35,7 @@ To leverage the inductive biases learned by larger models during pre-training, D
 
 ### Masked Language Modeling
 
-As in the original [[BERT - Bidirectional Encoder Representations from Transformers|BERT]] model, DistillBERT uses a masked language model (MLM) to train the model to predict the original vocabulary id of the masked word based only on its context.
+As in the original [BERT](./bert) model, DistillBERT uses a masked language model (MLM) to train the model to predict the original vocabulary id of the masked word based only on its context.
 
 ### Knowledge Distillation
 

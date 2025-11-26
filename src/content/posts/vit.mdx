@@ -16,7 +16,7 @@ import Highlight from '../../components/Highlight.astro';
 
 ## Abstract
   
-Self-attention-based architectures, in particular [[Transformer - Attention Is All You Need|Transformers]], have become the model of choice in natural language processing (NLP). The predominant approach is to pre-train on a large text corpus and then fine-tune on a smaller task-specific dataset.
+Self-attention-based architectures, in particular [Transformers](./transformer), have become the model of choice in natural language processing (NLP). The predominant approach is to pre-train on a large text corpus and then fine-tune on a smaller task-specific dataset.
 
 ViT experiments with applying a standard Transformer directly to images, with the fewest possible modifications. To do so, <Highlight color="green">ViT splits an image into patches</Highlight> and provide the sequence of linear embeddings of these patches as an input to a Transformer. Image patches are treated the same way as tokens (words) in NLP applications. ViT model is trained on image classification in <Highlight color="green">supervised fashion</Highlight>.  
 
@@ -24,7 +24,7 @@ When trained on mid-sized datasets ViT yields modest accuracies: Transformers la
 
 ## Architecture
 
-ViT's model architecture is a multi-layer <Highlight color="brown">bidirectional Transformer Encoder</Highlight>, inspired in [[BERT - Bidirectional Encoder Representations from Transformers|BERT]] and following the original [[Transformer - Attention Is All You Need|Transformer]] design as closely as possible.
+ViT's model architecture is a multi-layer <Highlight color="brown">bidirectional Transformer Encoder</Highlight>, inspired in [BERT](./bert) and following the original [Transformer](./transformer) design as closely as possible.
 
 ![ViT architecture](./images/vit/architecture.png)
 
@@ -114,11 +114,11 @@ def resize_pos_embed(posemb: torch.Tensor, ntok_new: int) -> torch.Tensor:
 
 ### Training
 
-Similar to [[BERT - Bidirectional Encoder Representations from Transformers|BERT's]] <Highlight color="green">[class] token</Highlight>, ViT prepends a learnable embedding to the sequence of embedded patches, whose state at the output of the Transformer encoder serves as the <Highlight color="yellow">image representation</Highlight>. Both during pre-training and fine-tuning, a classification head is attached to the image representation `[class]` output. The classification head is implemented by a MLP with one hidden layer at pre-training time and by a single layer at fine-tuning time.
+Similar to [BERT's](./bert) <Highlight color="green">[class] token</Highlight>, ViT prepends a learnable embedding to the sequence of embedded patches, whose state at the output of the Transformer encoder serves as the <Highlight color="yellow">image representation</Highlight>. Both during pre-training and fine-tuning, a classification head is attached to the image representation `[class]` output. The classification head is implemented by a MLP with one hidden layer at pre-training time and by a single layer at fine-tuning time.
 
 <Highlight color="yellow">Position embeddings</Highlight> are added to the patch embeddings to retain positional information. Standard learnable 1D position embeddings are used.  
 
-The authors note that ViT only performs well when <Highlight color="cyan">trained on huge datasets</Highlight> with millions of images. Specifically, [[ResNet - Deep Residual Learning for Image Recognition]] perform better with smaller pre-training datasets but plateau sooner than ViT, which performs better with larger pre-training. This result reinforces the intuition that the convolutional inductive-bias is useful for smaller datasets, but for larger ones, learning the relevant patterns directly from data is sufficient, even beneficial.
+The authors note that ViT only performs well when <Highlight color="cyan">trained on huge datasets</Highlight> with millions of images. Specifically, [ResNet](./resnet) perform better with smaller pre-training datasets but plateau sooner than ViT, which performs better with larger pre-training. This result reinforces the intuition that the convolutional inductive-bias is useful for smaller datasets, but for larger ones, learning the relevant patterns directly from data is sufficient, even beneficial.
 
 ### Inductive Bias
 

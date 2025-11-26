@@ -65,9 +65,9 @@ It is important to note that a **very large batch size** of $32,768$ is used to 
 
 ### Model Architecture & Training Details
 
-The image encoder is a [[ViT - An Image is Worth 16x16 Words|Vision Transformer]]. The `[CLS]` token is used as the aggregate representation of the image. 
+The image encoder is a [Vision Transformer](./vit). The `[CLS]` token is used as the aggregate representation of the image. 
 
-The text encoder is a [[Transformer - Attention Is All You Need|Transformer]]. Text sequence is bracketed with `[SOS]` and `[EOS]` tokens and the activations of the highest layer at the `[EOS]` token are used as the feature representation of the text. Finally, the representation is layer normalized and then linearly projected to the multi-modal embedding space.  
+The text encoder is a [Transformer](./transformer). Text sequence is bracketed with `[SOS]` and `[EOS]` tokens and the activations of the highest layer at the `[EOS]` token are used as the feature representation of the text. Finally, the representation is layer normalized and then linearly projected to the multi-modal embedding space.  
 
 About the training details:
 
@@ -97,7 +97,7 @@ CLIP is pre-trained to predict if an image and a text snippet are paired togethe
 
 > Tip: The feature embeddings of texts (classes) can be pre-computed and stored for subsequent predictions. Same applies for images, if we want to play with several texts.
 
-The way to place the class names into the text encoder is to use [[Prompt Engineering]], defining templates that need to be adapted to the specific task.
+The way to place the class names into the text encoder is to use Prompt Engineering, defining templates that need to be adapted to the specific task.
 
 ![CLIP zero-shot transfer](./images/clip/clip_zeroshot.png)
 
@@ -155,7 +155,7 @@ Authors observed <Highlight color="yellow">ensembling across many generated zero
 
 #### Zero-Shot vs Few-Shot
 
-While it is intuitive to expect zero-shot CLIP to underperform one-shot, authors found that this is not typically the case. This is likely due to an important difference between the [[Zero-Shot]] and [[Few-shot]] approach.
+While it is intuitive to expect zero-shot CLIP to underperform one-shot, authors found that this is not typically the case. This is likely due to an important difference between the Zero-Shot and Few-shot approach.
 
 First, CLIP's zero-shot classifier is generated via natural language which allows for visual concepts to be directly specified or *communicated*. By contrast, supervised learning must infer concepts indirectly from training examples.
 

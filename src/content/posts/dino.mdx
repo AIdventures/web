@@ -21,13 +21,13 @@ Furthermore, learned features explicitly contain the <Highlight color="brown">sc
 
 ## DINO
 
-Image-level supervision often reduces the rich visual information contained in an image to a single concept selected from a predefined set of a few thousand categories of objects. Inheriting from the success of [[Transformer - Attention Is All You Need|Transformers]] in NLP thanks to self-supervised pre-training, DINO aims to <Highlight color="yellow">create a pretext task that provide a richer signal than the supervised objective</Highlight>.
+Image-level supervision often reduces the rich visual information contained in an image to a single concept selected from a predefined set of a few thousand categories of objects. Inheriting from the success of [Transformers](./transformer) in NLP thanks to self-supervised pre-training, DINO aims to <Highlight color="yellow">create a pretext task that provide a richer signal than the supervised objective</Highlight>.
 
 DINO simplifies self-supervised training by directly predicting the output of a teacher network, *built with a momentum encoder*, by using a standard cross-entropy loss.
 
 ### Student-Teacher Framework  
 
-DINO follows a <Highlight color="red">knowledge distillation</Highlight> learning paradigm, where a <Highlight color="cyan">student</Highlight> network $g_{\theta s}$ is trained to <Highlight color="orange">match the output</Highlight> of a <Highlight color="cyan">teacher</Highlight> network $g_{\theta t}$, parameterized by $\theta_s$ and $\theta_t$, respectively. Both networks share the same architecture, which is a [[ViT - An Image is Worth 16x16 Words|Vision Transformer]] in this case. A MLP projection head with $K$ dimensions is attached to align the outputs of the networks. The features used in downstream tasks come from the `CLS` token from the ViT backbone.  
+DINO follows a <Highlight color="red">knowledge distillation</Highlight> learning paradigm, where a <Highlight color="cyan">student</Highlight> network $g_{\theta s}$ is trained to <Highlight color="orange">match the output</Highlight> of a <Highlight color="cyan">teacher</Highlight> network $g_{\theta t}$, parameterized by $\theta_s$ and $\theta_t$, respectively. Both networks share the same architecture, which is a [Vision Transformer](./vit) in this case. A MLP projection head with $K$ dimensions is attached to align the outputs of the networks. The features used in downstream tasks come from the `CLS` token from the ViT backbone.  
 
 To adapt the problem to <Highlight color="yellow">self-supervised learning</Highlight>, given an image $x$ DINO constructs different distorted views or <Highlight color="yellow">crops of an image</Highlight> by using a **multi-crop strategy**. Specifically, the standard setting for multi-crop training is to use 2 global views at resolution $224^2$ covering an area $>50\%$ of the image, and several local views at resolution $96^2$ with small areas covering $< 50\%$ of the image.
 
