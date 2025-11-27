@@ -105,14 +105,37 @@ Ejecuta el siguiente comando en la terminal (en la raíz de tu proyecto):
 docker build -t my-aesthetic-blog .
 ```
 
-2. Correr el contenedor una vez construida la imagen, iníciala mapeando el puerto 80 del contenedor al puerto que desees (por ejemplo, 8888):
+2. Correr el contenedor una vez construida la imagen, iníciala mapeando el puerto 80 del contenedor al puerto que desees (por ejemplo, 8321):
 ```bash
-docker run -d -p 8888:80 --name my-blog my-aesthetic-blog
+docker run -d -p 8321:80 --name my-blog my-aesthetic-blog
 ```
-Verificalo abriendo tu navegador y visita `http://localhost:8888`.
+Verificalo abriendo tu navegador y visita `http://localhost:8321`.
 
 3. Si necesitas detener o eliminar el contenedor más tarde:
 ```bash
 docker stop my-blogdocker
 rm my-blog
 ```
+
+### Configuración de Deployment Automático
+
+Estando ya dentro del servidor, lo más fácil es generar un par de llaves nuevo **específico para GitHub Actions**. Esto es más seguro que usar tus llaves personales.
+
+Sigue estos pasos en tu terminal del servidor:
+
+1.  **Genera las llaves** (dale a Enter a todo para dejarlas sin contraseña, GitHub Actions no soporta llaves con contraseña fácilmente):
+    ```bash
+    ssh-keygen -t ed25519 -C "github-actions" -f ~/.ssh/github_deploy_key
+    ```
+
+2.  **Autoriza la llave pública** para que permita el acceso:
+    ```bash
+    cat ~/.ssh/github_deploy_key.pub >> ~/.ssh/authorized_keys
+    ```
+
+3.  **Obtén la llave PRIVADA** (esta es la que necesitas copiar):
+    ```bash
+    cat ~/.ssh/github_deploy_key
+    ```
+
+Copia **todo** el bloque de texto que salga, incluyendo `-----BEGIN OPENSSH PRIVATE KEY-----` y `-----END OPENSSH PRIVATE KEY-----`. Ese bloque de texto es lo que debes pegar en el secreto `SERVER_SSH_KEY` en GitHub.

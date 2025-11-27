@@ -1,0 +1,91 @@
+name: Deploy Astro Blog
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: # Permite ejecución manual desde la interfaz de GitHub
+
+env:
+  REGISTRY: ghcr.io
+  # Nombre del contenedor en el servidor
+  CONTAINER_NAME: astro-blog
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Necesario para subir a GHCR
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy on server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: CONTAINER_NAME,REGISTRY
+          script: |
+            # Convertir repo a minúsculas para docker
+            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            TAG_NAME="${{ github.ref_name }}"
+            FULL_IMAGE="$REGISTRY/$REPO_LOWER:$TAG_NAME"
+            
+            echo "Deploying image: $FULL_IMAGE"
+            
+            # Descargar imagen
+            docker pull $FULL_IMAGE
+            
+            # 1. Detener el contenedor ANTIGUO (aidventure) para liberar el puerto 8321
+            # Solo será necesario la primera vez, pero no hace daño dejarlo con "|| true"
+            docker stop aidventure || true
+            docker rm aidventure || true
+
+            # 2. Detener el contenedor NUEVO (astro-blog) si ya existe por un deploy anterior
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
+            
+            # 3. Correr el nuevo contenedor en el puerto 8321
+            # Host: 8321 (para coincidir con tu túnel de Cloudflare)
+            # Container: 80 (donde escucha Nginx según tu Dockerfile)
+            docker run -d \
+              --name $CONTAINER_NAME \
+              --restart unless-stopped \
+              -p 8321:80 \
+              $FULL_IMAGE
+            
+            # Limpieza opcional
+            docker image prune -f
+
