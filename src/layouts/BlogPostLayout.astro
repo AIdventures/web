@@ -39,7 +39,7 @@ const { frontmatter, headings } = Astro.props as Props;
 
     <main class="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-12">
       
-      <article class="prose prose-stone prose-lg max-w-none">
+      <article class="prose prose-stone prose-lg max-w-none min-w-0">
         <header class="mb-8 not-prose">
             <h1 class="text-4xl md:text-5xl font-serif font-medium mb-4">{frontmatter.title}</h1>
             <p class="text-stone-500 font-sans text-sm">{frontmatter.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
