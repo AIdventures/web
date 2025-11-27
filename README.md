@@ -87,3 +87,32 @@ From time to time need to review:
 
 - Obsidian links `[[` and `]]`.
 - Obsidian images `![[`.
+
+## Docker
+
+### Archivos creados
+- `Dockerfile`: Utiliza una construcción "multi-stage" (multietapa).
+  - Etapas de construcción: Usa Node.js para instalar dependencias y ejecutar pnpm run build.
+  - Etapa final: Copia solo la carpeta dist/ resultante a una imagen ligera de Nginx. Esto resulta en una imagen final muy pequeña y rápida, ideal para producción.
+- `nginx.conf`: Configuración para que Nginx sirva correctamente tus archivos estáticos, maneje las rutas de carpetas (estándar de Astro) y sirva tu página 404.html personalizada.
+- `.dockerignore`: Evita copiar node_modules y otros archivos innecesarios al contexto de Docker.
+
+### Cómo ejecutarlo
+
+1. Construir la imagen de Docker:
+Ejecuta el siguiente comando en la terminal (en la raíz de tu proyecto):
+```bash
+docker build -t my-aesthetic-blog .
+```
+
+2. Correr el contenedor una vez construida la imagen, iníciala mapeando el puerto 80 del contenedor al puerto que desees (por ejemplo, 8888):
+```bash
+docker run -d -p 8888:80 --name my-blog my-aesthetic-blog
+```
+Verificalo abriendo tu navegador y visita `http://localhost:8888`.
+
+3. Si necesitas detener o eliminar el contenedor más tarde:
+```bash
+docker stop my-blogdocker
+rm my-blog
+```
