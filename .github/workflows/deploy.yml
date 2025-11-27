@@ -4,19 +4,19 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch: # Permite ejecución manual desde la interfaz de GitHub
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   # Nombre del contenedor en el servidor
-  CONTAINER_NAME: astro-blog
+  CONTAINER_NAME: aidventure
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Necesario para subir a GHCR
+      packages: write
 
     steps:
       - name: Checkout repo
@@ -52,34 +52,33 @@ jobs:
 
       - name: Deploy on server via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          envs: CONTAINER_NAME,REGISTRY
+          envs: CONTAINER_NAME,REGISTRY,GITHUB_TOKEN,GITHUB_ACTOR
           script: |
+            # 1. Login en GHCR en el servidor remoto
+            echo $GITHUB_TOKEN | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
+
             # Convertir repo a minúsculas para docker
             REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
             TAG_NAME="${{ github.ref_name }}"
             FULL_IMAGE="$REGISTRY/$REPO_LOWER:$TAG_NAME"
             
-            echo "Deploying image: $FULL_IMAGE"
+            echo "Deploying image: $FULL_IMAGE as container: $CONTAINER_NAME"
             
             # Descargar imagen
             docker pull $FULL_IMAGE
             
-            # 1. Detener el contenedor ANTIGUO (aidventure) para liberar el puerto 8321
-            # Solo será necesario la primera vez, pero no hace daño dejarlo con "|| true"
-            docker stop aidventure || true
-            docker rm aidventure || true
-
-            # 2. Detener el contenedor NUEVO (astro-blog) si ya existe por un deploy anterior
+            # Detener el contenedor (sea la versión vieja o nueva, al llamarse igual simplificamos)
             docker stop $CONTAINER_NAME || true
             docker rm $CONTAINER_NAME || true
             
-            # 3. Correr el nuevo contenedor en el puerto 8321
-            # Host: 8321 (para coincidir con tu túnel de Cloudflare)
-            # Container: 80 (donde escucha Nginx según tu Dockerfile)
+            # Correr el nuevo contenedor en el puerto 8321
             docker run -d \
               --name $CONTAINER_NAME \
               --restart unless-stopped \
@@ -88,4 +87,6 @@ jobs:
             
             # Limpieza opcional
             docker image prune -f
-
+            
+            # Logout por seguridad
+            docker logout $REGISTRY
