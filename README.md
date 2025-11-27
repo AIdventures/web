@@ -139,3 +139,19 @@ Sigue estos pasos en tu terminal del servidor:
     ```
 
 Copia **todo** el bloque de texto que salga, incluyendo `-----BEGIN OPENSSH PRIVATE KEY-----` y `-----END OPENSSH PRIVATE KEY-----`. Ese bloque de texto es lo que debes pegar en el secreto `SERVER_SSH_KEY` en GitHub.
+
+### Ejecutar el despliegue
+
+El deployment se activa automáticamente al subir un tag que comience con `v` (ejemplo: `v1.0.0`).
+
+1. **Crear un tag** con la nueva versión:
+   ```bash
+   git tag v1.0.0
+   ```
+
+2. **Subir el tag** a GitHub:
+   ```bash
+   git push origin v1.0.0
+   ```
+
+Esto disparará el workflow de GitHub Actions que construye la imagen Docker y la despliega en el servidor.
