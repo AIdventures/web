@@ -10,6 +10,21 @@ import "../styles/global.css";
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <title>404 - Page Not Found | AIdventure</title>
+        <meta name="description" content="The page you are looking for might have been moved, deleted, or never existed." />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={Astro.url.href} />
+        <meta property="og:title" content="404 - Page Not Found | AIdventure" />
+        <meta property="og:description" content="The page you are looking for might have been moved, deleted, or never existed." />
+        <meta property="og:image" content={new URL('/og-image-dark.png', Astro.url)} />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={Astro.url.href} />
+        <meta property="twitter:title" content="404 - Page Not Found | AIdventure" />
+        <meta property="twitter:description" content="The page you are looking for might have been moved, deleted, or never existed." />
+        <meta property="twitter:image" content={new URL('/og-image-dark.png', Astro.url)} />
     </head>
     <body
         class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col"

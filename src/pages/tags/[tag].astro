@@ -24,6 +24,21 @@ const posts = allPosts
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <title>AIdventure - #{tag}</title>
+        <meta name="description" content={`Explore all posts tagged with #${tag} on AIdventure.`} />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={Astro.url.href} />
+        <meta property="og:title" content={`AIdventure - #${tag}`} />
+        <meta property="og:description" content={`Explore all posts tagged with #${tag} on AIdventure.`} />
+        <meta property="og:image" content={new URL('/og-image-dark.png', Astro.url)} />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={Astro.url.href} />
+        <meta property="twitter:title" content={`AIdventure - #${tag}`} />
+        <meta property="twitter:description" content={`Explore all posts tagged with #${tag} on AIdventure.`} />
+        <meta property="twitter:image" content={new URL('/og-image-dark.png', Astro.url)} />
     </head>
     <body
         class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col"
