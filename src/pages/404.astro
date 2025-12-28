@@ -17,14 +17,16 @@ import "../styles/global.css";
         <meta property="og:url" content={Astro.url.href} />
         <meta property="og:title" content="404 - Page Not Found | AIdventure" />
         <meta property="og:description" content="The page you are looking for might have been moved, deleted, or never existed." />
-        <meta property="og:image" content={new URL('/og-image-dark.png', Astro.url)} />
+        <meta property="og:image" content="https://aidventure.es/og-image-dark.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
 
         <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={Astro.url.href} />
-        <meta property="twitter:title" content="404 - Page Not Found | AIdventure" />
-        <meta property="twitter:description" content="The page you are looking for might have been moved, deleted, or never existed." />
-        <meta property="twitter:image" content={new URL('/og-image-dark.png', Astro.url)} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={Astro.url.href} />
+        <meta name="twitter:title" content="404 - Page Not Found | AIdventure" />
+        <meta name="twitter:description" content="The page you are looking for might have been moved, deleted, or never existed." />
+        <meta name="twitter:image" content="https://aidventure.es/og-image-dark.png" />
     </head>
     <body
         class="bg-bg text-primary min-h-screen p-6 md:p-12 max-w-3xl mx-auto flex flex-col"

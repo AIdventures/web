@@ -37,14 +37,16 @@ const description = frontmatter.description || "Exploring AI and machine learnin
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={`AIdventure - ${frontmatter.title}`} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL('/og-image-dark.png', Astro.url)} />
+    <meta property="og:image" content="https://aidventure.es/og-image-dark.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url.href} />
-    <meta property="twitter:title" content={`AIdventure - ${frontmatter.title}`} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL('/og-image-dark.png', Astro.url)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={Astro.url.href} />
+    <meta name="twitter:title" content={`AIdventure - ${frontmatter.title}`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://aidventure.es/og-image-dark.png" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
   </head>
