@@ -18,9 +18,10 @@ interface Props {
     tags?: string[];
   };
   headings: Array<{ depth: number; slug: string; text: string }>;
+  readingTime?: string;
 }
 
-const { frontmatter, headings } = Astro.props as Props;
+const { frontmatter, headings, readingTime } = Astro.props as Props;
 const description = frontmatter.description || "Exploring AI and machine learning — one paper, tool, and technique at a time.";
 ---
 
@@ -62,7 +63,15 @@ const description = frontmatter.description || "Exploring AI and machine learnin
       <article class="prose prose-stone prose-lg max-w-none min-w-0">
         <header class="mb-8 not-prose">
             <h1 class="text-4xl md:text-5xl font-serif font-medium mb-4">{frontmatter.title}</h1>
-            <p class="text-stone-500 font-sans text-sm">{frontmatter.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <div class="flex items-center gap-2 text-stone-500 font-sans text-sm">
+              <span>{frontmatter.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              {readingTime && (
+                <>
+                  <span class="text-stone-300 text-xs">•</span>
+                  <span>{readingTime}</span>
+                </>
+              )}
+            </div>
             
             {frontmatter.tags && frontmatter.tags.length > 0 && (
               <div class="mt-4 flex flex-row items-baseline gap-2">

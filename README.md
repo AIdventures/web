@@ -31,12 +31,12 @@ All commands are run from the root of the project, from a terminal:
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+| `pnpm install`            | Installs dependencies                            |
+| `pnpm dev`                | Starts local dev server at `localhost:4321`      |
+| `pnpm build`              | Build your production site to `./dist/`          |
+| `pnpm preview`            | Preview your build locally, before deploying     |
+| `pnpm astro ...`          | Run CLI commands like `astro add`, `astro check` |
+| `pnpm astro -- --help`    | Get help using the Astro CLI                     |
 
 ## 👀 Want to learn more?
 
@@ -124,19 +124,19 @@ Estando ya dentro del servidor, lo más fácil es generar un par de llaves nuevo
 Sigue estos pasos en tu terminal del servidor:
 
 1.  **Genera las llaves** (dale a Enter a todo para dejarlas sin contraseña, GitHub Actions no soporta llaves con contraseña fácilmente):
-    ```bash
-    ssh-keygen -t ed25519 -C "github-actions" -f ~/.ssh/github_deploy_key
-    ```
+```bash
+ssh-keygen -t ed25519 -C "github-actions" -f ~/.ssh/github_deploy_key
+```
 
 2.  **Autoriza la llave pública** para que permita el acceso:
-    ```bash
-    cat ~/.ssh/github_deploy_key.pub >> ~/.ssh/authorized_keys
-    ```
+```bash
+cat ~/.ssh/github_deploy_key.pub >> ~/.ssh/authorized_keys
+```
 
 3.  **Obtén la llave PRIVADA** (esta es la que necesitas copiar):
-    ```bash
-    cat ~/.ssh/github_deploy_key
-    ```
+```bash
+cat ~/.ssh/github_deploy_key
+```
 
 Copia **todo** el bloque de texto que salga, incluyendo `-----BEGIN OPENSSH PRIVATE KEY-----` y `-----END OPENSSH PRIVATE KEY-----`. Ese bloque de texto es lo que debes pegar en el secreto `SERVER_SSH_KEY` en GitHub.
 
@@ -145,13 +145,13 @@ Copia **todo** el bloque de texto que salga, incluyendo `-----BEGIN OPENSSH PRIV
 El deployment se activa automáticamente al subir un tag que comience con `v` (ejemplo: `v1.0.0`).
 
 1. **Crear un tag** con la nueva versión:
-   ```bash
-   git tag v1.0.0
-   ```
+```bash
+git tag v1.0.0
+```
 
 2. **Subir el tag** a GitHub:
-   ```bash
-   git push origin v1.0.0
-   ```
+```bash
+git push origin v1.0.0
+```
 
 Esto disparará el workflow de GitHub Actions que construye la imagen Docker y la despliega en el servidor.
