@@ -4,6 +4,7 @@ import TableOfContents from '../components/TableOfContents.astro';
 import Footer from '../components/Footer.astro';
 import CodeCopyButton from '../components/CodeCopyButton.astro';
 import TableWrapper from '../components/TableWrapper.astro';
+import ImageZoom from '../components/ImageZoom.astro';
 import Search from '../components/Search';
 import '../styles/global.css';
 
@@ -93,7 +94,7 @@ const description = frontmatter.description || "Exploring AI and machine learnin
         </header>
 
         {frontmatter.image && (
-            <Image src={frontmatter.image} alt={frontmatter.title} class="w-full h-64 object-cover rounded-xl shadow-sm mb-8" loading="eager" />
+            <Image src={frontmatter.image} alt={frontmatter.title} class="w-full h-64 object-cover rounded-xl shadow-sm mb-8" loading="eager" data-no-zoom />
         )}
 
         <slot />
@@ -112,5 +113,6 @@ const description = frontmatter.description || "Exploring AI and machine learnin
     <Footer />
     <CodeCopyButton />
     <TableWrapper />
+    <ImageZoom />
   </body>
 </html>

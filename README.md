@@ -155,3 +155,9 @@ git push origin v1.0.0
 ```
 
 Esto disparará el workflow de GitHub Actions que construye la imagen Docker y la despliega en el servidor.
+
+Para conocer el tag más reciente:
+```bash
+git tag --sort=version:refname
+
+```

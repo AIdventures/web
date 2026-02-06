@@ -1,0 +1,61 @@
+---
+// This component adds elegant click-to-zoom to all images inside blog posts.
+// Uses medium-zoom for a smooth, Medium-style expand experience on desktop & mobile.
+---
+
+<script>
+  import mediumZoom, { type Zoom } from 'medium-zoom';
+
+  let zoomInstance: Zoom | null = null;
+
+  function setupImageZoom() {
+    // Detach previous instance to avoid duplicates after view transitions
+    if (zoomInstance) {
+      zoomInstance.detach();
+    }
+
+    // Target all images inside the prose content area (blog post body)
+    zoomInstance = mediumZoom('.prose img:not([data-no-zoom])', {
+      margin: 24,
+      background: 'rgba(244, 243, 241, 0.95)', // Matches --color-bg with slight transparency
+      scrollOffset: 60,
+    });
+  }
+
+  // Run on page load
+  setupImageZoom();
+
+  // Re-run after Astro view transitions
+  document.addEventListener('astro:page-load', setupImageZoom);
+</script>
+
+<style is:global>
+  /* Indicate images are clickable (exclude cover image) */
+  .prose img:not([data-no-zoom]) {
+    cursor: zoom-in;
+    border-radius: 0.5rem;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .prose img:not([data-no-zoom]):hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  /* When the image is zoomed open */
+  .medium-zoom-image--opened {
+    cursor: zoom-out;
+    border-radius: 0.25rem;
+  }
+
+  /* The overlay backdrop */
+  .medium-zoom-overlay {
+    z-index: 50;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* The zoomed image sits above the overlay */
+  .medium-zoom-image--opened {
+    z-index: 51;
+  }
+</style>

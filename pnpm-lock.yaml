@@ -29,6 +29,9 @@ importers:
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
+      medium-zoom:
+        specifier: ^1.1.0
+        version: 1.1.0
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -1543,6 +1546,9 @@ packages:
 
   mdn-data@2.12.2:
     resolution: {integrity: sha512-IEn+pegP1aManZuckezWCO+XZQDplx1366JoVhTpMpBB1sPey/SbveZQUosKiKiGYjg1wH4pMlNgXbCiYgihQA==}
+
+  medium-zoom@1.1.0:
+    resolution: {integrity: sha512-ewyDsp7k4InCUp3jRmwHBRFGyjBimKps/AJLjRSox+2q/2H4p/PNpQf+pwONWlJiOudkBXtbdmVbFjqyybfTmQ==}
 
   micromark-core-commonmark@2.0.3:
     resolution: {integrity: sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg==}
@@ -3878,6 +3884,8 @@ snapshots:
       '@types/mdast': 4.0.4
 
   mdn-data@2.12.2: {}
+
+  medium-zoom@1.1.0: {}
 
   micromark-core-commonmark@2.0.3:
     dependencies:
