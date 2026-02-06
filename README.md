@@ -38,6 +38,18 @@ All commands are run from the root of the project, from a terminal:
 | `pnpm astro ...`          | Run CLI commands like `astro add`, `astro check` |
 | `pnpm astro -- --help`    | Get help using the Astro CLI                     |
 
+## 📊 Analytics
+
+This project uses **Umami Analytics** (Cloud version) for privacy-friendly, cookie-less tracking.
+
+The tracking script is included in the `<head>` section of the following files to ensure full site coverage:
+- `src/layouts/BlogPostLayout.astro` (All blog posts)
+- `src/pages/index.astro` (Homepage)
+- `src/pages/tags/[tag].astro` (Tag listing pages)
+- `src/pages/404.astro` (Error page)
+
+Umami Dashboard: [cloud.umami.is](https://cloud.umami.is/)
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
