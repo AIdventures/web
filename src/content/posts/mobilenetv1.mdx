@@ -29,7 +29,7 @@ This **reduces the number of parameters and computations required**, making the 
 ## Main Ideas
 
 
-The MobileNet model is based on [depthwise separable convolutions](/blog/depthwise_separable_convolution) which is a form of factorized convolutions which **factorize a standard convolution into a depthwise convolution and a $1\times1$ convolution called a pointwise convolution**.
+The MobileNet model is based on [depthwise separable convolutions](/posts/depthwise_separable_convolutions) which is a form of factorized convolutions which **factorize a standard convolution into a depthwise convolution and a $1\times1$ convolution called a pointwise convolution**.
 
 **The standard convolution** operation has the effect of **filtering features** based on the convolutional kernels and **combining features** in order to produce a new representation. The **filtering and combination steps can be split into two steps** via the use of factorized convolutions called **depthwise separable convolutions** for substantial reduction in computational cost.
 
@@ -159,4 +159,4 @@ class MobileNet(nn.Module):
 ## Credits
 
 - [Paper - MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/abs/1704.04861)
-- [Depthwise separable convolution](/blog/depthwise_separable_convolution)
+- [Depthwise separable convolution](/posts/depthwise_separable_convolutions)
