@@ -171,5 +171,4 @@ Esto disparará el workflow de GitHub Actions que construye la imagen Docker y l
 Para conocer el tag más reciente:
 ```bash
 git tag --sort=version:refname
-
 ```
